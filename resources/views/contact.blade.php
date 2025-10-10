@@ -56,7 +56,7 @@
                         <i class="fas fa-map-marker-alt text-white fs-4"></i>
                     </div>
                     <h5 class="fw-bold">Alamat</h5>
-                    <p>Jl. Kesehatan Hewan No. 123<br>Jakarta, Indonesia</p>
+                    <p>drh Arundhina G, DV Pets Clinic,<br> Jl. Tj. Pura No.15, Karanganyar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212</p>
                 </div>
                 
                 <div class="col-md-4 text-center mb-4">
@@ -64,7 +64,7 @@
                         <i class="fas fa-phone text-white fs-4"></i>
                     </div>
                     <h5 class="fw-bold">Telepon</h5>
-                    <p>+62 123 4567 89<br>+62 987 6543 21</p>
+                    <p>+62 817-7002-9905</p>
                 </div>
                 
                 <div class="col-md-4 text-center mb-4">
@@ -72,7 +72,7 @@
                         <i class="fas fa-envelope text-white fs-4"></i>
                     </div>
                     <h5 class="fw-bold">Email</h5>
-                    <p>info@klinikhewanungu.com<br>appointment@klinikhewanungu.com</p>
+                    <p>dvpets@gmail.com<br>klinikhewan@gmail.com</p>
                 </div>
             </div>
         </div>

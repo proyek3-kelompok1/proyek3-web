@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
-                <h5 class="fw-bold mb-3">Klinik Hewan Ungu</h5>
+                <h5 class="fw-bold mb-3">Klinik Hewan DV Pets</h5>
                 <p class="mb-3">
                     Memberikan perawatan terbaik untuk hewan peliharaan Anda dengan penuh kasih sayang dan profesionalisme.
                 </p>
@@ -39,19 +39,19 @@
                 <ul class="list-unstyled">
                     <li class="mb-2">
                         <i class="fas fa-map-marker-alt me-2"></i>
-                        Jl. Pahlawan, indramayu, Jawa Barat
+                        drh Arundhina G, DV Pets Clinic, Jl. Tj. Pura No.15, Karanganyar, Kec. Indramayu, Kabupaten Indramayu, Jawa Barat 45212
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-phone me-2"></i>
-                        +62 123 4567 89
+                        +62 817-7002-9905
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-envelope me-2"></i>
-                        info@klinikhewanungu.com
+                    dvpets@gmail.com
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-clock me-2"></i>
-                        Buka Setiap Hari: 08.00 - 20.00
+                        Buka Setiap Hari: 09.00 - 20.00 WIB
                     </li>
                 </ul>
             </div>
@@ -60,7 +60,7 @@
         <hr class="my-4 bg-light">
         
         <div class="text-center">
-            <p class="mb-0">&copy; 2023 Klinik Hewan Ungu. Semua Hak Dilindungi.</p>
+            <p class="mb-0">&copy; 2025 Klinik Hewan Ungu. Semua Hak Dilindungi.</p>
         </div>
     </div>
 </footer>

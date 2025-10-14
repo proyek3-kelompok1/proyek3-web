@@ -33,17 +33,23 @@
                                     </div>
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <label for="subject" class="form-label">Subjek</label>
-                                    <input type="text" class="form-control" id="subject" required>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label for="message" class="form-label">Pesan</label>
-                                    <textarea class="form-control" id="message" rows="5" required></textarea>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-purple px-4">Kirim Pesan</button>
+                                <div class="form-group">
+        <label for="service_type">Jenis Layanan yang Diinginkan</label>
+        <select name="service_type" id="service_type" class="form-control">
+            <option value="">Pilih Layanan</option>
+            <option value="vaksinasi" {{ old('service_type') == 'vaksinasi' ? 'selected' : '' }}>Vaksinasi</option>
+            <option value="rawat_inap" {{ old('service_type') == 'rawat_inap' ? 'selected' : '' }}>Rawat inap</option>
+            <option value="operasi" {{ old('service_type') == 'operasi' ? 'selected' : '' }}>Operasi</option>
+            <option value="hematology" {{ old('service_type') == 'hematology' ? 'selected' : '' }}>Hematology</option>
+        </select>
+    </div>
+                                <br><div class="form-group">
+        <label for="message">Pesan/Kebutuhan *</label>
+        <textarea name="message" id="message" class="form-control" rows="5" required>{{ old('message') }}</textarea>
+        @error('message') <span class="text-danger">{{ $message }}</span> @enderror
+    </div>
+
+    <br><button type="submit" class="btn btn-purple">Kirim Konsultasi</button>
                             </form>
                         </div>
                     </div>
@@ -77,4 +83,10 @@
             </div>
         </div>
     </section>
+<!-- Tambahkan ini untuk menampilkan pesan sukses -->
+@if(session('success'))
+    <div class="alert alert-success mt-3">
+        {{ session('success') }}
+    </div>
+@endif
 @endsection

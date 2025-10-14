@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\ConsultationsController;
 use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
     return view('home');
 });
@@ -14,8 +14,8 @@ Route::get('/services', function () {
     return view('services');
 });
 
-Route::get('/contact', function () {
-    return view('contact');
+Route::get('/consultations', function () {
+    return view('consultations');
 });
 // Admin Routes
 Route::prefix('admin')->group(function () {
@@ -40,6 +40,14 @@ Route::prefix('admin')->group(function () {
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
 
     // Kelola Pesan (Contacts)
-    Route::get('/contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('admin.contacts.index');
-    Route::delete('/contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+    // Route::get('/contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('admin.contacts.index');
+    // Route::delete('/contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+});
+Route::get('/konsultasi', [ConsultationsController::class, 'showForm'])->name('consultations.form');
+Route::post('/konsultasi', [ConsultationsController::class, 'store'])->name('consultations.store');
+
+// Route untuk admin (jika perlu login, tambahkan auth middleware)
+Route::middleware(['auth'])->group(function () {
+    // Route::get('/admin/consultations', [ConsultationController::class, 'index'])->name('admin.consultations');
+    // Route::put('/admin/consultations/{id}', [ConsultationController::class, 'updateStatus'])->name('admin.consultations.update');
 });

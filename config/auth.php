@@ -41,6 +41,11 @@ return [
             'provider' => 'users',
         ],
     ],
+    'pelanggan' => [
+        'driver' => 'session',
+        'provider' => 'pelanggan',
+    ],
+
 
     /*
     |--------------------------------------------------------------------------

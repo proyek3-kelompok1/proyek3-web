@@ -17,6 +17,7 @@ Route::get('/services', function () {
 Route::get('/consultations', [ConsultationsController::class, 'showForm'])->name('consultations');
 Route::post('/consultations', [ConsultationsController::class, 'store']);
 
+
 // Admin Routes
 Route::prefix('admin')->group(function () {
     // Login Routes
@@ -39,14 +40,4 @@ Route::prefix('admin')->group(function () {
     // Kelola Galeri (Gallery)
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
 
-    // Kelola Pesan (Contacts)
-    // Route::get('/contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('admin.contacts.index');
-    // Route::delete('/contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('admin.contacts.destroy');
 });
-
-
-// Route untuk admin (jika perlu login, tambahkan auth middleware)
-// Route::middleware(['auth'])->group(function () {
-//     // Route::get('/admin/consultations', [ConsultationController::class, 'index'])->name('admin.consultations');
-//     // Route::put('/admin/consultations/{id}', [ConsultationController::class, 'updateStatus'])->name('admin.consultations.update');
-// });

@@ -13,11 +13,16 @@
             </div>
         </div>
     </section>
-
     <section class="py-5">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h1 class="fw-bold text-purple mb-4">Jadwal Buka Klinik</h1>
+                    <p class="mb-4">Pukul 09.00 - 22.00 WIB</p>
+                    <h1 class="fw-bold text-purple mb-4">Jadwal Praktek Dokter</h1>
+                    <p class="mb-4">Pagi : 11.00 - 19.00 WIB (drh.Reza)<br>
+                    Sore : 17.00 - 22.00 WIB (drh.Arundhina)<br>
+                <H1>BUKA SETIAP HARI</H1></p>
                     <h2 class="fw-bold text-purple mb-4">Visi & Misi Kami</h2>
                     <p class="mb-4">Klinik Hewan DV Pets didirikan dengan visi untuk menjadi penyedia layanan kesehatan hewan terdepan yang memberikan perawatan komprehensif dengan standar tertinggi.</p>
                     

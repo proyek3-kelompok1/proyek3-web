@@ -19,7 +19,7 @@
                     <a class="nav-link {{ request()->is('services') ? 'active' : '' }}" href="{{ url('/services') }}">Layanan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('contact') ? 'active' : '' }}" href="{{ url('/contact') }}">Kontak</a>
+                    <a class="nav-link {{ request()->is('consultations') ? 'active' : '' }}" href="{{ url('/consultations') }}">Kontak</a>
                 </li>
             </ul>
             

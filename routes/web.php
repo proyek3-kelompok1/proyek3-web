@@ -43,8 +43,12 @@ Route::prefix('admin')->group(function () {
     // Route::get('/contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('admin.contacts.index');
     // Route::delete('/contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('admin.contacts.destroy');
 });
-Route::get('/konsultasi', [ConsultationsController::class, 'showForm'])->name('consultations.form');
-Route::post('/konsultasi', [ConsultationsController::class, 'store'])->name('consultations.store');
+Route::get('/konsultasi', [ConsultationsController::class, 'showForm']);
+Route::post('/konsultasi', [ConsultationsController::class, 'store']);
+
+// Alternatif untuk /contact
+Route::get('/contact', [ConsultationsController::class, 'showForm']);
+Route::post('/contact', [ConsultationsController::class, 'store']);
 
 // Route untuk admin (jika perlu login, tambahkan auth middleware)
 Route::middleware(['auth'])->group(function () {

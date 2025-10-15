@@ -10,7 +10,7 @@ class ConsultationsController extends Controller
 {
     public function showForm()
     {
-        return view('konsultasi-form'); // Ganti dengan view yang sudah ada
+        return view('consultations-form'); // Ganti dengan view yang sudah ada
     }
 
    public function store(Request $request)
@@ -30,8 +30,6 @@ class ConsultationsController extends Controller
 
     // Ambil hanya data yang sudah tervalidasi
     $data = $validator->validated();
-
-    // Pastikan model yang dipanggil sesuai: Konsultasi (sesuaikan namespace/import)
     Consultations::create($data);
 
     return redirect()->back()

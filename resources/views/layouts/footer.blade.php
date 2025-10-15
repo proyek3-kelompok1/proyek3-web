@@ -20,7 +20,7 @@
                     <li class="mb-2"><a href="{{ url('/') }}" class="text-light text-decoration-none">Beranda</a></li>
                     <li class="mb-2"><a href="{{ url('/about') }}" class="text-light text-decoration-none">Tentang Kami</a></li>
                     <li class="mb-2"><a href="{{ url('/services') }}" class="text-light text-decoration-none">Layanan</a></li>
-                    <li class="mb-2"><a href="{{ url('/contact') }}" class="text-light text-decoration-none">Kontak</a></li>
+                    <li class="mb-2"><a href="{{ url('/consultations') }}" class="text-light text-decoration-none">Kontak</a></li>
                 </ul>
             </div>
             

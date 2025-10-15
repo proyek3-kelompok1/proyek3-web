@@ -1,5 +1,23 @@
 <footer class="footer py-5">
     <div class="container">
+        <!-- Google Maps Section -->
+        <div class="row mb-5">
+    <div class="col-12 col-md-10 col-lg-8 mx-auto"> <!-- Menggunakan mx-auto untuk pusat dan lebar yang lebih sempit -->
+        <h5 class="fw-bold mb-3 text-center">Lokasi Klinik Kami</h5>
+        <div class="map-container rounded shadow" style="height: 300px; overflow: hidden;">
+            <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.925536235237!2d108.3155113143171!3d-6.327564663932123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6ebd8a7d1b2b5f%3A0x7a1b4ef5f5f5f5f5!2sDV%20Pets%20Clinic!5e0!3m2!1sid!2sid!4v1640000000000!5m2!1sid!2sid" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+        </div>
+    </div>
+</div>
+
         <div class="row">
             <div class="col-lg-4 mb-4 mb-lg-0">
                 <h5 class="fw-bold mb-3">Klinik Hewan DV Pets</h5>
@@ -60,7 +78,7 @@
         <hr class="my-4 bg-light">
         
         <div class="text-center">
-            <p class="mb-0">&copy; 2025 Klinik Hewan Ungu. Semua Hak Dilindungi.</p>
+            <p class="mb-0">&copy; 2025 Klinik Hewan DV Pets. Semua Hak Dilindungi.</p>
         </div>
     </div>
 </footer>

@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\OnlineServiceController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationsController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,11 @@ Route::prefix('admin')->group(function () {
     // Kelola Pesan (Contacts)
     // Route::get('/contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('admin.contacts.index');
     // Route::delete('/contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('admin.contacts.destroy');
+
+    // Route Pemesanan Layanan Online
+    Route::get('/online-services', [OnlineServiceController::class, 'index'])->name('online-services.index');
+    Route::post('/online-services/book', [OnlineServiceController::class, 'book'])->name('online-services.book');
+    Route::get('/online-services/success', [OnlineServiceController::class, 'success'])->name('online-services.success');
     
 });
 

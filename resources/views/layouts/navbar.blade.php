@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-purple py-3">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{{ url('/') }}">
@@ -24,8 +26,11 @@
             </ul>
             
             <div class="ms-lg-3 mt-3 mt-lg-0">
-                <a href="tel:+62123456789" class="btn btn-outline-light">
-                    <i class="fas fa-phone me-2"></i>Hubungi Kami
+                <a href="{{ route('login') }}" class="btn btn-outline-light">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login
+                </a>
+            </div>
+
                 </a>
             </div>
         </div>

@@ -2,6 +2,7 @@
 use App\Http\Controllers\OnlineServiceController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationsController;
+use App\Http\Controllers\MedicalRecordController;
 use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('home');
@@ -53,6 +54,14 @@ Route::prefix('admin')->group(function () {
     Route::post('/online-services/book', [OnlineServiceController::class, 'book'])->name('online-services.book');
     Route::get('/online-services/success', [OnlineServiceController::class, 'success'])->name('online-services.success');
     
+    // Route untuk rekam medis
+    Route::get('/medical-records', [MedicalRecordController::class, 'index'])->name('medical-records.index');
+    Route::post('/medical-records/search', [MedicalRecordController::class, 'search'])->name('medical-records.search');
+    Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
+
+    // Route untuk admin/dokter (bisa diproteksi dengan auth)
+    Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
+    Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
 });
 
 

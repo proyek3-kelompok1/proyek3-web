@@ -221,18 +221,6 @@
                                     <p class="mb-1">Dokter: <span id="summaryDoctor" class="fw-bold">-</span></p>
                                     <p class="mb-1">Tanggal: <span id="summaryDate" class="fw-bold">-</span></p>
                                     <p class="mb-1">Waktu: <span id="summaryTime" class="fw-bold">-</span></p>
-                                    <p class="mb-0">Biaya: <span id="summaryPrice" class="fw-bold">-</span></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <h6 class="fw-bold text-purple">Ringkasan Pemesanan</h6>
-                                <div id="bookingSummary">
-                                    <p class="mb-1">Layanan: <span id="summaryService" class="fw-bold">-</span></p>
-                                    <p class="mb-1">Dokter: <span id="summaryDoctor" class="fw-bold">-</span></p>
-                                    <p class="mb-1">Tanggal: <span id="summaryDate" class="fw-bold">-</span></p>
-                                    <p class="mb-1">Waktu: <span id="summaryTime" class="fw-bold">-</span></p>
                                     <p class="mb-1">Estimasi Antrian: <span id="summaryQueue" class="fw-bold text-success">-</span></p>
                                     <p class="mb-0">Biaya: <span id="summaryPrice" class="fw-bold">-</span></p>
                                 </div>

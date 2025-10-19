@@ -7,7 +7,7 @@
 <body class="bg-light">
 <div class="container mt-5">
     <div class="text-center">
-        <h2>Selamat datang, {{ Auth::user()->name }}!</h2>
+        <h2>Hello, Selamat datang, {{ Auth::user()->name }}!</h2>
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf

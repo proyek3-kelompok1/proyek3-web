@@ -20,7 +20,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect('/dashboard');
+            return redirect('/')->with('success', 'Berhasil login!');
         }
 
         return back()->withErrors(['email' => 'Email atau password salah.'])->withInput();
@@ -54,6 +54,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/')->with('success', 'Anda telah logout.');
     }
 }

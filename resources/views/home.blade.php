@@ -6,8 +6,14 @@
     <!-- Hero Section -->
     <section class="hero-section text-center">
         <div class="container">
+            {{-- Jika user sudah login, tampilkan nama --}}
+            @auth
+                <h2 class="text-light mb-3">Selamat datang, {{ Auth::user()->name }}! 🐾</h2>
+            @endauth
+
             <h1 class="display-4 fw-bold mb-4">Perawatan Terbaik untuk Sahabat Setia Anda</h1>
             <p class="lead mb-5">Klinik hewan terpercaya dengan pelayanan profesional dan penuh kasih sayang</p>
+
             <a href="{{ route('appointments.create') }}" class="btn btn-outline-light btn-lg px-4">Buat Janji Temu</a>
             <a href="{{ url('/services') }}" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
@@ -15,7 +21,6 @@
         </div>
     </section>
 
-    <!-- Layanan Unggulan -->
     <!-- Layanan Unggulan -->
 <section class="py-5">
     <div class="container">

@@ -286,6 +286,7 @@
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
+                
             </div>
         @endif
 
@@ -460,11 +461,456 @@
                     </div>
                     <div class="info-text">
                         <h3>Layanan Unggulan</h3>
-                        <p>Rawat inap 24 jam, vaksinasi, konsultasi umum, grooming, operasi, pemeriksaan lab, perawatan gigi, dan penitipan hewan.</p>
+                        <p>Rawat inap 24 jam, vaksinasi, konsultasi umum, operasi, pemeriksaan lab, scalling gigi, dan penitipan hewan.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+<!-- Tambahkan kode ini di bagian bawah konten, sebelum penutup div.consultation-container -->
+<!-- Tambahkan kode ini di bagian bawah konten, sebelum penutup div.consultation-container -->
+<div class="feedback-section">
+    <div class="container">
+        <div class="feedback-header">
+            <h2><i class="fas fa-comments"></i> Ulasan & Testimoni</h2>
+            <p>Bagikan pengalaman Anda menggunakan layanan kami</p>
+        </div>
+        
+        <div class="feedback-container">
+            <!-- Form Feedback -->
+            <div class="feedback-form-container">
+                <h3><i class="fas fa-edit"></i> Beri Ulasan</h3>
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label for="feedbackName">Nama Anda</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="feedbackName" name="name" placeholder="Masukkan nama Anda" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <div class="rating-stars">
+                            <input type="radio" id="star5" name="rating" value="5">
+                            <label for="star5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackMessage">Ulasan Anda</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-comment"></i>
+                            <textarea id="feedbackMessage" name="message" placeholder="Bagikan pengalaman Anda menggunakan layanan klinik kami..." required></textarea>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit-feedback">
+                        <i class="fas fa-paper-plane"></i> Kirim Ulasan
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Daftar Feedback -->
+            <div class="feedback-list-container">
+                <h3><i class="fas fa-list"></i> Ulasan Pelanggan</h3>
+                <div id="feedbackList" class="feedback-list">
+                    <!-- Feedback akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style untuk section feedback */
+    .feedback-section {
+        background-color: #f0e6ff;
+        padding: 40px 0;
+        margin-top: 40px;
+        border-top: 2px solid #e1d5f5;
+    }
+    
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .feedback-header h2 {
+        color: #6a3093;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .feedback-header p {
+        color: #777;
+        font-size: 1.1rem;
+    }
+    
+    .feedback-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+    
+    @media (max-width: 768px) {
+        .feedback-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .feedback-form-container, .feedback-list-container {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(106, 48, 147, 0.1);
+    }
+    
+    .feedback-form-container h3, .feedback-list-container h3 {
+        color: #6a3093;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0e6ff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .rating-stars {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-top: 10px;
+    }
+    
+    .rating-stars input {
+        display: none;
+    }
+    
+    .rating-stars label {
+        font-size: 1.5rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .rating-stars input:checked ~ label,
+    .rating-stars label:hover,
+    .rating-stars label:hover ~ label {
+        color: #ffc107;
+    }
+    
+    .btn-submit-feedback {
+        background: linear-gradient(135deg, #8a4dcc, #6a3093);
+        color: white;
+        border: none;
+        padding: 14px 25px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .btn-submit-feedback:hover {
+        background: linear-gradient(135deg, #6a3093, #8a4dcc);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 48, 147, 0.4);
+    }
+    
+    .feedback-list {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .feedback-item {
+        background: #f9f5ff;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid #8a4dcc;
+        position: relative;
+    }
+    
+    .feedback-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    
+    .feedbacker-info {
+        flex: 1;
+    }
+    
+    .feedbacker-info h4 {
+        margin: 0 0 5px 0;
+        color: #6a3093;
+        font-size: 1.1rem;
+    }
+    
+    .feedback-rating {
+        color: #ffc107;
+        margin-bottom: 5px;
+    }
+    
+    .feedback-date {
+        color: #888;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+    
+    .feedback-text {
+        color: #555;
+        line-height: 1.5;
+        margin: 10px 0 0 0;
+        padding-right: 40px;
+    }
+    
+    /* Tombol hapus - dipindahkan ke samping kanan atas */
+    .delete-feedback {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: none;
+        border: none;
+        color: #c53030;
+        cursor: pointer;
+        font-size: 1rem;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+        padding: 5px;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .delete-feedback:hover {
+        opacity: 1;
+        background-color: rgba(197, 48, 48, 0.1);
+    }
+    
+    /* Hilangkan ikon garis tiga (hamburger) jika ada */
+    .fa-bars, .fa-ellipsis-v, .fa-ellipsis-h {
+        display: none !important;
+    }
+    
+    /* Scrollbar styling */
+    .feedback-list::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .feedback-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .feedback-list::-webkit-scrollbar-thumb {
+        background: #8a4dcc;
+        border-radius: 10px;
+    }
+    
+    .feedback-list::-webkit-scrollbar-thumb:hover {
+        background: #6a3093;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const feedbackForm = document.getElementById('feedbackForm');
+        const feedbackList = document.getElementById('feedbackList');
+        
+        // Fungsi untuk menghitung waktu relatif
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const date = new Date(timestamp);
+            const diffMs = now - date;
+            const diffSecs = Math.floor(diffMs / 1000);
+            const diffMins = Math.floor(diffSecs / 60);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            
+            if (diffSecs < 60) {
+                return 'Baru saja';
+            } else if (diffMins < 60) {
+                return `${diffMins} menit lalu`;
+            } else if (diffHours < 24) {
+                return `${diffHours} jam lalu`;
+            } else if (diffDays === 1) {
+                return '1 hari lalu';
+            } else if (diffDays < 7) {
+                return `${diffDays} hari lalu`;
+            } else if (diffDays < 30) {
+                const weeks = Math.floor(diffDays / 7);
+                return `${weeks} minggu lalu`;
+            } else {
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+        }
+        
+        // Fungsi untuk menampilkan feedback dari localStorage
+        function loadFeedbacks() {
+            const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
+            
+            // Kosongkan daftar feedback
+            feedbackList.innerHTML = '';
+            
+            // Tambahkan feedback contoh jika tidak ada feedback tersimpan
+            if (savedFeedbacks.length === 0) {
+                // Tambahkan contoh feedback
+                const exampleFeedbacks = [
+                    {
+                        id: 'example_1',
+                        name: 'Budi Santoso',
+                        rating: 5,
+                        message: 'Pelayanan sangat memuaskan! Dokter hewan sangat ramah dan teliti. Kucing saya sembuh setelah dirawat di sini.',
+                        timestamp: Date.now() - (2 * 24 * 60 * 60 * 1000) // 2 hari lalu
+                    },
+                    {
+                        id: 'example_2',
+                        name: 'Sari Indah',
+                        rating: 4,
+                        message: 'Harga terjangkau dan fasilitas lengkap. Anjing saya sudah vaksin di sini beberapa kali, selalu puas dengan layanannya.',
+                        timestamp: Date.now() - (7 * 24 * 60 * 60 * 1000) // 1 minggu lalu
+                    }
+                ];
+                
+                exampleFeedbacks.forEach(feedback => {
+                    addFeedbackToDOM(feedback, true);
+                });
+                return;
+            }
+            
+            // Tampilkan feedback dari localStorage
+            savedFeedbacks.forEach(feedback => {
+                addFeedbackToDOM(feedback, false);
+            });
+        }
+        
+        // Fungsi untuk menambahkan feedback ke DOM
+        function addFeedbackToDOM(feedback, isExample) {
+            const feedbackItem = document.createElement('div');
+            feedbackItem.className = 'feedback-item';
+            feedbackItem.setAttribute('data-id', feedback.id);
+            
+            // Buat elemen rating bintang
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= feedback.rating) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+            }
+            
+            // Format waktu
+            const timeAgo = getTimeAgo(feedback.timestamp);
+            
+            feedbackItem.innerHTML = `
+                <div class="feedback-item-header">
+                    <div class="feedbacker-info">
+                        <h4>${feedback.name}</h4>
+                        <div class="feedback-rating">
+                            ${starsHtml}
+                        </div>
+                        <div class="feedback-date">${timeAgo}</div>
+                    </div>
+                </div>
+                <p class="feedback-text">${feedback.message}</p>
+                ${isExample ? '' : '<button class="delete-feedback"><i class="fas fa-trash"></i></button>'}
+            `;
+            
+            feedbackList.prepend(feedbackItem);
+            
+            // Tambahkan event listener untuk tombol hapus jika bukan contoh
+            if (!isExample) {
+                const deleteBtn = feedbackItem.querySelector('.delete-feedback');
+                deleteBtn.addEventListener('click', function() {
+                    deleteFeedback(feedback.id);
+                });
+            }
+        }
+        
+        // Fungsi untuk menghapus feedback
+        function deleteFeedback(feedbackId) {
+            if (confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
+                const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
+                const updatedFeedbacks = savedFeedbacks.filter(feedback => feedback.id !== feedbackId);
+                localStorage.setItem('petClinicFeedbacks', JSON.stringify(updatedFeedbacks));
+                
+                // Hapus elemen dari DOM
+                const feedbackElement = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
+                if (feedbackElement) {
+                    feedbackElement.remove();
+                }
+            }
+        }
+        
+        // Fungsi untuk menangani pengiriman feedback
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('feedbackName').value;
+            const message = document.getElementById('feedbackMessage').value;
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            
+            if (!ratingInput) {
+                alert('Silakan beri rating terlebih dahulu!');
+                return;
+            }
+            
+            const rating = parseInt(ratingInput.value);
+            
+            // Buat objek feedback dengan ID unik
+            const feedback = {
+                id: 'feedback_' + Date.now(),
+                name,
+                rating,
+                message,
+                timestamp: Date.now()
+            };
+            
+            // Simpan ke localStorage
+            const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
+            savedFeedbacks.push(feedback);
+            localStorage.setItem('petClinicFeedbacks', JSON.stringify(savedFeedbacks));
+            
+            // Reset form
+            feedbackForm.reset();
+            
+            // Tampilkan feedback baru
+            addFeedbackToDOM(feedback, false);
+            
+            // Tampilkan pesan sukses
+            alert('Terima kasih atas ulasan Anda!');
+        });
+        
+        // Muat feedback saat halaman dimuat
+        loadFeedbacks();
+    });
+</script>
 </div>
 @endsection

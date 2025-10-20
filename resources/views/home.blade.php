@@ -3,6 +3,31 @@
 @section('title', 'Beranda')
 
 @section('content')
+<style>
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-container a {
+    padding: 12px 25px;
+    border-radius: 10px;
+    border: 2px solid #fff;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-container a:hover {
+    background-color: #fff;
+    color: #6f42c1; /* ungu lembut biar serasi */
+    transform: scale(1.05);
+}
+</style>
+
     <!-- Hero Section -->
     <section class="hero-section text-center">
         <div class="container">
@@ -13,11 +38,12 @@
 
             <h1 class="display-4 fw-bold mb-4">Perawatan Terbaik untuk Sahabat Setia Anda</h1>
             <p class="lead mb-5">Klinik hewan terpercaya dengan pelayanan profesional dan penuh kasih sayang</p>
-
+<div class="btn-container">
             <a href="{{ route('appointments.create') }}" class="btn btn-outline-light btn-lg px-4">Buat Janji Temu</a>
             <a href="{{ url('/services') }}" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
             <a href="{{ route('medical-records.index') }}" class="btn btn-outline-light btn-lg px-4">Rekam Medis</a>
+</div>
         </div>
     </section>
 

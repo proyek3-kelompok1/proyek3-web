@@ -22,6 +22,9 @@
                     <a class="nav-link {{ request()->is('services') ? 'active' : '' }}" href="{{ url('/services') }}">Layanan</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->is('articles') ? 'active' : '' }}" href="{{ url('/articles') }}">Artikel & Edukasi</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->is('consultations') ? 'active' : '' }}" href="{{ url('/consultations') }}">Kontak</a>
                 </li>
             </ul>
@@ -46,3 +49,35 @@
         </div>
     </div>
 </nav>
+
+<style>
+    .bg-purple {
+        background: linear-gradient(135deg, #6a3093, #8a4dcc) !important;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+    
+    .nav-link {
+        font-weight: 500;
+        margin: 0 5px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        font-weight: 600;
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+</style>

@@ -5,6 +5,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FeedbackController;
 use Illuminate\Support\Facades\Route;
 
 // =======================
@@ -24,7 +25,10 @@ Route::get('/services', function () {
 
 Route::get('/consultations', [ConsultationsController::class, 'showForm'])->name('consultations');
 Route::post('/consultations', [ConsultationsController::class, 'store']);
-
+// Route untuk Artikel & Edukasi (gabungan)
+Route::get('/articles', function () {
+    return view('articles');
+});
 // =======================
 // AUTENTIKASI USER (Login, Register, Logout)
 // =======================
@@ -69,3 +73,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
 });
+//feedback didalam halam kontak dan konsultasi
+// Route::get('/feedbacks', [FeedbackController::class, 'index']);
+// Route::post('/feedbacks', [FeedbackController::class, 'store']); 
+// Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy']);

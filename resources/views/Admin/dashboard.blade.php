@@ -154,4 +154,18 @@
         </div>
     </div>
 </div>
+
+<!-- Info Admin Login -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card card-purple">
+            <div class="card-body">
+                <h6 class="card-title">Informasi Login</h6>
+                <p class="mb-1"><strong>Nama:</strong> {{ Auth::guard('admin')->user()->name }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ Auth::guard('admin')->user()->email }}</p>
+                <p class="mb-0"><strong>Login Time:</strong> {{ now()->format('d M Y H:i:s') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

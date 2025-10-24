@@ -40,12 +40,17 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-    ],
-    'pelanggan' => [
-        'driver' => 'session',
-        'provider' => 'pelanggan',
-    ],
+        
+        'pelanggan' => [
+            'driver' => 'session',
+            'provider' => 'pelanggan',
+        ],
 
+        'admin' => [  // TAMBAHKAN GUARD ADMIN
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -68,6 +73,16 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'pelanggan' => [  // Provider untuk pelanggan (jika ada)
+            'driver' => 'eloquent',
+            'model' => App\Models\Pelanggan::class, // Sesuaikan dengan model pelanggan Anda
+        ],
+
+        'admins' => [  // TAMBAHKAN PROVIDER ADMINS
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [
@@ -99,6 +114,13 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        
+        'admins' => [  // TAMBAHKAN UNTUK ADMIN
+            'provider' => 'admins',
+            'table' => 'admin_password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],

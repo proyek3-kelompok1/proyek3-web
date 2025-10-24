@@ -1,5 +1,5 @@
 <?php
-
+// app/Http/Controllers/Admin/AuthController.php
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -10,6 +10,11 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        // Jika sudah login, redirect ke dashboard
+        if (Auth::guard('admin')->check()) {
+            return redirect('/admin/dashboard');
+        }
+        
         return view('admin.auth.login');
     }
 
@@ -20,19 +25,20 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        // Coba login dengan guard admin
+        if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/admin/dashboard');
+            return redirect('/admin/dashboard');
         }
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',
-        ]);
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/admin/login');

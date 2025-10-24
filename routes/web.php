@@ -73,7 +73,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
 });
-//feedback didalam halam kontak dan konsultasi
-// Route::get('/feedbacks', [FeedbackController::class, 'index']);
-// Route::post('/feedbacks', [FeedbackController::class, 'store']); 
-// Route::delete('/feedbacks/{id}', [FeedbackController::class, 'destroy']);
+// Route untuk feedback
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');

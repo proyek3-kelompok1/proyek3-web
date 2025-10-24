@@ -1,4 +1,5 @@
 <?php
+// app/Models/Feedback.php
 
 namespace App\Models;
 
@@ -11,13 +12,7 @@ class Feedback extends Model
 
     protected $fillable = [
         'name',
-        'rating', 
+        'rating',
         'message'
-    ];
-
-    protected $casts = [
-        'rating' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 }

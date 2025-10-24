@@ -61,6 +61,7 @@
             color: white;
         }
     </style>
+     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     @include('layouts.navbar')

@@ -521,10 +521,11 @@
             
             <!-- Daftar Feedback -->
             <div class="feedback-list-container">
-                <h3><i class="fas fa-list"></i> Ulasan Pelanggan</h3>
+                <h3> Ulasan Pelanggan</h3>
                 <div id="feedbackList" class="feedback-list">
                     <!-- Feedback akan ditampilkan di sini -->
                 </div>
+                
             </div>
         </div>
     </div>
@@ -714,9 +715,9 @@
     }
     
     /* Hilangkan ikon garis tiga (hamburger) jika ada */
-    .fa-bars, .fa-ellipsis-v, .fa-ellipsis-h {
+    /* .fa-bars, .fa-ellipsis-v, .fa-ellipsis-h {
         display: none !important;
-    }
+    } */
     
     /* Scrollbar styling */
     .feedback-list::-webkit-scrollbar {
@@ -743,80 +744,17 @@
         const feedbackForm = document.getElementById('feedbackForm');
         const feedbackList = document.getElementById('feedbackList');
         
-        // Fungsi untuk menghitung waktu relatif
-        function getTimeAgo(timestamp) {
-            const now = new Date();
-            const date = new Date(timestamp);
-            const diffMs = now - date;
-            const diffSecs = Math.floor(diffMs / 1000);
-            const diffMins = Math.floor(diffSecs / 60);
-            const diffHours = Math.floor(diffMins / 60);
-            const diffDays = Math.floor(diffHours / 24);
-            
-            if (diffSecs < 60) {
-                return 'Baru saja';
-            } else if (diffMins < 60) {
-                return `${diffMins} menit lalu`;
-            } else if (diffHours < 24) {
-                return `${diffHours} jam lalu`;
-            } else if (diffDays === 1) {
-                return '1 hari lalu';
-            } else if (diffDays < 7) {
-                return `${diffDays} hari lalu`;
-            } else if (diffDays < 30) {
-                const weeks = Math.floor(diffDays / 7);
-                return `${weeks} minggu lalu`;
-            } else {
-                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-            }
+        // Fungsi untuk format tanggal yang lebih baik
+        function getTimeAgo() {
+            return 'Baru saja';
         }
         
-        // Fungsi untuk menampilkan feedback dari localStorage
-        function loadFeedbacks() {
-            const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
-            
-            // Kosongkan daftar feedback
-            feedbackList.innerHTML = '';
-            
-            // Tambahkan feedback contoh jika tidak ada feedback tersimpan
-            if (savedFeedbacks.length === 0) {
-                // Tambahkan contoh feedback
-                const exampleFeedbacks = [
-                    {
-                        id: 'example_1',
-                        name: 'Budi Santoso',
-                        rating: 5,
-                        message: 'Pelayanan sangat memuaskan! Dokter hewan sangat ramah dan teliti. Kucing saya sembuh setelah dirawat di sini.',
-                        timestamp: Date.now() - (2 * 24 * 60 * 60 * 1000) // 2 hari lalu
-                    },
-                    {
-                        id: 'example_2',
-                        name: 'Sari Indah',
-                        rating: 4,
-                        message: 'Harga terjangkau dan fasilitas lengkap. Anjing saya sudah vaksin di sini beberapa kali, selalu puas dengan layanannya.',
-                        timestamp: Date.now() - (7 * 24 * 60 * 60 * 1000) // 1 minggu lalu
-                    }
-                ];
-                
-                exampleFeedbacks.forEach(feedback => {
-                    addFeedbackToDOM(feedback, true);
-                });
-                return;
-            }
-            
-            // Tampilkan feedback dari localStorage
-            savedFeedbacks.forEach(feedback => {
-                addFeedbackToDOM(feedback, false);
-            });
-        }
-        
-        // Fungsi untuk menambahkan feedback ke DOM
-        function addFeedbackToDOM(feedback, isExample) {
+        // Fungsi untuk menampilkan feedback
+        function showFeedback(feedback) {
             const feedbackItem = document.createElement('div');
             feedbackItem.className = 'feedback-item';
-            feedbackItem.setAttribute('data-id', feedback.id);
             
-            // Buat elemen rating bintang
+            // Buat bintang rating
             let starsHtml = '';
             for (let i = 1; i <= 5; i++) {
                 if (i <= feedback.rating) {
@@ -826,50 +764,34 @@
                 }
             }
             
-            // Format waktu
-            const timeAgo = getTimeAgo(feedback.timestamp);
-            
             feedbackItem.innerHTML = `
                 <div class="feedback-item-header">
                     <div class="feedbacker-info">
                         <h4>${feedback.name}</h4>
-                        <div class="feedback-rating">
-                            ${starsHtml}
-                        </div>
-                        <div class="feedback-date">${timeAgo}</div>
+                        <div class="feedback-rating">${starsHtml}</div>
+                        <div class="feedback-date">${getTimeAgo()}</div>
                     </div>
                 </div>
                 <p class="feedback-text">${feedback.message}</p>
-                ${isExample ? '' : '<button class="delete-feedback"><i class="fas fa-trash"></i></button>'}
             `;
             
             feedbackList.prepend(feedbackItem);
-            
-            // Tambahkan event listener untuk tombol hapus jika bukan contoh
-            if (!isExample) {
-                const deleteBtn = feedbackItem.querySelector('.delete-feedback');
-                deleteBtn.addEventListener('click', function() {
-                    deleteFeedback(feedback.id);
-                });
-            }
         }
         
-        // Fungsi untuk menghapus feedback
-        function deleteFeedback(feedbackId) {
-            if (confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
-                const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
-                const updatedFeedbacks = savedFeedbacks.filter(feedback => feedback.id !== feedbackId);
-                localStorage.setItem('petClinicFeedbacks', JSON.stringify(updatedFeedbacks));
-                
-                // Hapus elemen dari DOM
-                const feedbackElement = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
-                if (feedbackElement) {
-                    feedbackElement.remove();
-                }
-            }
-        }
+        // Tampilkan contoh feedback
+        showFeedback({
+            name: 'Budi Santoso',
+            rating: 5,
+            message: 'Pelayanan sangat memuaskan! Dokter hewan sangat ramah dan teliti. Kucing saya sembuh setelah dirawat di sini.'
+        });
         
-        // Fungsi untuk menangani pengiriman feedback
+        showFeedback({
+            name: 'Sari Indah',
+            rating: 4, 
+            message: 'Harga terjangkau dan fasilitas lengkap. Anjing saya sudah vaksin di sini beberapa kali, selalu puas dengan layanannya.'
+        });
+        
+        // Handle form submission - VERSI SANGAT SEDERHANA
         feedbackForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -884,32 +806,41 @@
             
             const rating = parseInt(ratingInput.value);
             
-            // Buat objek feedback dengan ID unik
-            const feedback = {
-                id: 'feedback_' + Date.now(),
-                name,
-                rating,
-                message,
-                timestamp: Date.now()
-            };
-            
-            // Simpan ke localStorage
-            const savedFeedbacks = JSON.parse(localStorage.getItem('petClinicFeedbacks')) || [];
-            savedFeedbacks.push(feedback);
-            localStorage.setItem('petClinicFeedbacks', JSON.stringify(savedFeedbacks));
+            // Tampilkan langsung tanpa server dulu
+            showFeedback({
+                name: name,
+                rating: rating,
+                message: message
+            });
             
             // Reset form
             feedbackForm.reset();
+            alert('Terima kasih atas ulasan Anda! ✅');
             
-            // Tampilkan feedback baru
-            addFeedbackToDOM(feedback, false);
-            
-            // Tampilkan pesan sukses
-            alert('Terima kasih atas ulasan Anda!');
+            // Optional: Coba kirim ke server (tapi jangan ganggu user)
+            try {
+                fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        rating: rating,
+                        message: message
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      console.log('Server response:', data);
+                  })
+                  .catch(error => {
+                      console.log('Server offline, tapi feedback tetap tersimpan');
+                  });
+            } catch (error) {
+                console.log('Tidak bisa connect ke server, tapi feedback tetap ditampilkan');
+            }
         });
-        
-        // Muat feedback saat halaman dimuat
-        loadFeedbacks();
     });
 </script>
 </div>

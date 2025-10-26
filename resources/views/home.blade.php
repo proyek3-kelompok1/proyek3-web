@@ -43,6 +43,8 @@
             <a href="{{ url('/services') }}" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
             <a href="{{ route('medical-records.index') }}" class="btn btn-outline-light btn-lg px-4">Rekam Medis</a>
+            <a href="{{ route('online-services.queue') }}" class="btn btn-outline-light btn-lg px-4">Lihat Antrian</a>
+            
 </div>
         </div>
     </section>

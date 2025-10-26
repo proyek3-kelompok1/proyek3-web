@@ -72,6 +72,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
+
+    // Route untuk lihat antrian
+    Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
+    Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');
+    Route::post('/online-services/check-my-queue', [OnlineServiceController::class, 'checkMyQueue'])->name('online-services.check-my-queue');
+    
 });
 // Route untuk feedback
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');

@@ -191,4 +191,127 @@ class OnlineServiceController extends Controller
             'next_queue_number' => $currentQueue + 1
         ]);
     }
+
+    /**
+     * Menampilkan halaman lihat antrian
+     */
+    public function queue()
+    {
+        return view('online-services.queue');
+    }
+
+    /**
+     * API untuk mendapatkan data antrian real-time
+     */
+    public function getQueueData(Request $request)
+    {
+        $date = $request->input('date', date('Y-m-d'));
+        $serviceType = $request->input('service_type');
+
+        // Data antrian hari ini
+        $todayQueue = ServiceBooking::whereDate('booking_date', $date)
+                                ->where('status', 'pending')
+                                ->with(['serviceBooking'])
+                                ->orderBy('nomor_antrian')
+                                ->get();
+
+        // Data antrian berdasarkan service type jika dipilih
+        if ($serviceType) {
+            $todayQueue = $todayQueue->where('service_type', $serviceType);
+        }
+
+        // Antrian saat ini (yang sedang dilayani)
+        $currentQueue = ServiceBooking::whereDate('booking_date', $date)
+                                    ->where('status', 'confirmed')
+                                    ->orderBy('nomor_antrian')
+                                    ->first();
+
+        // Estimasi waktu tunggu
+        $estimatedWait = $todayQueue->count() * 30; // 30 menit per antrian
+
+        return response()->json([
+            'current_queue' => $currentQueue ? [
+                'nomor_antrian' => $currentQueue->nomor_antrian,
+                'service_type' => $currentQueue->service_type,
+                'booking_code' => $currentQueue->booking_code
+            ] : null,
+            'today_queue' => $todayQueue->map(function($item) {
+                return [
+                    'nomor_antrian' => $item->nomor_antrian,
+                    'service_type' => $item->service_type,
+                    'booking_code' => $item->booking_code,
+                    'nama_hewan' => $item->nama_hewan,
+                    'waktu' => $item->booking_time,
+                    'status' => $item->status
+                ];
+            }),
+            'total_queue' => $todayQueue->count(),
+            'estimated_wait_minutes' => $estimatedWait,
+            'current_date' => $date
+        ]);
+    }
+
+    /**
+     * Cek antrian berdasarkan kode booking
+     */
+    public function checkMyQueue(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'booking_code' => 'required|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode booking harus diisi'
+            ]);
+        }
+
+        $booking = ServiceBooking::where('booking_code', $request->booking_code)->first();
+
+        if (!$booking) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode booking tidak ditemukan'
+            ]);
+        }
+
+        // Hitung posisi antrian
+        $queuePosition = ServiceBooking::whereDate('booking_date', $booking->booking_date)
+                                    ->where('service_type', $booking->service_type)
+                                    ->where('status', 'pending')
+                                    ->where('nomor_antrian', '<=', $booking->nomor_antrian)
+                                    ->count();
+
+        // Antrian saat ini
+        $currentQueue = ServiceBooking::whereDate('booking_date', $booking->booking_date)
+                                    ->where('service_type', $booking->service_type)
+                                    ->where('status', 'confirmed')
+                                    ->orderBy('nomor_antrian')
+                                    ->first();
+
+        $currentQueueNumber = $currentQueue ? $currentQueue->nomor_antrian : 0;
+        $estimatedWait = ($queuePosition - 1) * 30; // Estimasi menit
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'booking' => [
+                    'nomor_antrian' => $booking->nomor_antrian,
+                    'booking_code' => $booking->booking_code,
+                    'service_type' => $booking->service_type,
+                    'nama_hewan' => $booking->nama_hewan,
+                    'dokter' => $booking->doctor,
+                    'waktu' => $booking->booking_time,
+                    'tanggal' => $booking->booking_date
+                ],
+                'queue_info' => [
+                    'current_position' => $queuePosition,
+                    'current_serving' => $currentQueueNumber,
+                    'estimated_wait_minutes' => $estimatedWait,
+                    'status' => $booking->status
+                ]
+            ]
+        ]);
+    }
 }

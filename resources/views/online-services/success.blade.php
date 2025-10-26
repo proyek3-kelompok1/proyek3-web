@@ -91,6 +91,9 @@
                         <a href="{{ url('/') }}" class="btn btn-purple me-md-2">
                             <i class="fas fa-home me-2"></i>Kembali ke Beranda
                         </a>
+                        <a href="{{ route('online-services.queue') }}" class="btn btn-info me-md-2">
+                            <i class="fas fa-list-ol me-2"></i>Lihat Antrian
+                        </a>
                         <a href="{{ route('online-services.index') }}" class="btn btn-outline-purple">
                             <i class="fas fa-plus me-2"></i>Pesan Layanan Lain
                         </a>

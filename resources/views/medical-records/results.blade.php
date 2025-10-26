@@ -81,6 +81,17 @@
                                 </div>
                             </div>
 
+                            <!-- Tindakan Umum (Tanpa Resep) -->
+                            @if($record->tindakan)
+                            <div class="mt-3">
+                                <h6 class="text-info"><i class="fas fa-procedures me-1"></i>Tindakan Medis:</h6>
+                                <div class="bg-light rounded p-3">
+                                    {{ Str::limit($record->tindakan, 150) }}
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Vaksinasi -->
                             @if($record->vaccinations->count() > 0)
                             <div class="mt-3">
                                 <h6 class="text-success"><i class="fas fa-syringe me-1"></i>Vaksinasi:</h6>
@@ -97,6 +108,32 @@
                                 </div>
                             </div>
                             @endif
+
+                            <!-- Informasi Umum Lainnya -->
+                            <div class="mt-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @if($record->catatan_dokter)
+                                        <h6 class="text-primary"><i class="fas fa-notes-medical me-1"></i>Catatan Umum:</h6>
+                                        <div class="bg-light rounded p-2 small">
+                                            {{ Str::limit($record->catatan_dokter, 120) }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted"><i class="fas fa-info-circle me-1"></i>Status:</h6>
+                                        <div class="small">
+                                            @if($record->status == 'selesai')
+                                                <span class="badge bg-success">Pemeriksaan Selesai</span>
+                                            @elseif($record->status == 'rawat')
+                                                <span class="badge bg-warning">Dalam Perawatan</span>
+                                            @elseif($record->status == 'kontrol')
+                                                <span class="badge bg-info">Perlu Kontrol Ulang</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         @endforeach
                     </div>

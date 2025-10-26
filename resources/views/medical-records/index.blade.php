@@ -48,9 +48,12 @@
 
                     <div class="mt-4 p-3 bg-light rounded">
                         <h6 class="text-purple"><i class="fas fa-info-circle me-2"></i>Informasi</h6>
-                        <p class="small mb-0">
-                            Rekam medis berisi riwayat pemeriksaan, diagnosa, resep obat, dan vaksinasi hewan peliharaan Anda.
-                            Data akan tampil setelah proses pemeriksaan selesai dilakukan oleh dokter.
+                        <p class="small mb-2">
+                            Rekam medis berisi riwayat pemeriksaan, diagnosa, vaksinasi, dan informasi umum kesehatan hewan peliharaan Anda.
+                        </p>
+                        <p class="small mb-0 text-muted">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            <strong>Informasi Privasi:</strong> Data sensitif seperti resep obat detail hanya dapat diakses secara langsung di klinik.
                         </p>
                     </div>
                 </div>

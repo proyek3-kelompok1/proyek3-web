@@ -23,7 +23,8 @@ class ServiceBooking extends Model
         'booking_time',
         'catatan',
         'status',
-        'booking_code'
+        'booking_code',
+        'nomor_antrian'
     ];
 
     protected $casts = [

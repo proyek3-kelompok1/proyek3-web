@@ -124,14 +124,25 @@
                     @endif
                 </div>
 
-                <!-- Resep Obat -->
+                <!-- Informasi Resep (Hanya Tampilan Umum) -->
                 @if($medicalRecord->resep_obat)
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="fas fa-pills me-2"></i>Resep Obat</h5>
+                    <h5 class="mb-0"><i class="fas fa-pills me-2"></i>Informasi Pengobatan</h5>
                 </div>
                 <div class="card-body">
-                    <div class="border rounded p-3 bg-light">
-                        {!! nl2br(e($medicalRecord->resep_obat)) !!}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Informasi Resep:</strong> Resep obat telah diberikan dan dapat dilihat di klinik. 
+                        Silakan hubungi dokter untuk informasi detail mengenai pengobatan.
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-light rounded p-4 border">
+                            <i class="fas fa-lock fa-2x text-muted mb-3"></i>
+                            <p class="text-muted mb-0">
+                                Informasi resep obat bersifat privat dan hanya dapat diakses<br>
+                                oleh pemilik hewan secara langsung di klinik.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 @endif
@@ -175,10 +186,10 @@
                 </div>
                 @endif
 
-                <!-- Catatan Dokter -->
+                <!-- Catatan Dokter (Umum) -->
                 @if($medicalRecord->catatan_dokter)
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Catatan Dokter</h5>
+                    <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Catatan dan Saran Dokter</h5>
                 </div>
                 <div class="card-body">
                     <div class="border rounded p-3 bg-light">
@@ -188,12 +199,29 @@
                 @endif
             </div>
 
-            <!-- Footer Note -->
+            <!-- Informasi Privasi -->
             <div class="mt-4 p-3 bg-light rounded">
+                <h6 class="text-purple"><i class="fas fa-shield-alt me-2"></i>Informasi Privasi</h6>
                 <p class="small text-muted mb-0">
-                    <i class="fas fa-shield-alt me-1"></i>
-                    Data rekam medis ini bersifat rahasia dan hanya dapat diakses oleh pemilik hewan dan pihak klinik yang berwenang.
+                    Data rekam medis ini dilindungi privasi. Informasi sensitif seperti resep obat detail 
+                    hanya dapat diakses secara langsung di klinik dengan menunjukkan identitas yang valid.
                 </p>
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="d-flex justify-content-center mt-4">
+                <div class="btn-group">
+                    <a href="{{ route('medical-records.index') }}" class="btn btn-outline-purple">
+                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Pencarian
+                    </a>
+                    <button onclick="window.print()" class="btn btn-outline-success">
+                        <i class="fas fa-print me-2"></i>Cetak Ringkasan
+                    </button>
+                    <a href="https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20konsultasi%20tentang%20rekam%20medis%20hewan%20saya%20dengan%20kode%20{{ $medicalRecord->kode_rekam_medis }}" 
+                       class="btn btn-outline-success" target="_blank">
+                        <i class="fab fa-whatsapp me-2"></i>Konsultasi Dokter
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -223,6 +251,10 @@
     .card-header {
         color: #000 !important;
         background-color: #f8f9fa !important;
+    }
+    .alert-info {
+        background-color: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
     }
 }
 </style>

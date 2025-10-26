@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\MedicalRecord;
 use App\Models\ServiceBooking;
 use App\Models\VaccinationRecord;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MedicalRecordController extends Controller
@@ -40,15 +41,14 @@ class MedicalRecordController extends Controller
                 ->withInput();
         }
 
-        // Ambil semua rekam medis untuk hewan ini
-        $medicalRecords = MedicalRecord::where('nama_hewan', $booking->nama_hewan)
-                                     ->where('nama_pemilik', $booking->nama_pemilik)
-                                     ->with('vaccinations')
-                                     ->orderBy('tanggal_pemeriksaan', 'desc')
-                                     ->get();
+         // PERBAIKAN: Gunakan service_booking_id untuk konsistensi
+            $medicalRecords = MedicalRecord::where('service_booking_id', $booking->id)
+                                        ->with('vaccinations')
+                                        ->orderBy('tanggal_pemeriksaan', 'desc')
+                                        ->get();
 
-        return view('medical-records.results', compact('booking', 'medicalRecords'));
-    }
+            return view('medical-records.results', compact('booking', 'medicalRecords'));
+        }
 
     public function show($id)
     {
@@ -99,11 +99,11 @@ class MedicalRecordController extends Controller
                 ->withInput();
         }
 
-        // Generate kode rekam medis
-        $kodeRM = 'RM' . date('Ymd') . str_pad(MedicalRecord::count() + 1, 3, '0', STR_PAD_LEFT);
+        // PERBAIKAN: Generate kode RM yang lebih unik
+    $countToday = MedicalRecord::whereDate('created_at', today())->count();
+    $kodeRM = 'RM' . date('Ymd') . str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
 
-        $booking = ServiceBooking::find($request->service_booking_id);
-
+    $booking = ServiceBooking::find($request->service_booking_id);
         // Buat rekam medis
         $medicalRecord = MedicalRecord::create([
             'kode_rekam_medis' => $kodeRM,
@@ -126,6 +126,8 @@ class MedicalRecordController extends Controller
             'status' => $request->status
         ]);
 
+        // PERBAIKAN: Gunakan transaction untuk konsistensi data
+    DB::transaction(function () use ($medicalRecord, $request) {
         // Simpan data vaksinasi jika ada
         if ($request->has('vaccinations')) {
             foreach ($request->vaccinations as $vaccination) {
@@ -140,8 +142,9 @@ class MedicalRecordController extends Controller
                 ]);
             }
         }
+    });
 
-        return redirect()->route('medical-records.show', $medicalRecord->id)
-                         ->with('success', 'Rekam medis berhasil disimpan!');
-    }
+    return redirect()->route('medical-records.show', $medicalRecord->id)
+                     ->with('success', 'Rekam medis berhasil disimpan!');
+}
 }

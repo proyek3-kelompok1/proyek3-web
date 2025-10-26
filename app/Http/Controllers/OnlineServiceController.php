@@ -57,27 +57,35 @@ class OnlineServiceController extends Controller
             ]
         ];
 
-        // Data dokter
+        // Data dokter dengan jadwal lengkap
         $doctors = [
             'drh_andi' => [
                 'name' => 'drh. Andi Wijaya',
                 'specialization' => 'Spesialis Umum',
-                'schedule' => ['Senin - Jumat', '08:00 - 16:00']
+                'schedule' => ['Senin - Jumat', '08:00 - 16:00'],
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
             ],
             'drh_sari' => [
                 'name' => 'drh. Sari Dewi',
                 'specialization' => 'Spesialis Bedah',
-                'schedule' => ['Selasa - Sabtu', '09:00 - 17:00']
+                'schedule' => ['Selasa - Sabtu', '09:00 - 17:00'],
+                'available_days' => ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00']
             ],
             'drh_budi' => [
                 'name' => 'drh. Budi Santoso',
                 'specialization' => 'Spesialis Dermatologi',
-                'schedule' => ['Senin - Kamis', '10:00 - 18:00']
+                'schedule' => ['Senin - Kamis', '10:00 - 18:00'],
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00']
             ],
             'drh_maya' => [
                 'name' => 'drh. Maya Purnama',
                 'specialization' => 'Spesialis Gigi',
-                'schedule' => ['Rabu - Minggu', '08:00 - 16:00']
+                'schedule' => ['Rabu - Minggu', '08:00 - 16:00'],
+                'available_days' => ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
             ]
         ];
 
@@ -312,6 +320,59 @@ class OnlineServiceController extends Controller
                     'status' => $booking->status
                 ]
             ]
+        ]);
+    }
+
+    /**
+     * API untuk mendapatkan jam tersedia berdasarkan dokter dan tanggal
+     */
+    public function getAvailableHours(Request $request)
+    {
+        $doctorId = $request->input('doctor');
+        $selectedDate = $request->input('date');
+
+        $doctors = [
+            'drh_andi' => [
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+            ],
+            'drh_sari' => [
+                'available_days' => ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00']
+            ],
+            'drh_budi' => [
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+            ],
+            'drh_maya' => [
+                'available_days' => ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+            ]
+        ];
+
+        if (!isset($doctors[$doctorId])) {
+            return response()->json(['available_hours' => []]);
+        }
+
+        $doctor = $doctors[$doctorId];
+        $selectedDay = date('l', strtotime($selectedDate));
+
+        // Cek apakah tanggal sesuai dengan hari kerja dokter
+        if (!in_array($selectedDay, $doctor['available_days'])) {
+            return response()->json(['available_hours' => []]);
+        }
+
+        // Filter jam yang sudah dipesan
+        $bookedHours = ServiceBooking::whereDate('booking_date', $selectedDate)
+                                   ->where('doctor', $doctorId)
+                                   ->pluck('booking_time')
+                                   ->toArray();
+
+        $availableHours = array_diff($doctor['available_hours'], $bookedHours);
+
+        return response()->json([
+            'available_hours' => array_values($availableHours),
+            'doctor_schedule' => $doctor['available_hours']
         ]);
     }
 }

@@ -255,6 +255,11 @@
     border-color: #5a32a3;
     color: white;
 }
+.btn-purple:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+}
 .service-option .card-label {
     cursor: pointer;
     transition: all 0.3s ease;
@@ -270,8 +275,30 @@
 .cursor-pointer {
     cursor: pointer;
 }
-</style>
 
+/* Style untuk alert validasi */
+.step-validation-alert {
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+/* Style untuk field yang error */
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+/* Style untuk tombol yang disabled */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Highlight untuk field yang required */
+.form-label:after {
+    content: " *";
+    color: #dc3545;
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Step navigation
@@ -279,64 +306,353 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevButtons = document.querySelectorAll('.prev-step');
     
     nextButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
             const currentStep = this.closest('.card');
             const nextStepId = this.getAttribute('data-next');
-            const nextStep = document.getElementById(nextStepId);
+            const currentStepId = currentStep.id;
             
+            // Validasi berdasarkan step
+            if (!validateStep(currentStepId)) {
+                return false;
+            }
+            
+            const nextStep = document.getElementById(nextStepId);
             currentStep.style.display = 'none';
             nextStep.style.display = 'block';
+            
+            // Scroll ke atas
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
     
     prevButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
             const currentStep = this.closest('.card');
             const prevStepId = this.getAttribute('data-prev');
             const prevStep = document.getElementById(prevStepId);
             
             currentStep.style.display = 'none';
             prevStep.style.display = 'block';
+            
+            // Scroll ke atas
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
 
-    // Service selection
+    // Fungsi validasi step
+    function validateStep(stepId) {
+        switch(stepId) {
+            case 'step1':
+                return validateStep1();
+            case 'step2':
+                return validateStep2();
+            case 'step3':
+                return validateStep3();
+            default:
+                return true;
+        }
+    }
+
+    // Validasi Step 1: Pilih Layanan
+    function validateStep1() {
+        const selectedService = document.querySelector('input[name="service_type"]:checked');
+        
+        if (!selectedService) {
+            // showAlert('error', 'Silakan pilih layanan terlebih dahulu!');
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Validasi Step 2: Pilih Dokter & Jadwal
+    function validateStep2() {
+        const selectedDoctor = document.getElementById('doctorSelect').value;
+        const selectedDate = document.getElementById('booking_date').value;
+        const selectedTime = document.getElementById('booking_time').value;
+        
+        if (!selectedDoctor) {
+            // showAlert('error', 'Silakan pilih dokter terlebih dahulu!');
+            document.getElementById('doctorSelect').focus();
+            return false;
+        }
+        
+        if (!selectedDate) {
+            // showAlert('error', 'Silakan pilih tanggal kunjungan terlebih dahulu!');
+            document.getElementById('booking_date').focus();
+            return false;
+        }
+        
+        if (!selectedTime || selectedTime === '') {
+            // showAlert('error', 'Silakan pilih waktu kunjungan terlebih dahulu!');
+            document.getElementById('booking_time').focus();
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Validasi Step 3: Data Pemilik & Hewan
+    function validateStep3() {
+        const requiredFields = [
+            { id: 'nama_pemilik', name: 'Nama Lengkap' },
+            { id: 'email', name: 'Email' },
+            { id: 'telepon', name: 'Nomor Telepon' },
+            { id: 'nama_hewan', name: 'Nama Hewan' },
+            { id: 'jenis_hewan', name: 'Jenis Hewan' },
+            { id: 'ras', name: 'Ras' },
+            { id: 'umur', name: 'Umur' }
+        ];
+        
+        for (let field of requiredFields) {
+            const element = document.getElementById(field.id);
+            if (!element.value.trim()) {
+                // showAlert('error', `Silakan isi ${field.name} terlebih dahulu!`);
+                element.focus();
+                return false;
+            }
+        }
+        
+        // Validasi email format
+        const email = document.getElementById('email').value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAlert('error', 'Format email tidak valid!');
+            document.getElementById('email').focus();
+            return false;
+        }
+        
+        // Validasi umur
+        const umur = document.getElementById('umur').value;
+        if (umur < 0 || umur > 300) {
+            showAlert('error', 'Umur harus antara 0 - 300 bulan!');
+            document.getElementById('umur').focus();
+            return false;
+        }
+        
+        return true;
+    }
+
+    // Fungsi untuk menampilkan alert
+    function showAlert(type, message) {
+        // Hapus alert sebelumnya
+        const existingAlert = document.querySelector('.step-validation-alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+        
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        const icon = type === 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${alertClass} step-validation-alert alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            <i class="fas ${icon} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Tambahkan alert di atas form
+        const container = document.querySelector('.container.py-5');
+        container.insertBefore(alertDiv, container.firstChild);
+        
+        // Scroll ke alert
+        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Auto remove setelah 5 detik
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // Service selection dengan validasi real-time
     const serviceRadios = document.querySelectorAll('.service-radio');
     serviceRadios.forEach(radio => {
-        radio.addEventListener('change', updateSummary);
+        radio.addEventListener('change', function() {
+            updateSummary();
+            // Enable tombol next step 1 jika service dipilih
+            updateNextButtonState('step1', !!this.checked);
+        });
     });
 
     // Doctor selection
     const doctorSelect = document.getElementById('doctorSelect');
     const doctorInfo = document.getElementById('doctorInfo');
+    const bookingDate = document.getElementById('booking_date');
+    const bookingTime = document.getElementById('booking_time');
     
     // Doctor schedule data
     const doctorSchedules = {
         @foreach($doctors as $key => $doctor)
-        '{{ $key }}': `Jadwal: {{ $doctor['schedule'][0] }} ({{ $doctor['schedule'][1] }})`,
+        '{{ $key }}': {
+            info: `Jadwal: {{ $doctor['schedule'][0] }} ({{ $doctor['schedule'][1] }})`,
+            days: {!! json_encode($doctor['available_days'] ?? []) !!},
+            hours: {!! json_encode($doctor['available_hours'] ?? []) !!}
+        },
         @endforeach
     };
 
+    // Update info dokter dan reset tanggal/jam saat dokter dipilih
     doctorSelect.addEventListener('change', function() {
         const selectedDoctor = this.value;
+        
         if (selectedDoctor && doctorSchedules[selectedDoctor]) {
-            doctorInfo.textContent = doctorSchedules[selectedDoctor];
+            doctorInfo.textContent = doctorSchedules[selectedDoctor].info;
             doctorInfo.className = 'text-success small';
+            
+            // Reset tanggal dan jam
+            bookingDate.value = '';
+            bookingTime.innerHTML = '<option value="">Pilih Waktu...</option>';
+            bookingTime.disabled = true;
+            
+            // Set minimum date berdasarkan hari kerja dokter
+            setMinDateForDoctor(selectedDoctor);
         } else {
             doctorInfo.textContent = 'Pilih dokter untuk melihat jadwal praktek';
             doctorInfo.className = 'text-muted small';
+            bookingTime.disabled = true;
         }
+        
         updateSummary();
+        updateNextButtonState('step2', validateStep2());
     });
 
-    // Date and time selection
-    document.getElementById('booking_date').addEventListener('change', updateSummary);
-    document.getElementById('booking_time').addEventListener('change', updateSummary);
+    // Update jam tersedia saat tanggal dipilih
+    bookingDate.addEventListener('change', function() {
+        const selectedDoctor = doctorSelect.value;
+        const selectedDate = this.value;
+        
+        if (selectedDoctor && selectedDate) {
+            loadAvailableHours(selectedDoctor, selectedDate);
+        } else {
+            bookingTime.disabled = true;
+            bookingTime.innerHTML = '<option value="">Pilih Waktu...</option>';
+        }
+        
+        updateSummary();
+        updateNextButtonState('step2', validateStep2());
+    });
+
+    // Time selection
+    bookingTime.addEventListener('change', function() {
+        updateSummary();
+        updateNextButtonState('step2', validateStep2());
+    });
+
+    // Real-time validation untuk step 3
+    const step3Fields = ['nama_pemilik', 'email', 'telepon', 'nama_hewan', 'jenis_hewan', 'ras', 'umur'];
+    step3Fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', function() {
+                // Validasi real-time untuk email
+                if (fieldId === 'email' && field.value.trim()) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value)) {
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                }
+                
+                updateNextButtonState('step3', validateStep3());
+            });
+        }
+    });
+
+    // Fungsi untuk update state tombol next
+    function updateNextButtonState(stepId, isValid) {
+        const nextButton = document.querySelector(`#${stepId} .next-step`);
+        if (nextButton) {
+            if (isValid) {
+                nextButton.disabled = false;
+                nextButton.classList.remove('btn-secondary');
+                nextButton.classList.add('btn-purple');
+            } else {
+                nextButton.disabled = true;
+                nextButton.classList.remove('btn-purple');
+                nextButton.classList.add('btn-secondary');
+            }
+        }
+    }
+
+    // Fungsi untuk set minimum date berdasarkan hari kerja dokter
+    function setMinDateForDoctor(doctorId) {
+        const doctor = doctorSchedules[doctorId];
+        if (!doctor) return;
+
+        const today = new Date();
+        let minDate = new Date(today);
+        minDate.setDate(today.getDate() + 1); // Minimal besok
+        
+        // Cari tanggal terdekat yang sesuai dengan jadwal dokter
+        let foundDate = false;
+        let checkDate = new Date(minDate);
+        
+        for (let i = 0; i < 14; i++) { // Cek 14 hari ke depan
+            const dayName = checkDate.toLocaleDateString('en-US', { weekday: 'long' });
+            
+            if (doctor.days.includes(dayName)) {
+                // Format date untuk input type="date"
+                const formattedDate = checkDate.toISOString().split('T')[0];
+                bookingDate.min = formattedDate;
+                foundDate = true;
+                break;
+            }
+            
+            checkDate.setDate(checkDate.getDate() + 1);
+        }
+        
+        if (!foundDate) {
+            bookingDate.min = minDate.toISOString().split('T')[0];
+        }
+        
+        bookingDate.disabled = false;
+    }
+
+    // Fungsi untuk memuat jam tersedia
+    function loadAvailableHours(doctorId, date) {
+        bookingTime.disabled = true;
+        bookingTime.innerHTML = '<option value="">Memuat jam tersedia...</option>';
+
+        fetch(`/online-services/available-hours?doctor=${doctorId}&date=${date}`)
+            .then(response => response.json())
+            .then(data => {
+                bookingTime.innerHTML = '<option value="">Pilih Waktu...</option>';
+                
+                if (data.available_hours && data.available_hours.length > 0) {
+                    data.available_hours.forEach(hour => {
+                        const option = document.createElement('option');
+                        option.value = hour;
+                        option.textContent = hour;
+                        bookingTime.appendChild(option);
+                    });
+                    bookingTime.disabled = false;
+                } else {
+                    bookingTime.innerHTML = '<option value="">Tidak ada jam tersedia</option>';
+                    bookingTime.disabled = true;
+                }
+                
+                updateNextButtonState('step2', validateStep2());
+            })
+            .catch(error => {
+                console.error('Error loading available hours:', error);
+                bookingTime.innerHTML = '<option value="">Error memuat jam</option>';
+                bookingTime.disabled = true;
+                updateNextButtonState('step2', validateStep2());
+            });
+    }
 
     // Form data for summary
     const serviceData = {
         @foreach($services as $key => $service)
-        '{{ $key }}': {
+        '{{ $key }}': 
+        {
             name: '{{ $service["name"] }}',
             price: {{ $service["price"] }}
         },
@@ -352,17 +668,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSummary() {
         const selectedService = document.querySelector('input[name="service_type"]:checked');
         const selectedDoctor = doctorSelect.value;
-        const selectedDate = document.getElementById('booking_date').value;
-        const selectedTime = document.getElementById('booking_time').value;
+        const selectedDate = bookingDate.value;
+        const selectedTime = bookingTime.value;
 
         if (selectedService) {
             const service = serviceData[selectedService.value];
             document.getElementById('summaryService').textContent = service.name;
             document.getElementById('summaryPrice').textContent = 'Rp ' + service.price.toLocaleString('id-ID');
+        } else {
+            document.getElementById('summaryService').textContent = '-';
+            document.getElementById('summaryPrice').textContent = '-';
         }
 
         if (selectedDoctor) {
             document.getElementById('summaryDoctor').textContent = doctorData[selectedDoctor];
+        } else {
+            document.getElementById('summaryDoctor').textContent = '-';
         }
 
         if (selectedDate) {
@@ -373,15 +694,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 month: 'long',
                 day: 'numeric'
             });
+        } else {
+            document.getElementById('summaryDate').textContent = '-';
         }
 
         if (selectedTime) {
             document.getElementById('summaryTime').textContent = selectedTime;
+        } else {
+            document.getElementById('summaryTime').textContent = '-';
         }
+
+        // Update estimasi antrian
+        updateQueueEstimation(selectedService?.value, selectedDate);
     }
 
-    // Initialize summary
+    // Fungsi untuk update estimasi antrian
+    function updateQueueEstimation(serviceType, date) {
+        const queueElement = document.getElementById('summaryQueue');
+        
+        if (!serviceType || !date) {
+            queueElement.textContent = '-';
+            return;
+        }
+
+        const estimations = {
+            'vaksinasi': '5-10 menit',
+            'konsultasi_umum': '15-30 menit', 
+            'grooming': '30-45 menit',
+            'perawatan_gigi': '20-35 menit',
+            'pemeriksaan_darah': '10-20 menit',
+            'sterilisasi': '45-60 menit'
+        };
+
+        queueElement.textContent = estimations[serviceType] || '15-30 menit';
+    }
+
+    // Initialize summary dan disable tombol next awalnya
     updateSummary();
+    updateNextButtonState('step1', false);
+    updateNextButtonState('step2', false);
+    updateNextButtonState('step3', false);
 });
 </script>
 @endsection

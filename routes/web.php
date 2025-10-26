@@ -29,6 +29,20 @@ Route::post('/consultations', [ConsultationsController::class, 'store']);
 Route::get('/articles', function () {
     return view('articles');
 });
+
+    // Route untuk lihat antrian
+    Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
+    Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');
+    Route::post('/online-services/check-my-queue', [OnlineServiceController::class, 'checkMyQueue'])->name('online-services.check-my-queue');
+    
+    // Route untuk melihat jadwal jam dokter
+    Route::get('/online-services/available-hours', [OnlineServiceController::class, 'getAvailableHours'])->name('online-services.available-hours');
+    
+    // Route untuk feedback
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+    
 // =======================
 // AUTENTIKASI USER (Login, Register, Logout)
 // =======================
@@ -72,14 +86,4 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
-
-    // Route untuk lihat antrian
-    Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
-    Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');
-    Route::post('/online-services/check-my-queue', [OnlineServiceController::class, 'checkMyQueue'])->name('online-services.check-my-queue');
-    
 });
-// Route untuk feedback
-Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
-Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');

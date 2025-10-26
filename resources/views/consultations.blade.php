@@ -740,108 +740,164 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const feedbackForm = document.getElementById('feedbackForm');
-        const feedbackList = document.getElementById('feedbackList');
+document.addEventListener('DOMContentLoaded', function() {
+    const feedbackForm = document.getElementById('feedbackForm');
+    const feedbackList = document.getElementById('feedbackList');
+    
+    // URLs
+    const feedbackStoreUrl = '{{ route("feedback.store") }}';
+    const feedbackIndexUrl = '{{ route("feedback.index") }}';
+    
+    console.log('Feedback URLs:', { store: feedbackStoreUrl, index: feedbackIndexUrl });
+
+    // Fungsi untuk memuat feedback dari server
+    function loadFeedbacks() {
+        console.log('Loading feedbacks from:', feedbackIndexUrl);
         
-        // Fungsi untuk format tanggal yang lebih baik
-        function getTimeAgo() {
-            return 'Baru saja';
-        }
-        
-        // Fungsi untuk menampilkan feedback
-        function showFeedback(feedback) {
-            const feedbackItem = document.createElement('div');
-            feedbackItem.className = 'feedback-item';
-            
-            // Buat bintang rating
-            let starsHtml = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= feedback.rating) {
-                    starsHtml += '<i class="fas fa-star"></i>';
-                } else {
-                    starsHtml += '<i class="far fa-star"></i>';
-                }
+        fetch(feedbackIndexUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
             }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                });
+            }
+            return response.json();
+        })
+        .then(feedbacks => {
+            console.log('Feedbacks loaded:', feedbacks);
+            feedbackList.innerHTML = '';
             
-            feedbackItem.innerHTML = `
-                <div class="feedback-item-header">
-                    <div class="feedbacker-info">
-                        <h4>${feedback.name}</h4>
-                        <div class="feedback-rating">${starsHtml}</div>
-                        <div class="feedback-date">${getTimeAgo()}</div>
-                    </div>
-                </div>
-                <p class="feedback-text">${feedback.message}</p>
-            `;
-            
-            feedbackList.prepend(feedbackItem);
-        }
-        
-        // Tampilkan contoh feedback
-        showFeedback({
-            name: 'Budi Santoso',
-            rating: 5,
-            message: 'Pelayanan sangat memuaskan! Dokter hewan sangat ramah dan teliti. Kucing saya sembuh setelah dirawat di sini.'
-        });
-        
-        showFeedback({
-            name: 'Sari Indah',
-            rating: 4, 
-            message: 'Harga terjangkau dan fasilitas lengkap. Anjing saya sudah vaksin di sini beberapa kali, selalu puas dengan layanannya.'
-        });
-        
-        // Handle form submission - VERSI SANGAT SEDERHANA
-        feedbackForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('feedbackName').value;
-            const message = document.getElementById('feedbackMessage').value;
-            const ratingInput = document.querySelector('input[name="rating"]:checked');
-            
-            if (!ratingInput) {
-                alert('Silakan beri rating terlebih dahulu!');
+            if (!feedbacks || feedbacks.length === 0) {
+                feedbackList.innerHTML = '<p>Belum ada ulasan. Jadilah yang pertama!</p>';
                 return;
             }
             
-            const rating = parseInt(ratingInput.value);
-            
-            // Tampilkan langsung tanpa server dulu
-            showFeedback({
-                name: name,
-                rating: rating,
-                message: message
-            });
-            
-            // Reset form
-            feedbackForm.reset();
-            alert('Terima kasih atas ulasan Anda! ✅');
-            
-            // Optional: Coba kirim ke server (tapi jangan ganggu user)
-            try {
-                fetch('/feedback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        rating: rating,
-                        message: message
-                    })
-                }).then(response => response.json())
-                  .then(data => {
-                      console.log('Server response:', data);
-                  })
-                  .catch(error => {
-                      console.log('Server offline, tapi feedback tetap tersimpan');
-                  });
-            } catch (error) {
-                console.log('Tidak bisa connect ke server, tapi feedback tetap ditampilkan');
+            // Jika ada error message dari server
+            if (feedbacks.error) {
+                throw new Error(feedbacks.error);
             }
+            
+            feedbacks.forEach(feedback => {
+                showFeedback(feedback);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading feedbacks:', error);
+            feedbackList.innerHTML = '<p>Gagal memuat ulasan: ' + error.message + '</p>';
+        });
+    }
+    
+    // Fungsi untuk menampilkan feedback
+    function showFeedback(feedback) {
+        const feedbackItem = document.createElement('div');
+        feedbackItem.className = 'feedback-item';
+        
+        // Format tanggal
+        let formattedDate = 'Baru saja';
+        if (feedback.created_at) {
+            const date = new Date(feedback.created_at);
+            formattedDate = date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long', 
+                year: 'numeric'
+            });
+        }
+        
+        // Buat bintang rating
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= feedback.rating) {
+                starsHtml += '<i class="fas fa-star"></i>';
+            } else {
+                starsHtml += '<i class="far fa-star"></i>';
+            }
+        }
+        
+        feedbackItem.innerHTML = `
+            <div class="feedback-item-header">
+                <div class="feedbacker-info">
+                    <h4>${feedback.name}</h4>
+                    <div class="feedback-rating">${starsHtml}</div>
+                    <div class="feedback-date">${formattedDate}</div>
+                </div>
+            </div>
+            <p class="feedback-text">${feedback.message}</p>
+        `;
+        
+        feedbackList.appendChild(feedbackItem);
+    }
+    
+    // Handle form submission
+    feedbackForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('feedbackName').value.trim();
+        const message = document.getElementById('feedbackMessage').value.trim();
+        const ratingInput = document.querySelector('input[name="rating"]:checked');
+        
+        // Validasi
+        if (!name || !message || !ratingInput) {
+            alert('Silakan lengkapi semua field!');
+            return;
+        }
+        
+        const rating = parseInt(ratingInput.value);
+        const formData = {
+            name: name,
+            rating: rating,
+            message: message
+        };
+        
+        console.log('Sending feedback:', formData);
+        
+        // Kirim ke server
+        fetch(feedbackStoreUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            return response.json().then(data => ({
+                status: response.status,
+                data: data
+            }));
+        })
+        .then(({status, data}) => {
+            console.log('Response:', {status, data});
+            
+            if (status === 201 || data.success) {
+                // Success
+                feedbackForm.reset();
+                document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                alert('Terima kasih atas ulasan Anda! ✅');
+                loadFeedbacks();
+            } else {
+                // Error from server
+                alert('Gagal: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Terjadi kesalahan jaringan. Coba lagi.');
         });
     });
+    
+    // Muat feedback saat halaman dimuat
+    loadFeedbacks();
+});
 </script>
 </div>
 @endsection

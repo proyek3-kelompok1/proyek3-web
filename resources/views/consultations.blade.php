@@ -428,8 +428,8 @@
                     </div>
                     <div class="info-text">
                         <h3>Jam Operasional</h3>
-                        <p>Senin - Jumat: 08:00 - 20:00 WIB</p>
-                        <p>Sabtu - Minggu: 09:00 - 17:00 WIB</p>
+                        <p>Buka Setiap hari</p>
+                        <p>08:00 - 20:00 WIB</p>
                     </div>
                 </div>
                 
@@ -439,8 +439,8 @@
                     </div>
                     <div class="info-text">
                         <h3>Lokasi Klinik</h3>
-                        <p>Jl. Kesehatan Hewan No. 123</p>
-                        <p>Jakarta Selatan, 12560</p>
+                        <p>l. Tj. Pura No.15, Karanganyar, Indramayu</p>
+                        
                     </div>
                 </div>
                 
@@ -451,7 +451,6 @@
                     <div class="info-text">
                         <h3>Kontak Darurat</h3>
                         <p>Telepon: (021) 7654-3210</p>
-                        <p>WhatsApp: 0812-3456-7890</p>
                     </div>
                 </div>
                 
@@ -467,8 +466,6 @@
             </div>
         </div>
     </div>
-<!-- Tambahkan kode ini di bagian bawah konten, sebelum penutup div.consultation-container -->
-<!-- Tambahkan kode ini di bagian bawah konten, sebelum penutup div.consultation-container -->
 <div class="feedback-section">
     <div class="container">
         <div class="feedback-header">

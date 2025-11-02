@@ -39,7 +39,7 @@
             <h1 class="display-4 fw-bold mb-4">Perawatan Terbaik untuk Sahabat Setia Anda</h1>
             <p class="lead mb-5">Klinik hewan terpercaya dengan pelayanan profesional dan penuh kasih sayang</p>
 <div class="btn-container">
-            <a href="{{ route('appointments.create') }}" class="btn btn-outline-light btn-lg px-4">Buat Janji Temu</a>
+            {{-- <a href="{{ route('appointments.create') }}" class="btn btn-outline-light btn-lg px-4">Buat Janji Temu</a> --}}
             <a href="{{ url('/services') }}" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
             <a href="{{ route('medical-records.index') }}" class="btn btn-outline-light btn-lg px-4">Rekam Medis</a>

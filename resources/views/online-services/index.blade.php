@@ -27,7 +27,7 @@
                 <!-- Step 1: Pilih Layanan -->
                 <div class="card shadow mb-4" id="step1">
                     <div class="card-header bg-purple text-white">
-                        <h5 class="mb-0">Step 1: Pilih Layanan</h5>
+                        <h5 class="mb-0">Pilih Layanan</h5>
                     </div>
                     <div class="card-body">
                         <div class="row g-4">
@@ -68,7 +68,7 @@
                         </div>
                         
                         <div class="text-end mt-4">
-                            <button type="button" class="btn btn-purple next-step" data-next="step2">Lanjut ke Step 2</button>
+                            <button type="button" class="btn btn-purple next-step" data-next="step2">Selanjutnya</button>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                 <!-- Step 2: Pilih Dokter & Jadwal -->
                 <div class="card shadow mb-4" id="step2" style="display: none;">
                     <div class="card-header bg-purple text-white">
-                        <h5 class="mb-0">Step 2: Pilih Dokter & Jadwal</h5>
+                        <h5 class="mb-0">Pilih Dokter & Jadwal</h5>
                     </div>
                     <div class="card-body">
                         <div class="row mb-4">
@@ -125,7 +125,7 @@
 
                         <div class="d-flex justify-content-between mt-4">
                             <button type="button" class="btn btn-outline-secondary prev-step" data-prev="step1">Kembali</button>
-                            <button type="button" class="btn btn-purple next-step" data-next="step3">Lanjut ke Step 3</button>
+                            <button type="button" class="btn btn-purple next-step" data-next="step3">Selanjutnya</button>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                 <!-- Step 3: Data Pemilik & Hewan -->
                 <div class="card shadow mb-4" id="step3" style="display: none;">
                     <div class="card-header bg-purple text-white">
-                        <h5 class="mb-0">Step 3: Data Pemilik & Hewan</h5>
+                        <h5 class="mb-0">Data Pemilik & Hewan</h5>
                     </div>
                     <div class="card-body">
                         <h6 class="fw-bold text-purple mb-3">Data Pemilik</h6>

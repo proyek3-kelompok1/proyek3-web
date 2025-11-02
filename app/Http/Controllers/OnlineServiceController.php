@@ -18,74 +18,84 @@ class OnlineServiceController extends Controller
                 'description' => 'Program vaksinasi lengkap untuk melindungi hewan dari berbagai penyakit',
                 'price' => 150000,
                 'duration' => 30,
-                'kode' => 'VKS'
+                'kode' => 'VKS',
+                'available_doctors' => ['drh_andi', 'drh_sari', 'drh_maya'] // Dokter yang melayani vaksinasi
             ],
             'konsultasi_umum' => [
                 'name' => 'Konsultasi Umum',
                 'description' => 'Pemeriksaan kesehatan rutin dan konsultasi untuk hewan peliharaan',
                 'price' => 80000,
                 'duration' => 45,
-                'kode' => 'KON'
+                'kode' => 'KON',
+                'available_doctors' => ['drh_andi', 'drh_sari', 'drh_budi', 'drh_maya'] // Semua dokter
             ],
             'grooming' => [
                 'name' => 'Grooming',
                 'description' => 'Perawatan kebersihan lengkap termasuk mandi, potong kuku, dan sisir bulu',
                 'price' => 120000,
                 'duration' => 60,
-                'kode' => 'GRM'
+                'kode' => 'GRM',
+                'available_doctors' => ['drh_sari', 'drh_maya'] // Dokter grooming
             ],
             'perawatan_gigi' => [
                 'name' => 'Perawatan Gigi',
                 'description' => 'Pembersihan gigi dan perawatan kesehatan mulut untuk hewan kesayangan',
                 'price' => 200000,
                 'duration' => 45,
-                'kode' => 'GIG'
+                'kode' => 'GIG',
+                'available_doctors' => ['drh_maya'] // Hanya dokter spesialis gigi
             ],
             'pemeriksaan_darah' => [
                 'name' => 'Pemeriksaan Darah',
                 'description' => 'Tes darah lengkap untuk mendiagnosis kondisi kesehatan hewan',
                 'price' => 250000,
                 'duration' => 30,
-                'kode' => 'DRH'
+                'kode' => 'DRH',
+                'available_doctors' => ['drh_andi', 'drh_budi'] // Dokter umum dan dermatologi
             ],
             'sterilisasi' => [
                 'name' => 'Sterilisasi',
                 'description' => 'Tindakan sterilisasi untuk mengontrol populasi dan kesehatan hewan',
                 'price' => 500000,
                 'duration' => 120,
-                'kode' => 'STR'
+                'kode' => 'STR',
+                'available_doctors' => ['drh_sari'] // Hanya dokter spesialis bedah
             ]
         ];
 
-        // Data dokter dengan jadwal lengkap
+        // Data dokter dengan spesialisasi
         $doctors = [
             'drh_andi' => [
                 'name' => 'drh. Andi Wijaya',
                 'specialization' => 'Spesialis Umum',
                 'schedule' => ['Senin - Jumat', '08:00 - 16:00'],
                 'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00'],
+                'services' => ['vaksinasi', 'konsultasi_umum', 'pemeriksaan_darah'] // Layanan yang bisa ditangani
             ],
             'drh_sari' => [
                 'name' => 'drh. Sari Dewi',
                 'specialization' => 'Spesialis Bedah',
                 'schedule' => ['Selasa - Sabtu', '09:00 - 17:00'],
                 'available_days' => ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00']
+                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'],
+                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'sterilisasi']
             ],
             'drh_budi' => [
                 'name' => 'drh. Budi Santoso',
                 'specialization' => 'Spesialis Dermatologi',
                 'schedule' => ['Senin - Kamis', '10:00 - 18:00'],
                 'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+                'services' => ['konsultasi_umum', 'pemeriksaan_darah']
             ],
             'drh_maya' => [
                 'name' => 'drh. Maya Purnama',
                 'specialization' => 'Spesialis Gigi',
                 'schedule' => ['Rabu - Minggu', '08:00 - 16:00'],
                 'available_days' => ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00'],
+                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'perawatan_gigi']
             ]
         ];
 

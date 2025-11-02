@@ -282,9 +282,46 @@
     border-radius: 10px;
 }
 
-/* Style untuk field yang error */
+/* Style untuk field valid */
+.is-valid {
+    border-color: #198754 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+/* Style untuk field invalid */
 .is-invalid {
     border-color: #dc3545 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3cpath d='M6 7v2'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.invalid-feedback.d-block {
+    display: block;
+}
+
+/* Style untuk form group */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Tooltip untuk contoh email */
+.email-example {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
 }
 
 /* Style untuk tombol yang disabled */
@@ -360,13 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validasi Step 1: Pilih Layanan
     function validateStep1() {
         const selectedService = document.querySelector('input[name="service_type"]:checked');
-        
-        if (!selectedService) {
-            // showAlert('error', 'Silakan pilih layanan terlebih dahulu!');
-            return false;
-        }
-        
-        return true;
+        return !!selectedService;
     }
 
     // Validasi Step 2: Pilih Dokter & Jadwal
@@ -375,25 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedDate = document.getElementById('booking_date').value;
         const selectedTime = document.getElementById('booking_time').value;
         
-        if (!selectedDoctor) {
-            // showAlert('error', 'Silakan pilih dokter terlebih dahulu!');
-            document.getElementById('doctorSelect').focus();
-            return false;
-        }
-        
-        if (!selectedDate) {
-            // showAlert('error', 'Silakan pilih tanggal kunjungan terlebih dahulu!');
-            document.getElementById('booking_date').focus();
-            return false;
-        }
-        
-        if (!selectedTime || selectedTime === '') {
-            // showAlert('error', 'Silakan pilih waktu kunjungan terlebih dahulu!');
-            document.getElementById('booking_time').focus();
-            return false;
-        }
-        
-        return true;
+        return !!(selectedDoctor && selectedDate && selectedTime);
     }
 
     // Validasi Step 3: Data Pemilik & Hewan
@@ -411,98 +424,142 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let field of requiredFields) {
             const element = document.getElementById(field.id);
             if (!element.value.trim()) {
-                // showAlert('error', `Silakan isi ${field.name} terlebih dahulu!`);
-                element.focus();
                 return false;
             }
         }
         
         // Validasi email format
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            showAlert('error', 'Format email tidak valid!');
-            document.getElementById('email').focus();
+            return false;
+        }
+        
+        // Validasi domain email
+        if (!isValidEmailDomain(email)) {
+            return false;
+        }
+        
+        // Validasi telepon
+        const telepon = document.getElementById('telepon').value.trim();
+        const teleponRegex = /^[0-9]{10,15}$/;
+        if (!teleponRegex.test(telepon)) {
             return false;
         }
         
         // Validasi umur
         const umur = document.getElementById('umur').value;
         if (umur < 0 || umur > 300) {
-            showAlert('error', 'Umur harus antara 0 - 300 bulan!');
-            document.getElementById('umur').focus();
             return false;
         }
         
         return true;
     }
 
-    // Fungsi untuk menampilkan alert
-    function showAlert(type, message) {
-        // Hapus alert sebelumnya
-        const existingAlert = document.querySelector('.step-validation-alert');
-        if (existingAlert) {
-            existingAlert.remove();
-        }
+    // Fungsi validasi domain email
+    function isValidEmailDomain(email) {
+        const validDomains = [
+            '.com', '.net', '.org', '.id', '.co.id', '.ac.id', 
+            '.sch.id', '.go.id', '.mil.id', '.web.id', '.my.id',
+            '.biz', '.info', '.xyz', '.site', '.online', '.store',
+            '.io', '.me', '.tv', '.app', '.dev'
+        ];
         
-        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
-        const icon = type === 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle';
-        
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert ${alertClass} step-validation-alert alert-dismissible fade show`;
-        alertDiv.innerHTML = `
-            <i class="fas ${icon} me-2"></i>${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        // Tambahkan alert di atas form
-        const container = document.querySelector('.container.py-5');
-        container.insertBefore(alertDiv, container.firstChild);
-        
-        // Scroll ke alert
-        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
-        // Auto remove setelah 5 detik
-        setTimeout(() => {
-            if (alertDiv.parentNode) {
-                alertDiv.remove();
-            }
-        }, 5000);
+        const domain = email.substring(email.lastIndexOf('.'));
+        return validDomains.some(validDomain => domain.toLowerCase().includes(validDomain));
     }
 
-    // Service selection dengan validasi real-time
+    // Service selection dengan validasi real-time dan update dokter
     const serviceRadios = document.querySelectorAll('.service-radio');
-    serviceRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            updateSummary();
-            // Enable tombol next step 1 jika service dipilih
-            updateNextButtonState('step1', !!this.checked);
-        });
-    });
-
-    // Doctor selection
     const doctorSelect = document.getElementById('doctorSelect');
     const doctorInfo = document.getElementById('doctorInfo');
     const bookingDate = document.getElementById('booking_date');
     const bookingTime = document.getElementById('booking_time');
     
-    // Doctor schedule data
-    const doctorSchedules = {
-        @foreach($doctors as $key => $doctor)
+    // Data services dengan dokter yang available
+    const serviceData = {
+        @foreach($services as $key => $service)
         '{{ $key }}': {
-            info: `Jadwal: {{ $doctor['schedule'][0] }} ({{ $doctor['schedule'][1] }})`,
-            days: {!! json_encode($doctor['available_days'] ?? []) !!},
-            hours: {!! json_encode($doctor['available_hours'] ?? []) !!}
+            name: '{{ $service["name"] }}',
+            price: {{ $service["price"] }},
+            available_doctors: {!! json_encode($service['available_doctors'] ?? []) !!}
         },
         @endforeach
     };
 
-    // Update info dokter dan reset tanggal/jam saat dokter dipilih
+    // Doctor schedule data
+    const doctorSchedules = {
+        @foreach($doctors as $key => $doctor)
+        '{{ $key }}': {
+            name: '{{ $doctor["name"] }}',
+            specialization: '{{ $doctor["specialization"] }}',
+            info: `Jadwal: {{ $doctor['schedule'][0] }} ({{ $doctor['schedule'][1] }})`,
+            days: {!! json_encode($doctor['available_days'] ?? []) !!},
+            hours: {!! json_encode($doctor['available_hours'] ?? []) !!},
+            services: {!! json_encode($doctor['services'] ?? []) !!}
+        },
+        @endforeach
+    };
+
+    // Service selection event
+    serviceRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                updateDoctorsForService(this.value);
+                updateSummary();
+            }
+            updateNextButtonState('step1', !!this.checked);
+        });
+    });
+
+    // Fungsi untuk update dropdown dokter berdasarkan layanan
+    function updateDoctorsForService(serviceType) {
+        // Reset dokter selection
+        doctorSelect.innerHTML = '<option value="">Pilih Dokter...</option>';
+        doctorInfo.textContent = 'Pilih dokter untuk melihat jadwal praktek';
+        doctorInfo.className = 'text-muted small';
+        
+        // Reset tanggal dan jam
+        bookingDate.value = '';
+        bookingTime.innerHTML = '<option value="">Pilih Waktu...</option>';
+        bookingTime.disabled = true;
+        bookingDate.disabled = true;
+
+        if (!serviceType || !serviceData[serviceType]) {
+            return;
+        }
+
+        const availableDoctors = serviceData[serviceType].available_doctors;
+        
+        if (availableDoctors && availableDoctors.length > 0) {
+            availableDoctors.forEach(doctorId => {
+                if (doctorSchedules[doctorId]) {
+                    const doctor = doctorSchedules[doctorId];
+                    const option = document.createElement('option');
+                    option.value = doctorId;
+                    option.textContent = `${doctor.name} - ${doctor.specialization}`;
+                    option.setAttribute('data-specialization', doctor.specialization);
+                    doctorSelect.appendChild(option);
+                }
+            });
+            
+            // Enable dokter selection
+            doctorSelect.disabled = false;
+        } else {
+            doctorSelect.innerHTML = '<option value="">Tidak ada dokter tersedia</option>';
+            doctorSelect.disabled = true;
+        }
+        
+        updateNextButtonState('step2', validateStep2());
+    }
+
+    // Update info dokter saat dokter dipilih
     doctorSelect.addEventListener('change', function() {
         const selectedDoctor = this.value;
         
         if (selectedDoctor && doctorSchedules[selectedDoctor]) {
-            doctorInfo.textContent = doctorSchedules[selectedDoctor].info;
+            const doctor = doctorSchedules[selectedDoctor];
+            doctorInfo.textContent = doctor.info;
             doctorInfo.className = 'text-success small';
             
             // Reset tanggal dan jam
@@ -516,6 +573,7 @@ document.addEventListener('DOMContentLoaded', function() {
             doctorInfo.textContent = 'Pilih dokter untuk melihat jadwal praktek';
             doctorInfo.className = 'text-muted small';
             bookingTime.disabled = true;
+            bookingDate.disabled = true;
         }
         
         updateSummary();
@@ -550,13 +608,58 @@ document.addEventListener('DOMContentLoaded', function() {
         const field = document.getElementById(fieldId);
         if (field) {
             field.addEventListener('input', function() {
+                const value = this.value.trim();
+                
                 // Validasi real-time untuk email
-                if (fieldId === 'email' && field.value.trim()) {
+                if (fieldId === 'email' && value) {
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(field.value)) {
+                    const isValidFormat = emailRegex.test(value);
+                    const isValidDomain = isValidEmailDomain(value);
+                    
+                    if (!isValidFormat || !isValidDomain) {
                         field.classList.add('is-invalid');
+                        showFieldError('email', 'Format email tidak valid! Contoh: nama@email.com');
                     } else {
                         field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                        hideFieldError('email');
+                    }
+                }
+                
+                // Validasi real-time untuk telepon
+                if (fieldId === 'telepon' && value) {
+                    const teleponRegex = /^[0-9]{10,15}$/;
+                    if (!teleponRegex.test(value)) {
+                        field.classList.add('is-invalid');
+                        showFieldError('telepon', 'Nomor telepon harus 10-15 digit angka');
+                    } else {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                        hideFieldError('telepon');
+                    }
+                }
+                
+                // Validasi real-time untuk field required lainnya
+                if (value && fieldId !== 'email' && fieldId !== 'telepon') {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                    hideFieldError(fieldId);
+                } else if (!value && fieldId !== 'email' && fieldId !== 'telepon') {
+                    field.classList.remove('is-valid');
+                    field.classList.remove('is-invalid');
+                    hideFieldError(fieldId);
+                }
+                
+                // Validasi umur
+                if (fieldId === 'umur' && value) {
+                    const umurValue = parseInt(value);
+                    if (umurValue < 0 || umurValue > 300) {
+                        field.classList.add('is-invalid');
+                        showFieldError('umur', 'Umur harus antara 0 - 300 bulan');
+                    } else {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                        hideFieldError('umur');
                     }
                 }
                 
@@ -564,6 +667,28 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Fungsi untuk menampilkan error di bawah field
+    function showFieldError(fieldId, message) {
+        // Hapus error sebelumnya
+        hideFieldError(fieldId);
+        
+        const field = document.getElementById(fieldId);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback d-block';
+        errorDiv.id = `error-${fieldId}`;
+        errorDiv.textContent = message;
+        
+        field.parentNode.appendChild(errorDiv);
+    }
+
+    // Fungsi untuk menghapus error di bawah field
+    function hideFieldError(fieldId) {
+        const existingError = document.getElementById(`error-${fieldId}`);
+        if (existingError) {
+            existingError.remove();
+        }
+    }
 
     // Fungsi untuk update state tombol next
     function updateNextButtonState(stepId, isValid) {
@@ -649,19 +774,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Form data for summary
-    const serviceData = {
-        @foreach($services as $key => $service)
-        '{{ $key }}': 
-        {
-            name: '{{ $service["name"] }}',
-            price: {{ $service["price"] }}
-        },
-        @endforeach
-    };
-
     const doctorData = {
         @foreach($doctors as $key => $doctor)
-        '{{ $key }}': '{{ $doctor["name"] }}',
+        '{{ $key }}': '{{ $doctor["name"] }} - {{ $doctor["specialization"] }}',
         @endforeach
     };
 
@@ -728,6 +843,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
         queueElement.textContent = estimations[serviceType] || '15-30 menit';
     }
+
+    // Validasi form submission
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        if (!validateStep3()) {
+            e.preventDefault();
+            // Scroll ke step 3 jika ada error
+            document.getElementById('step3').scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+
+    // Initialize - disable dokter selection awalnya
+    doctorSelect.disabled = true;
+    bookingDate.disabled = true;
+    bookingTime.disabled = true;
 
     // Initialize summary dan disable tombol next awalnya
     updateSummary();

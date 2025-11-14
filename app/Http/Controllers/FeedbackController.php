@@ -78,14 +78,25 @@ class FeedbackController extends Controller
     public function destroy($id)
     {
         try {
+            Log::info('Deleting feedback', ['id' => $id]);
+            
             $feedback = Feedback::findOrFail($id);
             $feedback->delete();
-
-            return response()->json(['success' => true]);
+            
+            Log::info('Feedback deleted successfully', ['id' => $id]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Ulasan berhasil dihapus'
+            ]);
             
         } catch (\Exception $e) {
             Log::error('Feedback destroy error: ' . $e->getMessage());
-            return response()->json(['success' => false], 500);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus ulasan: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

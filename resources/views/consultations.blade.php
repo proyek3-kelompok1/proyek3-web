@@ -522,7 +522,6 @@
                 <div id="feedbackList" class="feedback-list">
                     <!-- Feedback akan ditampilkan di sini -->
                 </div>
-                
             </div>
         </div>
     </div>
@@ -744,6 +743,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // URLs
     const feedbackStoreUrl = '{{ route("feedback.store") }}';
     const feedbackIndexUrl = '{{ route("feedback.index") }}';
+    // URL untuk hapus - pastikan route ini ada
+    const feedbackDeleteUrl = '{{ route("feedback.destroy", ":id") }}';
     
     console.log('Feedback URLs:', { store: feedbackStoreUrl, index: feedbackIndexUrl });
 
@@ -795,6 +796,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showFeedback(feedback) {
         const feedbackItem = document.createElement('div');
         feedbackItem.className = 'feedback-item';
+        feedbackItem.dataset.id = feedback.id;
         
         // Format tanggal
         let formattedDate = 'Baru saja';
@@ -824,11 +826,70 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="feedback-rating">${starsHtml}</div>
                     <div class="feedback-date">${formattedDate}</div>
                 </div>
+                <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
+                    <i class="fas fa-trash"></i>
+                </button>
             </div>
             <p class="feedback-text">${feedback.message}</p>
         `;
         
         feedbackList.appendChild(feedbackItem);
+        
+        // Tambahkan event listener untuk tombol hapus
+        const deleteBtn = feedbackItem.querySelector('.delete-feedback');
+        deleteBtn.addEventListener('click', function() {
+            deleteFeedback(feedback.id);
+        });
+    }
+    
+    // Fungsi untuk menghapus feedback
+    function deleteFeedback(feedbackId) {
+        if (!confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
+            return;
+        }
+        
+        const deleteUrl = feedbackDeleteUrl.replace(':id', feedbackId);
+        
+        console.log('Deleting feedback:', feedbackId);
+        
+        fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => {
+            return response.json().then(data => ({
+                status: response.status,
+                data: data
+            }));
+        })
+        .then(({status, data}) => {
+            console.log('Delete response:', {status, data});
+            
+            if (status === 200 && data.success) {
+                // Hapus elemen dari DOM
+                const feedbackItem = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
+                if (feedbackItem) {
+                    feedbackItem.remove();
+                }
+                
+                // Jika tidak ada feedback lagi, tampilkan pesan
+                if (feedbackList.children.length === 0) {
+                    feedbackList.innerHTML = '<p>Belum ada ulasan. Jadilah yang pertama!</p>';
+                }
+                
+                alert('Ulasan berhasil dihapus!');
+            } else {
+                alert('Gagal menghapus ulasan: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            alert('Terjadi kesalahan jaringan. Coba lagi.');
+        });
     }
     
     // Handle form submission

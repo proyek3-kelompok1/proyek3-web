@@ -39,9 +39,10 @@ Route::get('/articles', function () {
     Route::get('/online-services/available-hours', [OnlineServiceController::class, 'getAvailableHours'])->name('online-services.available-hours');
     
     // Route untuk feedback
-    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
-    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+   // routes/web.php
+Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
     
 // =======================
 // AUTENTIKASI USER (Login, Register, Logout)

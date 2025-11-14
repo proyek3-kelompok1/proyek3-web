@@ -140,4 +140,39 @@
             </div>
         </div>
     </section>
+    <!-- Daftar Dokter -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold text-purple mb-4">Tim Dokter Kami</h2>
+        <p class="text-muted mb-5">Dokter berpengalaman dan penuh kasih dalam merawat hewan kesayangan Anda</p>
+
+        <div class="row g-4 justify-content-center">
+
+            <!-- Dokter 1 -->
+           <div class="col-md-4">
+    <div class="card h-100 p-3 text-center">
+        <img src="/image/dokter.jpg"
+             alt="Dokter Hewan"
+             class="img-fluid rounded mb-3"
+             style="height: 250px; width: 100%; object-fit: cover;">
+        <h5 class="fw-bold text-purple">drh. Roza Albate Chandra Adila
+</h5>
+        <p class="text-muted mb-2">Praktek Pukul 11.00 - 19.00 wib</p>
+    </div>
+</div>
+
+<!-- Dokter 2 -->
+<div class="col-md-4">
+    <div class="card h-100 p-3 text-center">
+        <img src="/image/dokter2.jpg"
+            alt="Dokter Hewan"
+            class="img-fluid rounded mb-3"
+            style="height: 250px; width: 100%; object-fit: cover; object-position: 50% 20%;">
+        <h5 class="fw-bold text-purple">drh. Arundhina Girishanta M.Si </h5>
+        <p class="text-muted mb-2">Praktek Pukul 17.00 - 22.00 wib</p>
+    </div>
+</div>
+
+</section>
+
 @endsection

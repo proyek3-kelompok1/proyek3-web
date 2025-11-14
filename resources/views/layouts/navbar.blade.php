@@ -3,8 +3,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-purple py-3">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-            <i class="fas fa-paw me-2"></i>DV Pets Klinik
-        </a>
+            <img src="/image/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">DV Pets Klinik </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

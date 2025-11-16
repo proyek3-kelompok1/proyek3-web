@@ -147,32 +147,30 @@
         <p class="text-muted mb-5">Dokter berpengalaman dan penuh kasih dalam merawat hewan kesayangan Anda</p>
 
         <div class="row g-4 justify-content-center">
-
-            <!-- Dokter 1 -->
-           <div class="col-md-4">
-    <div class="card h-100 p-3 text-center">
-        <img src="/image/dokter.jpg"
-             alt="Dokter Hewan"
-             class="img-fluid rounded mb-3"
-             style="height: 250px; width: 100%; object-fit: cover;">
-        <h5 class="fw-bold text-purple">drh. Roza Albate Chandra Adila
-</h5>
-        <p class="text-muted mb-2">Praktek Pukul 11.00 - 19.00 wib</p>
+            @forelse($doctors as $doctor)
+            <div class="col-md-4">
+                <div class="card h-100 p-3 text-center">
+                    <img src="{{ $doctor->photo_url }}"
+                         alt="{{ $doctor->name }}"
+                         class="img-fluid rounded mb-3"
+                         style="height: 400px; width: 100%; object-fit: cover;">
+                    <h5 class="fw-bold text-purple">{{ $doctor->name }}</h5>
+                    @if($doctor->specialization)
+                        <p class="text-muted mb-1">{{ $doctor->specialization }}</p>
+                    @endif
+                    <p class="text-muted mb-2">{{ $doctor->schedule }}</p>
+                    @if($doctor->description)
+                        <p class="small text-muted">{{ Str::limit($doctor->description, 100) }}</p>
+                    @endif
+                </div>
+            </div>
+            @empty
+            <div class="col-12">
+                <p class="text-muted">Data dokter sedang tidak tersedia.</p>
+            </div>
+            @endforelse
+        </div>
     </div>
-</div>
-
-<!-- Dokter 2 -->
-<div class="col-md-4">
-    <div class="card h-100 p-3 text-center">
-        <img src="/image/dokter2.jpg"
-            alt="Dokter Hewan"
-            class="img-fluid rounded mb-3"
-            style="height: 250px; width: 100%; object-fit: cover; object-position: 50% 20%;">
-        <h5 class="fw-bold text-purple">drh. Arundhina Girishanta M.Si </h5>
-        <p class="text-muted mb-2">Praktek Pukul 17.00 - 22.00 wib</p>
-    </div>
-</div>
-
 </section>
 
 @endsection

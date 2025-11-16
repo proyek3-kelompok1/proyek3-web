@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\OnlineServiceController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicalRecordController;
@@ -14,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('home');
 })->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/about', function () {
     return view('about');
@@ -70,9 +73,17 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('/services', App\Http\Controllers\Admin\ServiceController::class);
-    Route::resource('/doctors', App\Http\Controllers\Admin\DokterController::class);
+    Route::resource('doctors', App\Http\Controllers\Admin\DokterController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
+
+    Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+    
+    Route::resource('doctors', DoctorController::class);
+    });
 
     Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');

@@ -66,8 +66,8 @@
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 sidebar">
                 <div class="text-center py-4">
-                    <h4><i class="fas fa-paw me-2"></i>Admin Panel</h4>
-                    <p class="small mb-0">Klinik Hewan Ungu</p>
+                    <h4> <img src="/image/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">Admin Panel </a></h4>
+                    <p class="small mb-0">DV Pets Klinik</p>
                 </div>
                 
                 <nav class="nav flex-column">
@@ -77,14 +77,14 @@
                     <a class="nav-link {{ request()->is('admin/services*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-stethoscope me-2"></i>Kelola Layanan
                     </a>
-                    <a class="nav-link {{ request()->is('admin/doctors*') ? 'active' : '' }}" href="#">
-                        <i class="fas fa-user-md me-2"></i>Kelola Dokter
+                    <a class="nav-link {{ request()->is('admin/doctors*') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
+                    <i class="fas fa-user-md me-2"></i>Kelola Dokter
                     </a>
                     <a class="nav-link {{ request()->is('admin/posts*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-newspaper me-2"></i>Kelola Artikel
                     </a>
                     <a class="nav-link {{ request()->is('admin/gallery*') ? 'active' : '' }}" href="#">
-                        <i class="fas fa-images me-2"></i>Kelola Galeri
+                        <i class="fas fa-images me-2"></i>Kelola Edukasi
                     </a>
                     <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-envelope me-2"></i>Pesan Masuk

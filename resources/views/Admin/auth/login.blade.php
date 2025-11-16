@@ -51,7 +51,7 @@
 <body>
     <div class="login-card">
         <div class="login-header">
-            <h3><i class="fas fa-paw me-2"></i>Klinik Hewan Ungu</h3>
+            <h3> <img src="/image/logo.png" alt="Logo" style="height: 40px; margin-right: 10px;">DV Pets Klinik </a></h3>
             <p class="mb-0">Admin Panel</p>
         </div>
         

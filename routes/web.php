@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\OnlineServiceController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\Admin\EducationController as AdminEducationController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationsController;
@@ -32,7 +34,9 @@ Route::post('/consultations', [ConsultationsController::class, 'store']);
 Route::get('/articles', function () {
     return view('articles');
 });
-
+// Route untuk FRONTEND (halaman articles/edukasi yang dilihat user)
+    Route::get('/articles', [EducationController::class, 'index'])->name('articles.index');
+    Route::get('/articles/{id}', [EducationController::class, 'show'])->name('articles.show');
     // Route untuk lihat antrian
     Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
     Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');
@@ -76,6 +80,11 @@ Route::prefix('admin')->group(function () {
     Route::resource('doctors', App\Http\Controllers\Admin\DokterController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
+
+    // Route untuk ADMIN (CRUD edukasi)
+    Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
+        Route::resource('education', AdminEducationController::class);
+    });
 
     Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
     Route::get('/dashboard', function () {

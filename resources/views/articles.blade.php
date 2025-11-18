@@ -3,16 +3,23 @@
 @section('title', 'Artikel & Edukasi - DV Pets Klinik')
 
 @section('content')
+@php
+    // Pastikan variabel ada, jika tidak set default value
+    $videos = $videos ?? collect();
+    $guides = $guides ?? collect();
+    $featuredContent = $featuredContent ?? null;
+@endphp
+
 <div class="articles-education-page">
     <div class="container py-5">
         <!-- Header Section -->
         <div class="row mb-5">
             <div class="col-lg-8 mx-auto text-center">
                 <h1 class="display-4 fw-bold text-purple mb-3">
-                    <i class="fas fa-newspaper me-2"></i>Artikel & Edukasi
+                    <i class="fas fa-graduation-cap me-2"></i>Artikel & Edukasi
                 </h1>
                 <p class="lead text-muted">
-                    Informasi, tips, dan panduan lengkap untuk perawatan hewan peliharaan
+                    Video tutorial dan panduan lengkap untuk perawatan hewan peliharaan Anda
                 </p>
             </div>
         </div>
@@ -23,12 +30,17 @@
                 <ul class="nav nav-pills justify-content-center" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="articles-tab" data-bs-toggle="tab" data-bs-target="#articles" type="button" role="tab" aria-controls="articles" aria-selected="true">
-                            <i class="fas fa-newspaper me-2"></i>Artikel
+                            <i class="fas fa-newspaper me-2"></i>Semua Edukasi
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="education-tab" data-bs-toggle="tab" data-bs-target="#education" type="button" role="tab" aria-controls="education" aria-selected="false">
-                            <i class="fas fa-graduation-cap me-2"></i>Edukasi
+                        <button class="nav-link" id="videos-tab" data-bs-toggle="tab" data-bs-target="#videos" type="button" role="tab" aria-controls="videos" aria-selected="false">
+                            <i class="fas fa-play-circle me-2"></i>Video Tutorial
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="guides-tab" data-bs-toggle="tab" data-bs-target="#guides" type="button" role="tab" aria-controls="guides" aria-selected="false">
+                            <i class="fas fa-book me-2"></i>Panduan Lengkap
                         </button>
                     </li>
                 </ul>
@@ -37,39 +49,51 @@
 
         <!-- Tab Content -->
         <div class="tab-content" id="myTabContent">
-            <!-- Articles Tab -->
+            <!-- Articles Tab (Semua Edukasi) -->
             <div class="tab-pane fade show active" id="articles" role="tabpanel" aria-labelledby="articles-tab">
-                <!-- Featured Article -->
+                <!-- Featured Content -->
+                @if($featuredContent)
                 <div class="row mb-5">
                     <div class="col-12">
                         <div class="featured-article card border-0 shadow-lg overflow-hidden">
                             <div class="row g-0">
                                 <div class="col-md-6">
-                                    <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                                         class="img-fluid h-100 w-100" style="object-fit: cover;" alt="Featured Article">
+                                    <img src="{{ $featuredContent->thumbnail_url }}" 
+                                         class="img-fluid h-100 w-100" style="object-fit: cover;" alt="{{ $featuredContent->title }}"
+                                         onerror="this.src='https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
                                 </div>
                                 <div class="col-md-6">
                                     <div class="card-body p-4 d-flex flex-column h-100">
-                                        <span class="badge bg-purple mb-3 align-self-start">Featured</span>
+                                        <span class="badge bg-purple mb-3 align-self-start">
+                                            @if($featuredContent->type == 'video')
+                                                <i class="fas fa-play-circle me-1"></i>Video
+                                            @else
+                                                <i class="fas fa-book me-1"></i>Panduan
+                                            @endif
+                                        </span>
                                         <h2 class="card-title h3 fw-bold text-dark mb-3">
-                                            Cara Merawat Kucing dengan Baik dan Benar
+                                            {{ $featuredContent->title }}
                                         </h2>
                                         <p class="card-text text-muted mb-4 flex-grow-1">
-                                            Panduan lengkap untuk merawat kucing kesayangan Anda, mulai dari pemilihan makanan, 
-                                            perawatan kesehatan, hingga tips membuat kucing bahagia di rumah.
+                                            {{ $featuredContent->description ?? 'Deskripsi tidak tersedia' }}
                                         </p>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center">
-                                                <img src="https://ui-avatars.com/api/?name=Dr+Wahyudi&background=6a3093&color=fff" 
+                                                <img src="https://ui-avatars.com/api/?name=Admin+DV+Pets&background=6a3093&color=fff" 
                                                      class="rounded-circle me-2" width="40" height="40" alt="Author">
                                                 <div>
-                                                    <small class="fw-bold text-dark">Dr. Wahyudi</small>
+                                                    <small class="fw-bold text-dark">Admin DV Pets</small>
                                                     <br>
-                                                    <small class="text-muted">2 hari lalu</small>
+                                                    <small class="text-muted">{{ $featuredContent->created_at->diffForHumans() }}</small>
                                                 </div>
                                             </div>
-                                            <a href="#" class="btn btn-purple">
-                                                Baca Selengkapnya <i class="fas fa-arrow-right ms-2"></i>
+                                            <a href="{{ route('articles.show', $featuredContent->id) }}" class="btn btn-purple">
+                                                @if($featuredContent->type == 'video')
+                                                    Tonton Sekarang
+                                                @else
+                                                    Baca Selengkapnya
+                                                @endif
+                                                <i class="fas fa-arrow-right ms-2"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -78,231 +102,180 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
-                <!-- Articles Grid -->
+                <!-- All Educations Grid -->
                 <div class="row">
-                    @foreach([
-                        [
-                            'title' => 'Vaksinasi Hewan: Pentingnya dan Jadwal yang Tepat',
-                            'excerpt' => 'Ketahui jadwal vaksinasi yang tepat untuk anjing dan kucing Anda...',
-                            'image' => 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Sari',
-                            'date' => '1 minggu lalu'
-                        ],
-                        [
-                            'title' => 'Mengenal Penyakit Umum pada Anjing',
-                            'excerpt' => 'Kenali gejala dan cara pencegahan penyakit umum yang sering menyerang anjing...',
-                            'image' => 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Budi',
-                            'date' => '3 hari lalu'
-                        ],
-                        [
-                            'title' => 'Tips Grooming untuk Kucing Persia',
-                            'excerpt' => 'Cara merawat bulu kucing persia agar tetap indah dan sehat...',
-                            'image' => 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Maya',
-                            'date' => '5 hari lalu'
-                        ],
-                        [
-                            'title' => 'Pentingnya Sterilisasi untuk Hewan Peliharaan',
-                            'excerpt' => 'Manfaat sterilisasi dan kapan waktu yang tepat untuk melakukannya...',
-                            'image' => 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Andi',
-                            'date' => '1 minggu lalu'
-                        ],
-                        [
-                            'title' => 'Memilih Makanan Terbaik untuk Anjing',
-                            'excerpt' => 'Panduan memilih makanan yang sesuai dengan usia dan breed anjing...',
-                            'image' => 'https://images.unsplash.com/photo-1503256207526-0d5d80fa2f47?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Rina',
-                            'date' => '2 hari lalu'
-                        ],
-                        [
-                            'title' => 'Perawatan Gigi untuk Kucing dan Anjing',
-                            'excerpt' => 'Cara menjaga kesehatan gigi dan mulut hewan peliharaan Anda...',
-                            'image' => 'https://images.unsplash.com/photo-1517423738875-5ce310acd3da?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                            'author' => 'Dr. Fitri',
-                            'date' => '4 hari lalu'
-                        ]
-                    ] as $article)
+                    @php
+                        $allEducations = $videos->merge($guides)->sortByDesc('created_at');
+                    @endphp
+                    
+                    @forelse($allEducations as $education)
                     <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="article-card card h-100 border-0 shadow-sm">
-                            <img src="{{ $article['image'] }}" class="card-img-top" alt="{{ $article['title'] }}" style="height: 200px; object-fit: cover;">
+                        <div class="education-card card h-100 border-0 shadow-sm">
+                            @if($education->type == 'video')
+                            <div class="position-relative">
+                                <img src="{{ $education->thumbnail_url }}" class="card-img-top" alt="{{ $education->title }}" style="height: 200px; object-fit: cover;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <div class="play-btn btn btn-purple rounded-circle p-3">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                                @if($education->duration)
+                                <div class="position-absolute bottom-0 end-0 m-2">
+                                    <span class="badge bg-dark bg-opacity-75">{{ $education->duration }}</span>
+                                </div>
+                                @endif
+                            </div>
+                            @else
+                            <img src="{{ $education->thumbnail_url }}" class="card-img-top" alt="{{ $education->title }}" style="height: 200px; object-fit: cover;"
+                                 onerror="this.src='https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
+                            @endif
+                            
                             <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold text-dark">{{ $article['title'] }}</h5>
-                                <p class="card-text text-muted flex-grow-1">{{ $article['excerpt'] }}</p>
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="badge bg-{{ $education->category_color }}">{{ $education->category }}</span>
+                                    <span class="badge bg-light text-purple">
+                                        <i class="{{ $education->type_icon }} me-1"></i>
+                                        {{ $education->type == 'video' ? 'Video' : 'Panduan' }}
+                                    </span>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark">{{ $education->title }}</h5>
+                                <p class="card-text text-muted flex-grow-1">{{ $education->description ?? 'Deskripsi tidak tersedia' }}</p>
                                 <div class="d-flex justify-content-between align-items-center mt-auto">
                                     <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($article['author']) }}&background=6a3093&color=fff" 
-                                             class="rounded-circle me-2" width="30" height="30" alt="Author">
-                                        <small class="text-muted">{{ $article['author'] }}</small>
+                                        @if($education->reading_time)
+                                        <small class="text-muted">{{ $education->reading_time }}</small>
+                                        @endif
                                     </div>
-                                    <small class="text-muted">{{ $article['date'] }}</small>
+                                    <small class="text-muted">{{ $education->created_at->diffForHumans() }}</small>
                                 </div>
                             </div>
                             <div class="card-footer bg-transparent border-0 pt-0">
-                                <a href="#" class="btn btn-outline-purple btn-sm w-100">
-                                    Baca Artikel <i class="fas fa-arrow-right ms-2"></i>
+                                <a href="{{ route('articles.show', $education->id) }}" class="btn btn-outline-purple btn-sm w-100">
+                                    @if($education->type == 'video')
+                                        Tonton Video
+                                    @else
+                                        Baca Panduan
+                                    @endif
+                                    <i class="fas fa-arrow-right ms-2"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Belum ada konten edukasi yang tersedia.
+                        </div>
+                    </div>
+                    @endforelse
                 </div>
             </div>
 
-            <!-- Education Tab -->
-            <div class="tab-pane fade" id="education" role="tabpanel" aria-labelledby="education-tab">
-                <!-- Video Tutorials -->
-                <div class="row mb-5">
-                    <div class="col-12">
-                        <h2 class="h3 fw-bold text-dark mb-4">
-                            <i class="fas fa-play-circle me-2 text-purple"></i>Video Tutorial
-                        </h2>
-                        <div class="row">
-                            @foreach([
-                                [
-                                    'title' => 'Cara Memandikan Kucing yang Benar',
-                                    'duration' => '8:30',
-                                    'views' => '15.2K',
-                                    'thumbnail' => 'https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                                    'date' => '2 minggu lalu'
-                                ],
-                                [
-                                    'title' => 'Teknik Dasar Training Anjing',
-                                    'duration' => '12:15',
-                                    'views' => '23.7K',
-                                    'thumbnail' => 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                                    'date' => '3 minggu lalu'
-                                ],
-                                [
-                                    'title' => 'Pertolongan Pertama pada Hewan',
-                                    'duration' => '15:42',
-                                    'views' => '18.9K',
-                                    'thumbnail' => 'https://images.unsplash.com/photo-1559715541-5daf8a0296d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-                                    'date' => '1 minggu lalu'
-                                ]
-                            ] as $video)
-                            <div class="col-md-4 mb-4">
-                                <div class="video-card card border-0 shadow-sm">
-                                    <div class="position-relative">
-                                        <img src="{{ $video['thumbnail'] }}" class="card-img-top" alt="{{ $video['title'] }}" style="height: 200px; object-fit: cover;">
-                                        <div class="position-absolute top-50 start-50 translate-middle">
-                                            <div class="play-btn btn btn-purple rounded-circle p-3">
-                                                <i class="fas fa-play"></i>
-                                            </div>
-                                        </div>
-                                        <div class="position-absolute bottom-0 end-0 m-2">
-                                            <span class="badge bg-dark bg-opacity-75">{{ $video['duration'] }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <h5 class="card-title fw-bold text-dark">{{ $video['title'] }}</h5>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                <i class="fas fa-eye me-1"></i>{{ $video['views'] }} views
-                                            </small>
-                                            <small class="text-muted">{{ $video['date'] }}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Educational Guides -->
+            <!-- Videos Tab -->
+            <div class="tab-pane fade" id="videos" role="tabpanel" aria-labelledby="videos-tab">
+                <!-- Videos Grid -->
                 <div class="row">
-                    <div class="col-12">
-                        <h2 class="h3 fw-bold text-dark mb-4">
-                            <i class="fas fa-book me-2 text-purple"></i>Panduan Lengkap
-                        </h2>
-                        <div class="row">
-                            @foreach([
-                                [
-                                    'title' => 'Panduan Lengkap Vaksinasi Hewan',
-                                    'category' => 'kesehatan',
-                                    'level' => 'Pemula',
-                                    'time' => '10 min read',
-                                    'icon' => 'fas fa-syringe',
-                                    'description' => 'Panduan lengkap untuk memahami dan menerapkan vaksinasi pada hewan peliharaan Anda.'
-                                ],
-                                [
-                                    'title' => 'Memahami Perilaku Kucing',
-                                    'category' => 'perilaku', 
-                                    'level' => 'Menengah',
-                                    'time' => '15 min read',
-                                    'icon' => 'fas fa-cat',
-                                    'description' => 'Pelajari cara memahami bahasa tubuh dan perilaku kucing untuk hubungan yang lebih baik.'
-                                ],
-                                [
-                                    'title' => 'Formula Makanan Sehat untuk Anjing',
-                                    'category' => 'nutrisi',
-                                    'level' => 'Lanjutan', 
-                                    'time' => '20 min read',
-                                    'icon' => 'fas fa-bone',
-                                    'description' => 'Formula dan resep makanan sehat yang dapat Anda buat sendiri untuk anjing kesayangan.'
-                                ],
-                                [
-                                    'title' => 'Teknik Grooming Professional',
-                                    'category' => 'grooming',
-                                    'level' => 'Menengah',
-                                    'time' => '12 min read', 
-                                    'icon' => 'fas fa-cut',
-                                    'description' => 'Teknik grooming profesional yang dapat Anda praktikkan di rumah untuk hewan peliharaan.'
-                                ],
-                                [
-                                    'title' => 'Basic Obedience Training',
-                                    'category' => 'training',
-                                    'level' => 'Pemula',
-                                    'time' => '8 min read',
-                                    'icon' => 'fas fa-dog',
-                                    'description' => 'Pelatihan dasar untuk anjing Anda mulai dari sit, stay, hingga come command.'
-                                ],
-                                [
-                                    'title' => 'Deteksi Dini Penyakit Hewan',
-                                    'category' => 'kesehatan',
-                                    'level' => 'Menengah',
-                                    'time' => '18 min read',
-                                    'icon' => 'fas fa-stethoscope',
-                                    'description' => 'Belajar mengenali tanda-tanda awal penyakit pada hewan peliharaan Anda.'
-                                ]
-                            ] as $guide)
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="guide-card card border-0 shadow-sm h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="guide-icon bg-purple text-white rounded-circle p-3 me-3">
-                                                <i class="{{ $guide['icon'] }}"></i>
-                                            </div>
-                                            <div>
-                                                <span class="badge bg-light text-purple mb-1">{{ $guide['level'] }}</span>
-                                                <br>
-                                                <small class="text-muted">{{ $guide['time'] }}</small>
-                                            </div>
-                                        </div>
-                                        <h5 class="card-title fw-bold text-dark">{{ $guide['title'] }}</h5>
-                                        <p class="card-text text-muted small">
-                                            {{ $guide['description'] }}
-                                        </p>
-                                    </div>
-                                    <div class="card-footer bg-transparent border-0">
-                                        <a href="#" class="btn btn-outline-purple btn-sm w-100">
-                                            Pelajari Sekarang <i class="fas fa-arrow-right ms-2"></i>
-                                        </a>
+                    @forelse($videos as $video)
+                    <div class="col-md-4 mb-4">
+                        <div class="video-card card border-0 shadow-sm">
+                            <div class="position-relative">
+                                <img src="{{ $video->thumbnail_url }}" class="card-img-top" alt="{{ $video->title }}" style="height: 200px; object-fit: cover;"
+                                     onerror="this.src='https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'">
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <div class="play-btn btn btn-purple rounded-circle p-3">
+                                        <i class="fas fa-play"></i>
                                     </div>
                                 </div>
+                                @if($video->duration)
+                                <div class="position-absolute bottom-0 end-0 m-2">
+                                    <span class="badge bg-dark bg-opacity-75">{{ $video->duration }}</span>
+                                </div>
+                                @endif
                             </div>
-                            @endforeach
+                            <div class="card-body">
+                                <h5 class="card-title fw-bold text-dark">{{ $video->title }}</h5>
+                                <p class="card-text text-muted small mb-2">
+                                    {{ $video->description ?? 'Deskripsi tidak tersedia' }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-{{ $video->category_color }} me-2">{{ $video->category }}</span>
+                                        @if($video->reading_time)
+                                        <small class="text-muted">{{ $video->reading_time }}</small>
+                                        @endif
+                                    </div>
+                                    <small class="text-muted">{{ $video->created_at->diffForHumans() }}</small>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 pt-0">
+                                <a href="{{ route('articles.show', $video->id) }}" class="btn btn-outline-purple btn-sm w-100">
+                                    Tonton Video <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
+                    @empty
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Belum ada video tutorial yang tersedia.
+                        </div>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Guides Tab -->
+            <div class="tab-pane fade" id="guides" role="tabpanel" aria-labelledby="guides-tab">
+                <!-- Guides Grid -->
+                <div class="row">
+                    @forelse($guides as $guide)
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="guide-card card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="guide-icon bg-purple text-white rounded-circle p-3 me-3">
+                                        <i class="{{ $guide->type_icon }}"></i>
+                                    </div>
+                                    <div>
+                                        @if($guide->level)
+                                        <span class="badge bg-light text-purple mb-1">{{ $guide->level }}</span>
+                                        <br>
+                                        @endif
+                                        <small class="text-muted">{{ $guide->reading_time ?? '5 min read' }}</small>
+                                    </div>
+                                </div>
+                                <h5 class="card-title fw-bold text-dark">{{ $guide->title }}</h5>
+                                <p class="card-text text-muted small">
+                                    {{ $guide->description ?? 'Deskripsi tidak tersedia' }}
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <a href="{{ route('articles.show', $guide->id) }}" class="btn btn-outline-purple btn-sm w-100">
+                                    Pelajari Sekarang <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Belum ada panduan yang tersedia.
+                        </div>
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- CSS dan JavaScript tetap sama -->
 <style>
     .articles-education-page {
         background: linear-gradient(135deg, #f8f5ff 0%, #f0e6ff 100%);
@@ -346,11 +319,11 @@
         background: linear-gradient(135deg, #6a3093, #8a4dcc) !important;
     }
     
-    .featured-article, .article-card, .video-card, .guide-card, .category-card {
+    .featured-article, .education-card, .video-card, .guide-card {
         transition: transform 0.3s ease;
     }
     
-    .featured-article:hover, .article-card:hover, .video-card:hover, .guide-card:hover, .category-card:hover {
+    .featured-article:hover, .education-card:hover, .video-card:hover, .guide-card:hover {
         transform: translateY(-5px);
     }
     
@@ -383,11 +356,11 @@
         opacity: 1;
     }
     
-    .guide-icon, .category-icon {
+    .guide-icon {
         transition: transform 0.3s ease;
     }
     
-    .guide-card:hover .guide-icon, .category-card:hover .category-icon {
+    .guide-card:hover .guide-icon {
         transform: scale(1.1);
     }
     

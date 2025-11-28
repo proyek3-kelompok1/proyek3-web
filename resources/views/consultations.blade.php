@@ -710,11 +710,6 @@
         background-color: rgba(197, 48, 48, 0.1);
     }
     
-    /* Hilangkan ikon garis tiga (hamburger) jika ada */
-    /* .fa-bars, .fa-ellipsis-v, .fa-ellipsis-h {
-        display: none !important;
-    } */
-    
     /* Scrollbar styling */
     .feedback-list::-webkit-scrollbar {
         width: 8px;

@@ -88,7 +88,7 @@
                     </div>
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                        <a href="{{ url('/') }}" class="btn btn-purple me-md-2">
+                        <a href="{{ url('../after_services') }}" class="btn btn-purple me-md-2">
                             <i class="fas fa-home me-2"></i>Kembali ke Beranda
                         </a>
                         <a href="{{ route('online-services.queue') }}" class="btn btn-info me-md-2">

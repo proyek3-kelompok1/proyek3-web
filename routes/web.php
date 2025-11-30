@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OnlineServiceController;
+use App\Http\Controllers\Admin\QueueController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\Admin\EducationController as AdminEducationController;
@@ -107,4 +108,28 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
+
+    // Admin Queue Routes
+    Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
+    Route::get('/queue', [App\Http\Controllers\Admin\QueueController::class, 'index'])->name('queue.index');
+    Route::get('/queue/data', [App\Http\Controllers\Admin\QueueController::class, 'getQueueData'])->name('queue.data');
+    Route::get('/queue/{booking}', [App\Http\Controllers\Admin\QueueController::class, 'show'])->name('queue.show');
+    Route::put('/queue/{booking}/status', [App\Http\Controllers\Admin\QueueController::class, 'updateStatus'])->name('queue.status');
+    Route::delete('/queue/{booking}', [App\Http\Controllers\Admin\QueueController::class, 'destroy'])->name('queue.destroy');
+    Route::prefix('queue')->name('queue.')->group(function () {
+        Route::get('/', [QueueController::class, 'index'])->name('index');
+        Route::get('/data', [QueueController::class, 'getQueueData'])->name('data');
+        Route::get('/{id}/detail', [QueueController::class, 'showDetail'])->name('detail');
+        Route::get('/{id}', [QueueController::class, 'show'])->name('show');
+        Route::put('/{id}/status', [QueueController::class, 'updateStatus'])->name('updateStatus');
+        Route::delete('/{id}', [QueueController::class, 'destroy'])->name('destroy'); // PASTIKAN INI ADA
+        
+
+        
+    });
+
+    
 });
+    
+});
+

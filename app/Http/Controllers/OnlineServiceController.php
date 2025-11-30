@@ -19,7 +19,7 @@ class OnlineServiceController extends Controller
                 'price' => 150000,
                 'duration' => 30,
                 'kode' => 'VKS',
-                'available_doctors' => ['drh_andi', 'drh_sari', 'drh_maya'] // Dokter yang melayani vaksinasi
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ],
             'konsultasi_umum' => [
                 'name' => 'Konsultasi Umum',
@@ -27,7 +27,7 @@ class OnlineServiceController extends Controller
                 'price' => 80000,
                 'duration' => 45,
                 'kode' => 'KON',
-                'available_doctors' => ['drh_andi', 'drh_sari', 'drh_budi', 'drh_maya'] // Semua dokter
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ],
             'grooming' => [
                 'name' => 'Grooming',
@@ -35,7 +35,7 @@ class OnlineServiceController extends Controller
                 'price' => 120000,
                 'duration' => 60,
                 'kode' => 'GRM',
-                'available_doctors' => ['drh_sari', 'drh_maya'] // Dokter grooming
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ],
             'perawatan_gigi' => [
                 'name' => 'Perawatan Gigi',
@@ -43,7 +43,7 @@ class OnlineServiceController extends Controller
                 'price' => 200000,
                 'duration' => 45,
                 'kode' => 'GIG',
-                'available_doctors' => ['drh_maya'] // Hanya dokter spesialis gigi
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ],
             'pemeriksaan_darah' => [
                 'name' => 'Pemeriksaan Darah',
@@ -51,7 +51,7 @@ class OnlineServiceController extends Controller
                 'price' => 250000,
                 'duration' => 30,
                 'kode' => 'DRH',
-                'available_doctors' => ['drh_andi', 'drh_budi'] // Dokter umum dan dermatologi
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ],
             'sterilisasi' => [
                 'name' => 'Sterilisasi',
@@ -59,43 +59,27 @@ class OnlineServiceController extends Controller
                 'price' => 500000,
                 'duration' => 120,
                 'kode' => 'STR',
-                'available_doctors' => ['drh_sari'] // Hanya dokter spesialis bedah
+                'available_doctors' => ['drh_roza', 'drh_arundhina'] // Kedua dokter melayani semua layanan
             ]
         ];
 
-        // Data dokter dengan spesialisasi
+        // Data dokter dengan jadwal baru
         $doctors = [
-            'drh_andi' => [
-                'name' => 'drh. Andi Wijaya',
-                'specialization' => 'Spesialis Umum',
-                'schedule' => ['Senin - Jumat', '08:00 - 16:00'],
-                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00'],
-                'services' => ['vaksinasi', 'konsultasi_umum', 'pemeriksaan_darah'] // Layanan yang bisa ditangani
+            'drh_roza' => [
+                'name' => 'drh. Roza Albate Chandra Adila',
+                'specialization' => 'Dokter Umum',
+                'schedule' => ['Senin - Minggu', '11:00 - 19:00 WIB'],
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'],
+                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'perawatan_gigi', 'pemeriksaan_darah', 'sterilisasi'] // Semua layanan
             ],
-            'drh_sari' => [
-                'name' => 'drh. Sari Dewi',
-                'specialization' => 'Spesialis Bedah',
-                'schedule' => ['Selasa - Sabtu', '09:00 - 17:00'],
-                'available_days' => ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'],
-                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'sterilisasi']
-            ],
-            'drh_budi' => [
-                'name' => 'drh. Budi Santoso',
-                'specialization' => 'Spesialis Dermatologi',
-                'schedule' => ['Senin - Kamis', '10:00 - 18:00'],
-                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
-                'services' => ['konsultasi_umum', 'pemeriksaan_darah']
-            ],
-            'drh_maya' => [
-                'name' => 'drh. Maya Purnama',
-                'specialization' => 'Spesialis Gigi',
-                'schedule' => ['Rabu - Minggu', '08:00 - 16:00'],
-                'available_days' => ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00'],
-                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'perawatan_gigi']
+            'drh_arundhina' => [
+                'name' => 'drh. Arundhina Girishanta M.Si',
+                'specialization' => 'Dokter Umum',
+                'schedule' => ['Senin - Minggu', '17:00 - 22:00 WIB'],
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['17:00', '18:00', '19:00', '20:00', '21:00'],
+                'services' => ['vaksinasi', 'konsultasi_umum', 'grooming', 'perawatan_gigi', 'pemeriksaan_darah', 'sterilisasi'] // Semua layanan
             ]
         ];
 
@@ -229,7 +213,6 @@ class OnlineServiceController extends Controller
         // Data antrian hari ini
         $todayQueue = ServiceBooking::whereDate('booking_date', $date)
                                 ->where('status', 'pending')
-                                ->with(['serviceBooking'])
                                 ->orderBy('nomor_antrian')
                                 ->get();
 
@@ -342,21 +325,13 @@ class OnlineServiceController extends Controller
         $selectedDate = $request->input('date');
 
         $doctors = [
-            'drh_andi' => [
-                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+            'drh_roza' => [
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00']
             ],
-            'drh_sari' => [
-                'available_days' => ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                'available_hours' => ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00']
-            ],
-            'drh_budi' => [
-                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-                'available_hours' => ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00']
-            ],
-            'drh_maya' => [
-                'available_days' => ['Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                'available_hours' => ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00']
+            'drh_arundhina' => [
+                'available_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'available_hours' => ['17:00', '18:00', '19:00', '20:00', '21:00']
             ]
         ];
 

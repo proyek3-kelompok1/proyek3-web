@@ -32,10 +32,8 @@
                         ];
                         
                         $doctorNames = [
-                            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
-                            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah',
-                            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
-                            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi'
+                            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
+                            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
                         ];
                     @endphp
                     

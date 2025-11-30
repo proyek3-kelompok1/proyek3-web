@@ -86,6 +86,9 @@
                     <a class="nav-link {{ request()->is('admin/education*') ? 'active' : '' }}" href="{{ route('admin.education.index') }}">
                         <i class="fas fa-graduation-cap me-2"></i>Kelola Edukasi
                     </a>
+                    <a class="nav-link {{ request()->is('admin/queue*') ? 'active' : '' }}" href="{{ route('admin.queue.index') }}">
+                    <i class="fas fa-list-ol me-2"></i>Kelola Antrian
+                    </a>
                     <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-envelope me-2"></i>Pesan Masuk
                     </a>

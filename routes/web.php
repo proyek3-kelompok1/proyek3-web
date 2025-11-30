@@ -78,7 +78,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::resource('/services', App\Http\Controllers\Admin\ServiceController::class);
-    Route::resource('doctors', App\Http\Controllers\Admin\DokterController::class);
+    Route::resource('doctors', App\Http\Controllers\Admin\DoctorController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
 
@@ -133,3 +133,15 @@ Route::prefix('admin')->group(function () {
     
 });
 
+// Route untuk form rating setelah layanan
+// Route::get('/after_services', function () {
+//     // Data ini biasanya berasal dari database berdasarkan layanan yang selesai
+//     return view('/after_services', [
+//         'service_type' => 'Konsultasi Umum',
+//         'doctor_name' => 'Dr. Ahmad Wijaya',
+//         'transaction_id' => 'TRX-' . date('Ymd') . '-' . rand(100, 999)
+//     ]);
+// })->name('feedback.after.services.form');
+
+// // Route untuk menyimpan feedback setelah layanan
+// Route::post('/after_services', [FeedbackController::class, 'storeAfterService'])->name('feedback.store.after.services');

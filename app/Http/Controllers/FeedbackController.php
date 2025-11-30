@@ -8,71 +8,74 @@ use Illuminate\Support\Facades\Log;
 
 class FeedbackController extends Controller
 {
-    public function store(Request $request)
-    {
-        try {
-            Log::info('Feedback store method called', ['data' => $request->all()]);
+    public function storeAfterService(Request $request)
+{
+    try {
+        Log::info('After service feedback store method called', ['data' => $request->all()]);
 
-            // Validasi data
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'rating' => 'required|integer|min:1|max:5',
-                'message' => 'required|string'
-            ]);
+        // Validasi data
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255', // Opsional, bisa anonymous
+            'rating' => 'required|integer|min:1|max:5',
+            'message' => 'nullable|string',
+            'service_type' => 'nullable|string|max:255',
+            'transaction_id' => 'nullable|string|max:255'
+        ]);
 
-            Log::info('Validation passed', ['validated' => $validated]);
-
-            // Simpan ke database
-            $feedback = Feedback::create($validated);
-
-            Log::info('Feedback saved successfully', ['id' => $feedback->id]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Terima kasih atas ulasan Anda!',
-                'data' => $feedback
-            ], 201);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation error', ['errors' => $e->errors()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $e->errors()
-            ], 422);
-            
-        } catch (\Exception $e) {
-            Log::error('Feedback store error: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
-            ], 500);
+        // Jika nama tidak diisi, gunakan "Anonymous"
+        if (empty($validated['name'])) {
+            $validated['name'] = 'Anonymous';
         }
-    }
 
+        // Tambahkan metadata service
+        $validated['metadata'] = json_encode([
+            'service_type' => $validated['service_type'] ?? null,
+            'transaction_id' => $validated['transaction_id'] ?? null,
+            'feedback_type' => 'after_service'
+        ]);
+
+        Log::info('After service validation passed', ['validated' => $validated]);
+
+        // Simpan ke database
+        // $feedback = Feedback::create($validated);
+
+        // Log::info('After service feedback saved successfully', ['id' => $feedback->id]);
+
+        // Redirect ke halaman consultations dengan pesan sukses
+        return redirect()->route('consultations')->with([
+            'success' => 'Terima kasih atas ulasan Anda! Ulasan telah ditambahkan.'
+        ]);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error('After service validation error', ['errors' => $e->errors()]);
+        return back()->withErrors($e->errors())->withInput();
+        
+    } catch (\Exception $e) {
+        Log::error('After service feedback store error: ' . $e->getMessage());
+        
+        return back()->with([
+            'error' => 'Terjadi kesalahan: ' . $e->getMessage()
+        ])->withInput();
+    }
+}
     public function index()
     {
-        try {
-            Log::info('Fetching feedbacks');
+        // try {
+        //     Log::info('Fetching feedbacks');
             
-            $feedbacks = Feedback::orderBy('created_at', 'desc')->get();
+        //     $feedbacks = Feedback::orderBy('created_at', 'desc')->get();
             
-            Log::info('Feedbacks fetched', ['count' => $feedbacks->count()]);
+        //     Log::info('Feedbacks fetched', ['count' => $feedbacks->count()]);
             
-            return response()->json($feedbacks);
+        //     return response()->json($feedbacks);
             
-        } catch (\Exception $e) {
-            Log::error('Feedback index error: ' . $e->getMessage());
+        // } catch (\Exception $e) {
+        //     Log::error('Feedback index error: ' . $e->getMessage());
             
-            return response()->json([
-                'error' => 'Gagal memuat ulasan: ' . $e->getMessage()
-            ], 500);
-        }
+        //     return response()->json([
+        //         'error' => 'Gagal memuat ulasan: ' . $e->getMessage()
+        //     ], 500);
+        // }
     }
 
     public function destroy($id)

@@ -10,10 +10,13 @@ class Feedback extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'name', 
         'rating', 
-        'message'
+        'message',
+        // 'metadata' // Tambahkan ini
     ];
 
-    protected $table = 'feedbacks';
+    // protected $casts = [
+    //     'metadata' => 'array' // Cast JSON ke array
+    // ];
 }

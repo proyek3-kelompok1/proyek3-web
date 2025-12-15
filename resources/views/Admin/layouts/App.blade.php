@@ -89,9 +89,12 @@
                     <a class="nav-link {{ request()->is('admin/queue*') ? 'active' : '' }}" href="{{ route('admin.queue.index') }}">
                     <i class="fas fa-list-ol me-2"></i>Kelola Antrian
                     </a>
-                    <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="#">
-                        <i class="fas fa-envelope me-2"></i>Pesan Masuk
+                    <a class="nav-link {{ request()->is('admin/medical-records*') ? 'active' : '' }}" href="{{ route('admin.medical-records.index') }}">
+                        <i class="fas fa-file-medical me-2"></i>Kelola Rekam Medis
                     </a>
+                    <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="{{ route('admin.messages.index') }}">
+                            <i class="fas fa-envelope me-2"></i>Pesan Masuk
+                        </a>
                     <a class="nav-link" href="{{ url('/admin/logout') }}" 
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt me-2"></i>Logout

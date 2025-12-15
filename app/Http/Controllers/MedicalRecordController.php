@@ -41,14 +41,14 @@ class MedicalRecordController extends Controller
                 ->withInput();
         }
 
-         // PERBAIKAN: Gunakan service_booking_id untuk konsistensi
-            $medicalRecords = MedicalRecord::where('service_booking_id', $booking->id)
-                                        ->with('vaccinations')
-                                        ->orderBy('tanggal_pemeriksaan', 'desc')
-                                        ->get();
+        // PERBAIKAN: Gunakan service_booking_id untuk konsistensi
+        $medicalRecords = MedicalRecord::where('service_booking_id', $booking->id)
+                                    ->with('vaccinations')
+                                    ->orderBy('tanggal_pemeriksaan', 'desc')
+                                    ->get();
 
-            return view('medical-records.results', compact('booking', 'medicalRecords'));
-        }
+        return view('medical-records.results', compact('booking', 'medicalRecords'));
+    }
 
     public function show($id)
     {
@@ -99,52 +99,60 @@ class MedicalRecordController extends Controller
                 ->withInput();
         }
 
-        // PERBAIKAN: Generate kode RM yang lebih unik
-    $countToday = MedicalRecord::whereDate('created_at', today())->count();
-    $kodeRM = 'RM' . date('Ymd') . str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
+        try {
+            // PERBAIKAN: Generate kode RM yang lebih unik
+            $countToday = MedicalRecord::whereDate('created_at', today())->count();
+            $kodeRM = 'RM' . date('Ymd') . str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
 
-    $booking = ServiceBooking::find($request->service_booking_id);
-        // Buat rekam medis
-        $medicalRecord = MedicalRecord::create([
-            'kode_rekam_medis' => $kodeRM,
-            'service_booking_id' => $request->service_booking_id,
-            'nama_pemilik' => $booking->nama_pemilik,
-            'nama_hewan' => $booking->nama_hewan,
-            'jenis_hewan' => $booking->jenis_hewan,
-            'ras' => $booking->ras,
-            'umur' => $booking->umur,
-            'berat_badan' => $request->berat_badan,
-            'suhu_tubuh' => $request->suhu_tubuh,
-            'keluhan_utama' => $request->keluhan_utama,
-            'diagnosa' => $request->diagnosa,
-            'tindakan' => $request->tindakan,
-            'resep_obat' => $request->resep_obat,
-            'catatan_dokter' => $request->catatan_dokter,
-            'dokter' => $request->dokter,
-            'tanggal_pemeriksaan' => now(),
-            'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
-            'status' => $request->status
-        ]);
+            $booking = ServiceBooking::find($request->service_booking_id);
+            
+            // Buat rekam medis
+            $medicalRecord = MedicalRecord::create([
+                'kode_rekam_medis' => $kodeRM,
+                'service_booking_id' => $request->service_booking_id,
+                'nama_pemilik' => $booking->nama_pemilik,
+                'nama_hewan' => $booking->nama_hewan,
+                'jenis_hewan' => $booking->jenis_hewan,
+                'ras' => $booking->ras,
+                'umur' => $booking->umur,
+                'berat_badan' => $request->berat_badan,
+                'suhu_tubuh' => $request->suhu_tubuh,
+                'keluhan_utama' => $request->keluhan_utama,
+                'diagnosa' => $request->diagnosa,
+                'tindakan' => $request->tindakan,
+                'resep_obat' => $request->resep_obat,
+                'catatan_dokter' => $request->catatan_dokter,
+                'dokter' => $request->dokter,
+                'tanggal_pemeriksaan' => now(),
+                'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
+                'status' => $request->status
+            ]);
 
-        // PERBAIKAN: Gunakan transaction untuk konsistensi data
-    DB::transaction(function () use ($medicalRecord, $request) {
-        // Simpan data vaksinasi jika ada
-        if ($request->has('vaccinations')) {
-            foreach ($request->vaccinations as $vaccination) {
-                VaccinationRecord::create([
-                    'medical_record_id' => $medicalRecord->id,
-                    'nama_vaksin' => $vaccination['nama_vaksin'],
-                    'dosis' => $vaccination['dosis'],
-                    'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
-                    'tanggal_booster' => $vaccination['tanggal_booster'] ?? null,
-                    'dokter' => $request->dokter,
-                    'catatan' => $vaccination['catatan'] ?? null
-                ]);
-            }
+            // PERBAIKAN: Gunakan transaction untuk konsistensi data
+            DB::transaction(function () use ($medicalRecord, $request) {
+                // Simpan data vaksinasi jika ada
+                if ($request->has('vaccinations')) {
+                    foreach ($request->vaccinations as $vaccination) {
+                        VaccinationRecord::create([
+                            'medical_record_id' => $medicalRecord->id,
+                            'nama_vaksin' => $vaccination['nama_vaksin'],
+                            'dosis' => $vaccination['dosis'],
+                            'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
+                            'tanggal_booster' => $vaccination['tanggal_booster'] ?? null,
+                            'dokter' => $request->dokter,
+                            'catatan' => $vaccination['catatan'] ?? null
+                        ]);
+                    }
+                }
+            });
+
+            return redirect()->route('medical-records.show', $medicalRecord->id)
+                            ->with('success', 'Rekam medis berhasil disimpan!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menyimpan rekam medis: ' . $e->getMessage())
+                ->withInput();
         }
-    });
-
-    return redirect()->route('medical-records.show', $medicalRecord->id)
-                     ->with('success', 'Rekam medis berhasil disimpan!');
-}
+    }
 }

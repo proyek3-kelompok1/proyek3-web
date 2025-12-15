@@ -7,6 +7,7 @@ use App\Http\Controllers\EducationController;
 use App\Http\Controllers\Admin\EducationController as AdminEducationController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AdminMessageController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\AuthController;
@@ -47,10 +48,24 @@ Route::get('/articles', function () {
     Route::get('/online-services/available-hours', [OnlineServiceController::class, 'getAvailableHours'])->name('online-services.available-hours');
     
     // Route untuk feedback
-   // routes/web.php
-Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
-Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+  Route::middleware('web')->group(function () {
+    // Route untuk feedback dari after_service (biasa)
+    Route::post('/feedback/after-service', [FeedbackController::class, 'storeAfterService'])
+        ->name('feedback.after-service.store');
+    
+    // Route untuk feedback dari consultation page (AJAX)
+    Route::post('/feedback/consultation', [FeedbackController::class, 'storeFromConsultation'])
+        ->name('feedback.consultation.store');
+    
+    // Route untuk mengambil feedback (AJAX)
+    Route::get('/feedback', [FeedbackController::class, 'index'])
+        ->name('feedback.index');
+    
+    // Route untuk menghapus feedback (AJAX)
+    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])
+        ->name('feedback.destroy');
+});
+
     
 // =======================
 // AUTENTIKASI USER (Login, Register, Logout)
@@ -82,6 +97,11 @@ Route::prefix('admin')->group(function () {
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
     Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
 
+        Route::get('/', [AdminMessageController::class, 'index'])->name('admin.messages.index');
+        Route::get('/api', [AdminMessageController::class, 'api'])->name('admin.messages.api');
+        Route::get('/{id}', [AdminMessageController::class, 'show'])->name('admin.messages.show');
+        Route::delete('/{id}', [AdminMessageController::class, 'destroy'])->name('admin.messages.destroy');
+
     // Route untuk ADMIN (CRUD edukasi)
     Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
         Route::resource('education', AdminEducationController::class);
@@ -108,7 +128,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/medical-records/{id}', [MedicalRecordController::class, 'show'])->name('medical-records.show');
     Route::get('/medical-records/create/{bookingId}', [MedicalRecordController::class, 'createFromBooking'])->name('medical-records.create');
     Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name('medical-records.store');
-
+    
     // Admin Queue Routes
     Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(function () {
     Route::get('/queue', [App\Http\Controllers\Admin\QueueController::class, 'index'])->name('queue.index');
@@ -127,21 +147,29 @@ Route::prefix('admin')->group(function () {
 
         
     });
+    
+    Route::get('/medical-records', [App\Http\Controllers\Admin\MedicalRecordController::class, 'index'])->name('medical-records.index');
+    Route::get('/medical-records/create/{bookingId}', [App\Http\Controllers\Admin\MedicalRecordController::class, 'create'])->name('medical-records.create');
+    Route::post('/medical-records', [App\Http\Controllers\Admin\MedicalRecordController::class, 'store'])->name('medical-records.store');
+    Route::get('/medical-records/{id}', [App\Http\Controllers\Admin\MedicalRecordController::class, 'show'])->name('medical-records.show');
+    Route::get('/medical-records/{id}/edit', [App\Http\Controllers\Admin\MedicalRecordController::class, 'edit'])->name('medical-records.edit');
+    Route::put('/medical-records/{id}', [App\Http\Controllers\Admin\MedicalRecordController::class, 'update'])->name('medical-records.update');
+    
+    
+});
+});
+    
 
-    
-});
-    
-});
 
 // Route untuk form rating setelah layanan
-// Route::get('/after_services', function () {
-//     // Data ini biasanya berasal dari database berdasarkan layanan yang selesai
-//     return view('/after_services', [
-//         'service_type' => 'Konsultasi Umum',
-//         'doctor_name' => 'Dr. Ahmad Wijaya',
-//         'transaction_id' => 'TRX-' . date('Ymd') . '-' . rand(100, 999)
-//     ]);
-// })->name('feedback.after.services.form');
+Route::get('/after_services', function () {
+    // Data ini biasanya berasal dari database berdasarkan layanan yang selesai
+    return view('/after_services', [
+        'service_type' => 'Konsultasi Umum',
+        'doctor_name' => 'Dr. Ahmad Wijaya',
+        'transaction_id' => 'TRX-' . date('Ymd') . '-' . rand(100, 999)
+    ]);
+})->name('feedback.after.services.form');
 
-// // Route untuk menyimpan feedback setelah layanan
-// Route::post('/after_services', [FeedbackController::class, 'storeAfterService'])->name('feedback.store.after.services');
+// Route untuk menyimpan feedback setelah layanan
+Route::post('/after_services', [FeedbackController::class, 'storeAfterService'])->name('feedback.store.after.services');

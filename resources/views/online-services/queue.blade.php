@@ -85,9 +85,15 @@
                                 <div class="card-header bg-success text-white">
                                     <h6 class="mb-0"><i class="fas fa-user-md me-2"></i>Sedang Dilayani</h6>
                                 </div>
-                                <div class="card-body text-center">
-                                    <div id="currentQueue" class="display-4 fw-bold text-success mb-2">-</div>
-                                    <p class="text-muted mb-0" id="currentService">Menunggu data...</p>
+                                <div class="card-body">
+                                    <!-- Container untuk semua antrian yang sedang dilayani -->
+                                    <div id="currentQueuesContainer">
+                                        <div class="text-center text-muted">
+                                            <div class="display-4 fw-bold text-success mb-2">-</div>
+                                            <p class="mb-0">Memuat data...</p>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block" id="filterInfo"></small>
                                 </div>
                             </div>
                         </div>
@@ -100,12 +106,18 @@
                                     <div class="row text-center">
                                         <div class="col-6">
                                             <div class="fw-bold text-purple fs-3" id="totalQueue">0</div>
-                                            <small class="text-muted">Total Antrian</small>
+                                            <small class="text-muted" id="totalQueueLabel">Total Antrian</small>
                                         </div>
                                         <div class="col-6">
                                             <div class="fw-bold text-warning fs-3" id="waitTime">0</div>
-                                            <small class="text-muted">Estimasi Menit</small>
+                                            <small class="text-muted" id="waitTimeLabel">Estimasi Menit</small>
                                         </div>
+                                    </div>
+                                    <!-- Info tambahan berdasarkan filter -->
+                                    <div class="mt-2 small text-muted" id="queueStats">
+                                        <div>Antrian menunggu: <span id="waitingCount">0</span></div>
+                                        <div>Antrian selesai: <span id="completedCount">0</span></div>
+                                        <div>Sedang dilayani: <span id="servingCount">0</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -141,6 +153,7 @@
                             <span class="badge bg-success me-2">Sedang Dilayani</span>
                             <span class="badge bg-warning me-2">Menunggu</span>
                             <span class="badge bg-secondary me-2">Selesai</span>
+                            <span class="badge bg-danger me-2">Dibatalkan</span>
                         </small>
                     </div>
                 </div>
@@ -193,6 +206,55 @@
     animation: blink 2s infinite;
     background-color: #d4edda !important;
 }
+
+/* Style untuk multiple current queues */
+.current-queue-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #28a745;
+}
+
+.current-queue-item:last-child {
+    margin-bottom: 0;
+}
+
+.queue-service-badge {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: #6f42c1;
+    color: white;
+    margin-left: 8px;
+}
+
+.queue-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.queue-service-name {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.no-current-queue {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.serving-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #28a745;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: blink 1.5s infinite;
+}
 </style>
 
 <script>
@@ -209,12 +271,23 @@ document.addEventListener('DOMContentLoaded', function() {
         'sterilisasi': 'Sterilisasi'
     };
 
+    // Warna untuk setiap layanan
+    const serviceColors = {
+        'vaksinasi': '#28a745',
+        'konsultasi_umum': '#17a2b8',
+        'grooming': '#ffc107',
+        'perawatan_gigi': '#dc3545',
+        'pemeriksaan_darah': '#6f42c1',
+        'sterilisasi': '#fd7e14'
+    };
+
     // Format status
     const statusBadges = {
         'pending': '<span class="badge bg-warning">Menunggu</span>',
-        'confirmed': '<span class="badge bg-success">Sedang Dilayani</span>',
+        'serving': '<span class="badge bg-success">Sedang Dilayani</span>',
         'completed': '<span class="badge bg-secondary">Selesai</span>',
-        'cancelled': '<span class="badge bg-danger">Dibatalkan</span>'
+        'cancelled': '<span class="badge bg-danger">Dibatalkan</span>',
+        'confirmed': '<span class="badge bg-info">Terkonfirmasi</span>'
     };
 
     // Load data antrian
@@ -225,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`{{ route('online-services.queue-data') }}?date=${date}&service_type=${serviceType}`)
             .then(response => response.json())
             .then(data => {
-                updateQueueDisplay(data);
+                updateQueueDisplay(data, serviceType);
                 updateLastUpdateTime();
             })
             .catch(error => {
@@ -234,55 +307,231 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Update tampilan antrian
-    function updateQueueDisplay(data) {
-        // Update antrian saat ini
-        const currentQueueEl = document.getElementById('currentQueue');
-        const currentServiceEl = document.getElementById('currentService');
+    function updateQueueDisplay(data, serviceType) {
+        // Konversi today_queue ke array
+        const todayQueueArray = convertTodayQueueToArray(data.today_queue);
         
-        if (data.current_queue) {
-            currentQueueEl.textContent = `A${String(data.current_queue.nomor_antrian).padStart(3, '0')}`;
-            currentServiceEl.textContent = serviceNames[data.current_queue.service_type] || data.current_queue.service_type;
-        } else {
-            currentQueueEl.textContent = '-';
-            currentServiceEl.textContent = 'Tidak ada antrian';
+        // Update antrian yang sedang dilayani (PERBAIKAN UTAMA)
+        updateCurrentQueues(todayQueueArray, serviceType);
+
+        // Update statistik
+        updateQueueStatistics(todayQueueArray, serviceType);
+
+        // Update tabel
+        updateQueueTable(todayQueueArray, data.current_queue, serviceType);
+    }
+
+    // Konversi today_queue object ke array
+    function convertTodayQueueToArray(todayQueue) {
+        if (!todayQueue) {
+            return [];
         }
+        
+        if (Array.isArray(todayQueue)) {
+            return todayQueue;
+        }
+        
+        if (typeof todayQueue === 'object') {
+            return Object.values(todayQueue);
+        }
+        
+        return [];
+    }
 
-        // Update total antrian dan estimasi waktu
-        document.getElementById('totalQueue').textContent = data.total_queue;
-        document.getElementById('waitTime').textContent = data.estimated_wait_minutes;
+    // PERBAIKAN: Update antrian yang sedang dilayani - sesuai dengan filter
+    function updateCurrentQueues(todayQueueArray, serviceType) {
+        const container = document.getElementById('currentQueuesContainer');
+        
+        // Cari semua antrian yang sedang dilayani (status === 'serving')
+        let servingQueues = todayQueueArray.filter(item => 
+            item && item.status === 'serving'
+        );
+        
+        // Filter berdasarkan layanan jika ada filter spesifik
+        if (serviceType) {
+            servingQueues = servingQueues.filter(item => 
+                item.service_type === serviceType
+            );
+        }
+        
+        // Jika tidak ada yang sedang dilayani
+        if (servingQueues.length === 0) {
+            let message = 'Tidak ada antrian yang sedang dilayani';
+            if (serviceType) {
+                const serviceName = serviceNames[serviceType] || serviceType;
+                message = `Tidak ada antrian ${serviceName} yang sedang dilayani`;
+            }
+            
+            container.innerHTML = `
+                <div class="no-current-queue">
+                    <div class="display-4 fw-bold text-muted mb-2">-</div>
+                    <p class="mb-0">${message}</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Jika hanya 1 antrian yang sedang dilayani
+        if (servingQueues.length === 1) {
+            const queue = servingQueues[0];
+            const serviceName = serviceNames[queue.service_type] || queue.service_type;
+            const serviceColor = serviceColors[queue.service_type] || '#28a745';
+            
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="queue-number" style="color: ${serviceColor}">
+                        A${String(queue.nomor_antrian).padStart(3, '0')}
+                    </div>
+                    <p class="queue-service-name mb-0">
+                        ${serviceName}
+                        ${serviceType ? '' : `<span class="queue-service-badge" style="background-color: ${serviceColor}">${serviceName}</span>`}
+                    </p>
+                    <small class="text-muted">${queue.nama_hewan || ''}</small>
+                </div>
+            `;
+            return;
+        }
+        
+        // Jika banyak antrian yang sedang dilayani (untuk "Semua Layanan")
+        let html = '<div class="serving-queues-list">';
+        
+        servingQueues.forEach(queue => {
+            const serviceName = serviceNames[queue.service_type] || queue.service_type;
+            const serviceColor = serviceColors[queue.service_type] || '#28a745';
+            
+            html += `
+                <div class="current-queue-item mb-2" style="border-left-color: ${serviceColor}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="serving-indicator"></span>
+                            <div class="fw-bold d-inline-block" style="color: ${serviceColor}; font-size: 1.3rem;">
+                                A${String(queue.nomor_antrian).padStart(3, '0')}
+                            </div>
+                            <div class="small text-muted mt-1">${serviceName}</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-paw me-1"></i>${queue.nama_hewan || ''}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
 
-        // Update tabel antrian
+    // Update tabel antrian
+    function updateQueueTable(todayQueueArray, currentQueue, serviceType) {
         const tableBody = document.getElementById('queueTableBody');
         
-        if (data.today_queue.length === 0) {
+        // Filter data berdasarkan layanan jika dipilih
+        let displayData = todayQueueArray;
+        if (serviceType) {
+            displayData = displayData.filter(item => 
+                item && item.service_type === serviceType
+            );
+        }
+        
+        if (displayData.length === 0) {
+            let message = 'Tidak ada antrian untuk tanggal ini';
+            if (serviceType) {
+                const serviceName = serviceNames[serviceType] || serviceType;
+                message = `Tidak ada antrian ${serviceName} untuk tanggal ini`;
+            }
+            
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                        <i class="fas fa-calendar-times me-2"></i>Tidak ada antrian untuk tanggal ini
+                        <i class="fas fa-calendar-times me-2"></i>${message}
                     </td>
                 </tr>
             `;
             return;
         }
 
+        // Urutkan berdasarkan nomor antrian
+        displayData.sort((a, b) => (a.nomor_antrian || 0) - (b.nomor_antrian || 0));
+        
+        // Buat tabel
         let tableHTML = '';
-        data.today_queue.forEach(item => {
-            const isCurrent = data.current_queue && data.current_queue.nomor_antrian === item.nomor_antrian;
-            const rowClass = isCurrent ? 'queue-serving' : '';
+        
+        displayData.forEach(item => {
+            if (!item) return;
+            
+            const isServing = item.status === 'serving';
+            const rowClass = isServing ? 'queue-serving' : '';
+            
+            const statusBadge = isServing 
+                ? '<span class="badge bg-success"><i class="fas fa-play-circle me-1"></i>Sedang Dilayani</span>'
+                : statusBadges[item.status] || `<span class="badge bg-secondary">${item.status}</span>`;
             
             tableHTML += `
                 <tr class="${rowClass}">
-                    <td class="fw-bold">A${String(item.nomor_antrian).padStart(3, '0')}</td>
-                    <td><code>${item.booking_code}</code></td>
-                    <td>${serviceNames[item.service_type] || item.service_type}</td>
+                    <td class="fw-bold ${isServing ? 'text-success' : ''}">
+                        ${isServing ? '<span class="serving-indicator"></span>' : ''}
+                        A${String(item.nomor_antrian).padStart(3, '0')}
+                    </td>
+                    <td><code class="${isServing ? 'text-success' : ''}">${item.booking_code}</code></td>
+                    <td>
+                        <span class="badge" style="background-color: ${serviceColors[item.service_type] || '#6f42c1'}">
+                            ${serviceNames[item.service_type] || item.service_type}
+                        </span>
+                    </td>
                     <td>${item.nama_hewan}</td>
                     <td>${item.waktu}</td>
-                    <td>${statusBadges[item.status] || item.status}</td>
+                    <td>${statusBadge}</td>
                 </tr>
             `;
         });
 
         tableBody.innerHTML = tableHTML;
+    }
+
+    // Update statistik antrian
+    function updateQueueStatistics(todayQueueArray, serviceType) {
+        let totalQueue = 0;
+        let waitingCount = 0;
+        let completedCount = 0;
+        let servingCount = 0;
+        let estimatedWait = 0;
+        
+        if (todayQueueArray && todayQueueArray.length > 0) {
+            // Filter data
+            let filteredData = todayQueueArray;
+            if (serviceType) {
+                filteredData = filteredData.filter(item => 
+                    item && item.service_type === serviceType
+                );
+            }
+            
+            totalQueue = filteredData.length;
+            
+            // Hitung statistik
+            filteredData.forEach(item => {
+                if (!item) return;
+                
+                if (item.status === 'serving') {
+                    servingCount++;
+                } else if (item.status === 'pending' || item.status === 'confirmed') {
+                    waitingCount++;
+                } else if (item.status === 'completed') {
+                    completedCount++;
+                }
+            });
+            
+            // Estimasi waktu tunggu
+            estimatedWait = waitingCount * 15;
+        }
+        
+        // Update UI
+        document.getElementById('totalQueue').textContent = totalQueue;
+        document.getElementById('waitTime').textContent = estimatedWait;
+        document.getElementById('waitingCount').textContent = waitingCount;
+        document.getElementById('completedCount').textContent = completedCount;
+        document.getElementById('servingCount').textContent = servingCount;
     }
 
     // Update waktu terakhir refresh
@@ -300,7 +549,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const checkButton = this.querySelector('button[type="submit"]');
         const originalText = checkButton.innerHTML;
 
-        // Show loading
         checkButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mencari...';
         checkButton.disabled = true;
 
@@ -322,19 +570,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 let statusText = '';
                 let statusClass = 'warning';
+                let estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
                 
-                if (queueInfo.status === 'confirmed') {
+                if (booking.status === 'serving') {
                     statusText = 'SEDANG DILAYANI';
                     statusClass = 'success';
+                    estimatedWaitDisplay = '<span class="text-success">Sedang dilayani</span>';
+                } else if (booking.status === 'completed') {
+                    statusText = 'SELESAI';
+                    statusClass = 'secondary';
+                    estimatedWaitDisplay = '<span class="text-secondary">Sudah selesai</span>';
+                } else if (booking.status === 'cancelled') {
+                    statusText = 'DIBATALKAN';
+                    statusClass = 'danger';
+                    estimatedWaitDisplay = '<span class="text-danger">Dibatalkan</span>';
                 } else if (queueInfo.current_serving === booking.nomor_antrian) {
                     statusText = 'SILAKAN MASUK';
                     statusClass = 'success';
+                    estimatedWaitDisplay = '<span class="text-success">Silakan masuk</span>';
                 } else if (queueInfo.current_position === 1) {
                     statusText = 'BERSIAP-SIAP';
                     statusClass = 'info';
+                    estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
+                } else if (queueInfo.current_position <= 0) {
+                    statusText = 'TIDAK DITEMUKAN';
+                    statusClass = 'danger';
+                    estimatedWaitDisplay = '-';
                 } else {
                     statusText = 'MENUNGGU';
                     statusClass = 'warning';
+                    estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
                 }
 
                 resultContent.innerHTML = `
@@ -346,9 +611,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p class="mb-1"><strong>Layanan:</strong> ${serviceNames[booking.service_type] || booking.service_type}</p>
                         </div>
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Posisi Antrian:</strong> Ke-${queueInfo.current_position}</p>
-                            <p class="mb-1"><strong>Sedang Dilayani:</strong> A${String(queueInfo.current_serving).padStart(3, '0')}</p>
-                            <p class="mb-1"><strong>Estimasi Tunggu:</strong> ${queueInfo.estimated_wait_minutes} menit</p>
+                            <p class="mb-1"><strong>Posisi Antrian:</strong> ${queueInfo.current_position > 0 ? 'Ke-' + queueInfo.current_position : '-'}</p>
+                            <p class="mb-1"><strong>Sedang Dilayani:</strong> ${queueInfo.current_serving ? 'A' + String(queueInfo.current_serving).padStart(3, '0') : '-'}</p>
+                            <p class="mb-1"><strong>Estimasi Tunggu:</strong> ${estimatedWaitDisplay}</p>
                             <p class="mb-0"><strong>Status:</strong> <span class="badge bg-${statusClass}">${statusText}</span></p>
                         </div>
                     </div>
@@ -356,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 resultContent.innerHTML = `
                     <div class="alert alert-danger mb-0">
-                        <i class="fas fa-exclamation-triangle me-2"></i>${data.message}
+                        <i class="fas fa-exclamation-triangle me-2"></i>${data.message || 'Kode booking tidak ditemukan'}
                     </div>
                 `;
             }
@@ -364,22 +629,21 @@ document.addEventListener('DOMContentLoaded', function() {
             resultDiv.style.display = 'block';
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error checking queue:', error);
             document.getElementById('queueResultContent').innerHTML = `
                 <div class="alert alert-danger mb-0">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Terjadi kesalahan saat memproses permintaan
+                    <i class="fas fa-exclamation-triangle me-2"></i>Gagal memproses permintaan
                 </div>
             `;
             document.getElementById('myQueueResult').style.display = 'block';
         })
         .finally(() => {
-            // Restore button
             checkButton.innerHTML = originalText;
             checkButton.disabled = false;
         });
     });
 
-    // Event listeners untuk filter dan refresh
+    // Event listeners
     document.getElementById('queueDate').addEventListener('change', loadQueueData);
     document.getElementById('serviceFilter').addEventListener('change', loadQueueData);
     document.getElementById('refreshQueue').addEventListener('click', loadQueueData);
@@ -387,10 +651,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-refresh setiap 30 detik
     refreshInterval = setInterval(loadQueueData, 30000);
 
-    // Load data pertama kali
+    // Load initial data
     loadQueueData();
 
-    // Cleanup interval ketika page di-unload
+    // Cleanup
     window.addEventListener('beforeunload', function() {
         if (refreshInterval) {
             clearInterval(refreshInterval);

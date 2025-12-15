@@ -1,0 +1,156 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\MedicalRecord;
+use App\Models\ServiceBooking;
+use App\Models\VaccinationRecord;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class MedicalRecordController extends Controller
+{
+    public function index()
+    {
+        $medicalRecords = MedicalRecord::with('serviceBooking')
+            ->orderBy('tanggal_pemeriksaan', 'desc')
+            ->paginate(10);
+
+        return view('admin.medical-records.index', compact('medicalRecords'));
+    }
+
+    public function create($bookingId)
+    {
+        $booking = ServiceBooking::findOrFail($bookingId);
+        
+        $doctors = [
+            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
+            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah', 
+            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
+            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi',
+            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
+            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
+        ];
+
+        return view('admin.medical-records.create', compact('booking', 'doctors'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'service_booking_id' => 'required|exists:service_bookings,id',
+            'berat_badan' => 'required|string|max:50',
+            'suhu_tubuh' => 'required|string|max:50',
+            'keluhan_utama' => 'required|string',
+            'diagnosa' => 'required|string',
+            'tindakan' => 'nullable|string',
+            'resep_obat' => 'nullable|string',
+            'catatan_dokter' => 'nullable|string',
+            'dokter' => 'required|string|max:255',
+            'kunjungan_berikutnya' => 'nullable|date',
+            'status' => 'required|in:selesai,rawat,kontrol',
+            'vaccinations' => 'nullable|array',
+            'vaccinations.*.nama_vaksin' => 'required_with:vaccinations|string|max:255',
+            'vaccinations.*.dosis' => 'required_with:vaccinations|string|max:100',
+            'vaccinations.*.tanggal_vaksin' => 'required_with:vaccinations|date',
+            'vaccinations.*.tanggal_booster' => 'nullable|date',
+            'vaccinations.*.catatan' => 'nullable|string'
+        ]);
+
+        DB::transaction(function () use ($request) {
+            $booking = ServiceBooking::find($request->service_booking_id);
+            
+            // Update status booking menjadi completed
+            $booking->update(['status' => 'completed']);
+
+            // Generate kode rekam medis
+            $countToday = MedicalRecord::whereDate('created_at', today())->count();
+            $kodeRM = 'RM' . date('Ymd') . str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
+
+            // Buat rekam medis
+            $medicalRecord = MedicalRecord::create([
+                'kode_rekam_medis' => $kodeRM,
+                'service_booking_id' => $request->service_booking_id,
+                'nama_pemilik' => $booking->nama_pemilik,
+                'nama_hewan' => $booking->nama_hewan,
+                'jenis_hewan' => $booking->jenis_hewan,
+                'ras' => $booking->ras,
+                'umur' => $booking->umur,
+                'berat_badan' => $request->berat_badan,
+                'suhu_tubuh' => $request->suhu_tubuh,
+                'keluhan_utama' => $request->keluhan_utama,
+                'diagnosa' => $request->diagnosa,
+                'tindakan' => $request->tindakan,
+                'resep_obat' => $request->resep_obat,
+                'catatan_dokter' => $request->catatan_dokter,
+                'dokter' => $request->dokter,
+                'tanggal_pemeriksaan' => now(),
+                'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
+                'status' => $request->status
+            ]);
+
+            // Simpan data vaksinasi jika ada
+            if ($request->has('vaccinations')) {
+                foreach ($request->vaccinations as $vaccination) {
+                    VaccinationRecord::create([
+                        'medical_record_id' => $medicalRecord->id,
+                        'nama_vaksin' => $vaccination['nama_vaksin'],
+                        'dosis' => $vaccination['dosis'],
+                        'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
+                        'tanggal_booster' => $vaccination['tanggal_booster'] ?? null,
+                        'dokter' => $request->dokter,
+                        'catatan' => $vaccination['catatan'] ?? null
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->route('admin.medical-records.index')
+                         ->with('success', 'Rekam medis berhasil disimpan!');
+    }
+
+    public function show($id)
+    {
+        $medicalRecord = MedicalRecord::with(['serviceBooking', 'vaccinations'])->findOrFail($id);
+        return view('admin.medical-records.show', compact('medicalRecord'));
+    }
+
+    public function edit($id)
+    {
+        $medicalRecord = MedicalRecord::with(['serviceBooking', 'vaccinations'])->findOrFail($id);
+        
+        $doctors = [
+            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
+            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah', 
+            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
+            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi',
+            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
+            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
+        ];
+
+        return view('admin.medical-records.edit', compact('medicalRecord', 'doctors'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'berat_badan' => 'required|string|max:50',
+            'suhu_tubuh' => 'required|string|max:50',
+            'keluhan_utama' => 'required|string',
+            'diagnosa' => 'required|string',
+            'tindakan' => 'nullable|string',
+            'resep_obat' => 'nullable|string',
+            'catatan_dokter' => 'nullable|string',
+            'dokter' => 'required|string|max:255',
+            'kunjungan_berikutnya' => 'nullable|date',
+            'status' => 'required|in:selesai,rawat,kontrol',
+        ]);
+
+        $medicalRecord = MedicalRecord::findOrFail($id);
+        $medicalRecord->update($request->all());
+
+        return redirect()->route('admin.medical-records.show', $medicalRecord->id)
+                         ->with('success', 'Rekam medis berhasil diperbarui!');
+    }
+}

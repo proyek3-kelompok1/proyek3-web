@@ -529,6 +529,94 @@
 
 <style>
     /* Style untuk section feedback */
+    /* Tambahkan di CSS consultations.blade.php */
+    .loading-feedback {
+    text-align: center;
+    padding: 40px;
+    color: #6a3093;
+}
+
+.loading-feedback .fa-spinner {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.error-feedback {
+    text-align: center;
+    padding: 30px;
+    background: #fde8e8;
+    border-radius: 10px;
+    color: #c53030;
+}
+
+.error-feedback small {
+    display: block;
+    margin: 10px 0;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.btn-retry {
+    background: #6a3093;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.btn-retry:hover {
+    background: #8a4dcc;
+}
+.badge-source {
+    display: inline-block;
+    background: #e1d5f5;
+    color: #6a3093;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.service-info {
+    display: block;
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 3px;
+}
+
+.feedback-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.empty-feedback, .error-feedback {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+}
+
+.empty-feedback i, .error-feedback i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.error-feedback button {
+    background: #6a3093;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
     .feedback-section {
         background-color: #f0e6ff;
         padding: 40px 0;
@@ -729,112 +817,181 @@
         background: #6a3093;
     }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const feedbackForm = document.getElementById('feedbackForm');
     const feedbackList = document.getElementById('feedbackList');
     
-    // URLs
-    const feedbackStoreUrl = '{{ route("feedback.store") }}';
+    // URLs - PASTIKAN ROUTE INI SESUAI
+    const feedbackStoreUrl = '{{ route("feedback.consultation.store") }}';
     const feedbackIndexUrl = '{{ route("feedback.index") }}';
-    // URL untuk hapus - pastikan route ini ada
     const feedbackDeleteUrl = '{{ route("feedback.destroy", ":id") }}';
     
-    console.log('Feedback URLs:', { store: feedbackStoreUrl, index: feedbackIndexUrl });
+    console.log('Feedback URLs:', { 
+        store: feedbackStoreUrl, 
+        index: feedbackIndexUrl,
+        delete: feedbackDeleteUrl 
+    });
 
-    // Fungsi untuk memuat feedback dari server
+    // Fungsi untuk memuat feedback dari server (SEMUA FEEDBACK)
     function loadFeedbacks() {
-        console.log('Loading feedbacks from:', feedbackIndexUrl);
+    console.log('Loading feedbacks from:', feedbackIndexUrl);
+    
+    // Tampilkan loading
+    feedbackList.innerHTML = `
+        <div class="loading-feedback">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Memuat ulasan...</p>
+        </div>
+    `;
+    
+    fetch(feedbackIndexUrl, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', [...response.headers.entries()]);
         
-        fetch(feedbackIndexUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-                });
-            }
-            return response.json();
-        })
-        .then(feedbacks => {
-            console.log('Feedbacks loaded:', feedbacks);
-            feedbackList.innerHTML = '';
-            
-            if (!feedbacks || feedbacks.length === 0) {
-                feedbackList.innerHTML = '<p>Belum ada ulasan. Jadilah yang pertama!</p>';
-                return;
-            }
-            
-            // Jika ada error message dari server
-            if (feedbacks.error) {
-                throw new Error(feedbacks.error);
-            }
-            
-            feedbacks.forEach(feedback => {
-                showFeedback(feedback);
+        if (!response.ok) {
+            // Coba parse error message
+            return response.text().then(text => {
+                console.error('Response text:', text);
+                throw new Error(`HTTP error! status: ${response.status}`);
             });
-        })
-        .catch(error => {
-            console.error('Error loading feedbacks:', error);
-            feedbackList.innerHTML = '<p>Gagal memuat ulasan: ' + error.message + '</p>';
+        }
+        return response.json();
+    })
+    .then(feedbacks => {
+        console.log('Feedbacks loaded:', feedbacks);
+        
+        // Handle jika response adalah error object
+        if (feedbacks && feedbacks.error) {
+            throw new Error(feedbacks.error);
+        }
+        
+        updateFeedbackList(feedbacks);
+    })
+    .catch(error => {
+        console.error('Error loading feedbacks:', error);
+        console.error('Error stack:', error.stack);
+        
+        feedbackList.innerHTML = `
+            <div class="error-feedback">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Gagal memuat ulasan</p>
+                <p><small>Error: ${error.message}</small></p>
+                <p><small>URL: ${feedbackIndexUrl}</small></p>
+                <button onclick="loadFeedbacks()" class="btn-retry">
+                    <i class="fas fa-redo"></i> Coba Lagi
+                </button>
+            </div>
+        `;
+    });
+}
+    
+    // Update tampilan daftar feedback
+    function updateFeedbackList(feedbacks) {
+        feedbackList.innerHTML = '';
+        
+        if (!feedbacks || feedbacks.length === 0) {
+            feedbackList.innerHTML = `
+                <div class="empty-feedback">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Urutkan berdasarkan tanggal (terbaru dulu)
+        feedbacks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Tampilkan maksimal 10 feedback
+        feedbacks.slice(0, 10).forEach(feedback => {
+            const feedbackItem = createFeedbackElement(feedback);
+            feedbackList.appendChild(feedbackItem);
         });
     }
     
-    // Fungsi untuk menampilkan feedback
-    function showFeedback(feedback) {
+    // Buat elemen feedback
+    function createFeedbackElement(feedback) {
         const feedbackItem = document.createElement('div');
         feedbackItem.className = 'feedback-item';
         feedbackItem.dataset.id = feedback.id;
         
         // Format tanggal
-        let formattedDate = 'Baru saja';
-        if (feedback.created_at) {
-            const date = new Date(feedback.created_at);
-            formattedDate = date.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long', 
-                year: 'numeric'
-            });
-        }
+        const date = new Date(feedback.created_at);
+        const formattedDate = date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long', 
+            year: 'numeric'
+        });
         
         // Buat bintang rating
-        let starsHtml = '';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= feedback.rating) {
-                starsHtml += '<i class="fas fa-star"></i>';
-            } else {
-                starsHtml += '<i class="far fa-star"></i>';
-            }
-        }
+        const starsHtml = createStarsHtml(feedback.rating);
+        
+        // Tampilkan sumber feedback jika ada
+        const sourceBadge = feedback.source === 'after_service' 
+            ? '<span class="badge-source">📋 Dari Layanan</span>' 
+            : '<span class="badge-source">💬 Dari Konsultasi</span>';
+        
+        // Tampilkan jenis layanan jika ada
+        const serviceInfo = feedback.service_type 
+            ? `<small class="service-info"></small>`
+            : '';
         
         feedbackItem.innerHTML = `
             <div class="feedback-item-header">
                 <div class="feedbacker-info">
                     <h4>${feedback.name}</h4>
                     <div class="feedback-rating">${starsHtml}</div>
-                    <div class="feedback-date">${formattedDate}</div>
+                    ${sourceBadge}
+                    ${serviceInfo}
                 </div>
                 <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
             <p class="feedback-text">${feedback.message}</p>
+            <div class="feedback-footer">
+                <small class="feedback-date">${formattedDate}</small>
+            </div>
         `;
-        
-        feedbackList.appendChild(feedbackItem);
         
         // Tambahkan event listener untuk tombol hapus
         const deleteBtn = feedbackItem.querySelector('.delete-feedback');
-        deleteBtn.addEventListener('click', function() {
+        deleteBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
             deleteFeedback(feedback.id);
         });
+        
+        return feedbackItem;
+    }
+    
+    // Buat HTML untuk bintang rating
+    function createStarsHtml(rating) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += i <= rating 
+                ? '<i class="fas fa-star"></i>' 
+                : '<i class="far fa-star"></i>';
+        }
+        return starsHtml;
+    }
+    
+    // Tampilkan pesan error
+    function showErrorMessage(message) {
+        feedbackList.innerHTML = `
+            <div class="error-feedback">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>${message}</p>
+                <button onclick="loadFeedbacks()">Coba Lagi</button>
+            </div>
+        `;
     }
     
     // Fungsi untuk menghapus feedback
@@ -844,8 +1001,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const deleteUrl = feedbackDeleteUrl.replace(':id', feedbackId);
+        const feedbackItem = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
         
-        console.log('Deleting feedback:', feedbackId);
+        // Tampilkan loading
+        if (feedbackItem) {
+            feedbackItem.style.opacity = '0.5';
+        }
         
         fetch(deleteUrl, {
             method: 'DELETE',
@@ -855,39 +1016,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         })
-        .then(response => {
-            return response.json().then(data => ({
-                status: response.status,
-                data: data
-            }));
-        })
-        .then(({status, data}) => {
-            console.log('Delete response:', {status, data});
-            
-            if (status === 200 && data.success) {
-                // Hapus elemen dari DOM
-                const feedbackItem = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Hapus dari DOM
                 if (feedbackItem) {
                     feedbackItem.remove();
                 }
                 
                 // Jika tidak ada feedback lagi, tampilkan pesan
                 if (feedbackList.children.length === 0) {
-                    feedbackList.innerHTML = '<p>Belum ada ulasan. Jadilah yang pertama!</p>';
+                    updateFeedbackList([]);
                 }
                 
                 alert('Ulasan berhasil dihapus!');
             } else {
                 alert('Gagal menghapus ulasan: ' + (data.message || 'Unknown error'));
+                if (feedbackItem) {
+                    feedbackItem.style.opacity = '1';
+                }
             }
         })
         .catch(error => {
             console.error('Delete error:', error);
             alert('Terjadi kesalahan jaringan. Coba lagi.');
+            if (feedbackItem) {
+                feedbackItem.style.opacity = '1';
+            }
         });
     }
     
-    // Handle form submission
+    // Handle form submission feedback dari consultation page
     feedbackForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -908,7 +1067,12 @@ document.addEventListener('DOMContentLoaded', function() {
             message: message
         };
         
-        console.log('Sending feedback:', formData);
+        const submitBtn = feedbackForm.querySelector('.btn-submit-feedback');
+        const originalText = submitBtn.innerHTML;
+        
+        // Tampilkan loading
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+        submitBtn.disabled = true;
         
         // Kirim ke server
         fetch(feedbackStoreUrl, {
@@ -920,36 +1084,35 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => {
-            return response.json().then(data => ({
-                status: response.status,
-                data: data
-            }));
-        })
-        .then(({status, data}) => {
-            console.log('Response:', {status, data});
-            
-            if (status === 201 || data.success) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
                 // Success
                 feedbackForm.reset();
                 document.querySelectorAll('input[name="rating"]').forEach(radio => {
                     radio.checked = false;
                 });
                 alert('Terima kasih atas ulasan Anda! ✅');
-                loadFeedbacks();
+                loadFeedbacks(); // Reload feedback list
             } else {
-                // Error from server
                 alert('Gagal: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
             console.error('Fetch error:', error);
             alert('Terjadi kesalahan jaringan. Coba lagi.');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
     });
     
     // Muat feedback saat halaman dimuat
     loadFeedbacks();
+    
+    // Auto refresh setiap 30 detik
+    setInterval(loadFeedbacks, 30000);
 });
 </script>
 </div>

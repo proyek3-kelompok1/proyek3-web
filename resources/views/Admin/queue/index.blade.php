@@ -88,22 +88,24 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <label for="statusFilter" class="form-label fw-bold">Filter Status</label>
-                <select class="form-select" id="statusFilter">
-                    <option value="">Semua Status</option>
-                    <option value="pending">Menunggu</option>
-                    <option value="confirmed">Sedang Dilayani</option>
-                    <option value="completed">Selesai</option>
-                    <option value="cancelled">Dibatalkan</option>
-                </select>
-            </div>
+            <label for="statusFilter" class="form-label fw-bold">Filter Status</label>
+            <select class="form-select" id="statusFilter">
+                <option value="">Semua Status</option>
+                <option value="pending">Menunggu</option>
+                <option value="confirmed">Sedang Dilayani</option>
+                <option value="completed">Selesai</option>
+                <option value="cancelled">Dibatalkan</option>
+                <!-- Tambahkan filter untuk yang belum ada rekam medis -->
+                <option value="completed_no_record">Selesai (Belum Rekam Medis)</option>
+            </select>
+        </div>
         </div>
     </div>
 </div>
 
 <!-- Daftar Antrian -->
 <div class="card card-purple">
-    <div class="card-header bg-purple text-white">
+    <div class="card-header bg-purple text-black">
         <h5 class="mb-0">
             <i class="fas fa-table me-2"></i>Daftar Antrian
             <span class="badge bg-light text-purple ms-2" id="queueCount">{{ $todayBookings->count() }}</span>
@@ -186,6 +188,25 @@
                                         data-booking-id="{{ $booking->id }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                <!-- TOMBOL BUAT REKAM MEDIS - TAMPILKAN HANYA UNTUK STATUS COMPLETED -->
+        @if($booking->status == 'completed')
+            @php
+                // Cek apakah sudah ada rekam medis untuk booking ini
+                $hasMedicalRecord = \App\Models\MedicalRecord::where('service_booking_id', $booking->id)->exists();
+            @endphp
+            
+            @if(!$hasMedicalRecord)
+                <a href="{{ route('admin.medical-records.create', $booking->id) }}" 
+                   class="btn btn-outline-success" data-bs-toggle="tooltip" title="Buat Rekam Medis">
+                    <i class="fas fa-file-medical"></i>
+                </a>
+            @else
+                <button type="button" class="btn btn-outline-secondary" 
+                        data-bs-toggle="tooltip" title="Rekam Medis Sudah Dibuat" disabled>
+                    <i class="fas fa-file-check"></i>
+                </button>
+            @endif
+        @endif
                                 <button type="button" class="btn btn-outline-danger delete-booking"
                                         data-bs-toggle="tooltip" title="Hapus"
                                         data-booking-id="{{ $booking->id }}"
@@ -231,10 +252,29 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Get CSRF token
-    function getCsrfToken() {
-        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+
+    // Get CSRF token - FIXED VERSION
+function getCsrfToken() {
+    // Cari meta tag CSRF
+    const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+    if (tokenMeta) {
+        return tokenMeta.content;
     }
+    
+    // Fallback: coba dari input hidden (jika ada)
+    const tokenInput = document.querySelector('input[name="_token"]');
+    if (tokenInput) {
+        return tokenInput.value;
+    }
+    
+    // Fallback 2: cek window.Laravel (jika ada)
+    if (window.Laravel && window.Laravel.csrfToken) {
+        return window.Laravel.csrfToken;
+    }
+    
+    console.error('CSRF token not found!');
+    return '';
+}
 
     // Format nama layanan
     const serviceNames = {
@@ -341,87 +381,103 @@ function loadQueueData() {
 }
 
     // Update queue table
-    function updateQueueTable(bookings) {
-        const queueTableBody = document.getElementById('queueTableBody');
-        const queueCount = document.getElementById('queueCount');
+    // Di bagian updateQueueTable function, tambahkan:
+function updateQueueTable(bookings) {
+    const queueTableBody = document.getElementById('queueTableBody');
+    const queueCount = document.getElementById('queueCount');
 
-        if (!queueTableBody) return;
+    if (!queueTableBody) return;
 
-        if (!bookings || bookings.length === 0) {
-            queueTableBody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="text-center py-4">
-                        <div class="text-muted">
-                            <i class="fas fa-calendar-times fa-2x mb-3"></i>
-                            <p>Tidak ada antrian untuk filter yang dipilih</p>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            if (queueCount) queueCount.textContent = '0';
-            return;
-        }
-
-        let tableHTML = '';
-        bookings.forEach(booking => {
-            tableHTML += `
-                <tr data-booking-id="${booking.id}" data-service="${booking.service_type}" data-status="${booking.status}">
-                    <td>
-                        <span class="badge bg-primary fs-6">A${String(booking.nomor_antrian).padStart(3, '0')}</span>
-                    </td>
-                    <td><code>${booking.booking_code}</code></td>
-                    <td>
-                        <strong>${booking.nama_pemilik}</strong>
-                        <br>
-                        <small class="text-muted">${booking.telepon}</small>
-                    </td>
-                    <td>
-                        ${booking.nama_hewan}
-                        <br>
-                        <small class="text-muted">${booking.jenis_hewan} - ${booking.ras}</small>
-                    </td>
-                    <td>
-                        <span class="badge bg-info">${serviceNames[booking.service_type] || booking.service_type}</span>
-                    </td>
-                    <td>
-                        <small>${doctorNames[booking.doctor] || booking.doctor}</small>
-                    </td>
-                    <td>
-                        <small>${booking.booking_time}</small>
-                        <br>
-                        <small class="text-muted">${new Date(booking.booking_date).toLocaleDateString('id-ID')}</small>
-                    </td>
-                    <td>
-                        <select class="form-select form-select-sm status-select" data-booking-id="${booking.id}">
-                            <option value="pending" ${booking.status === 'pending' ? 'selected' : ''}>Menunggu</option>
-                            <option value="confirmed" ${booking.status === 'confirmed' ? 'selected' : ''}>Sedang Dilayani</option>
-                            <option value="completed" ${booking.status === 'completed' ? 'selected' : ''}>Selesai</option>
-                            <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Dibatalkan</option>
-                        </select>
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-sm" role="group">
-                            <button type="button" class="btn btn-outline-info view-booking" 
-                                    data-bs-toggle="tooltip" title="Lihat Detail"
-                                    data-booking-id="${booking.id}">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger delete-booking"
-                                    data-bs-toggle="tooltip" title="Hapus"
-                                    data-booking-id="${booking.id}"
-                                    data-booking-code="${booking.booking_code}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
-
-        queueTableBody.innerHTML = tableHTML;
-        if (queueCount) queueCount.textContent = bookings.length;
-        initializeEventListeners();
+    if (!bookings || bookings.length === 0) {
+        queueTableBody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="fas fa-calendar-times fa-2x mb-3"></i>
+                        <p>Tidak ada antrian untuk filter yang dipilih</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        if (queueCount) queueCount.textContent = '0';
+        return;
     }
+
+    let tableHTML = '';
+    bookings.forEach(booking => {
+        // Cek apakah sudah ada rekam medis
+        const hasMedicalRecord = booking.has_medical_record || false;
+        
+        const medicalRecordButton = booking.status === 'completed' 
+            ? (hasMedicalRecord 
+                ? `<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="Rekam Medis Sudah Dibuat" disabled>
+                      <i class="fas fa-file-check"></i>
+                   </button>`
+                : `<a href="/admin/medical-records/create/${booking.id}" 
+                      class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="Buat Rekam Medis">
+                      <i class="fas fa-file-medical"></i>
+                   </a>`)
+            : '';
+
+        tableHTML += `
+            <tr data-booking-id="${booking.id}" data-service="${booking.service_type}" data-status="${booking.status}">
+                <td>
+                    <span class="badge bg-primary fs-6">A${String(booking.nomor_antrian).padStart(3, '0')}</span>
+                </td>
+                <td><code>${booking.booking_code}</code></td>
+                <td>
+                    <strong>${booking.nama_pemilik}</strong>
+                    <br>
+                    <small class="text-muted">${booking.telepon}</small>
+                </td>
+                <td>
+                    ${booking.nama_hewan}
+                    <br>
+                    <small class="text-muted">${booking.jenis_hewan} - ${booking.ras}</small>
+                </td>
+                <td>
+                    <span class="badge bg-info">${serviceNames[booking.service_type] || booking.service_type}</span>
+                </td>
+                <td>
+                    <small>${doctorNames[booking.doctor] || booking.doctor}</small>
+                </td>
+                <td>
+                    <small>${booking.booking_time}</small>
+                    <br>
+                    <small class="text-muted">${new Date(booking.booking_date).toLocaleDateString('id-ID')}</small>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm status-select" data-booking-id="${booking.id}">
+                        <option value="pending" ${booking.status === 'pending' ? 'selected' : ''}>Menunggu</option>
+                        <option value="confirmed" ${booking.status === 'confirmed' ? 'selected' : ''}>Sedang Dilayani</option>
+                        <option value="completed" ${booking.status === 'completed' ? 'selected' : ''}>Selesai</option>
+                        <option value="cancelled" ${booking.status === 'cancelled' ? 'selected' : ''}>Dibatalkan</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-info view-booking" 
+                                data-bs-toggle="tooltip" title="Lihat Detail"
+                                data-booking-id="${booking.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${medicalRecordButton}
+                        <button type="button" class="btn btn-outline-danger delete-booking"
+                                data-bs-toggle="tooltip" title="Hapus"
+                                data-booking-id="${booking.id}"
+                                data-booking-code="${booking.booking_code}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    queueTableBody.innerHTML = tableHTML;
+    if (queueCount) queueCount.textContent = bookings.length;
+    initializeEventListeners();
+}
 
     // Update statistics
     // Update statistics - FIXED VERSION

@@ -21,7 +21,7 @@
                     <a class="nav-link {{ request()->is('services') ? 'active' : '' }}" href="{{ url('/services') }}">Layanan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('articles') ? 'active' : '' }}" href="{{ url('/articles') }}">Artikel & Edukasi</a>
+                    <a class="nav-link {{ request()->is('education') ? 'active' : '' }}" href="{{ url('education') }}">Edukasi</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('consultations') ? 'active' : '' }}" href="{{ url('/consultations') }}">Kontak</a>

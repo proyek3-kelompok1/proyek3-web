@@ -32,13 +32,9 @@ Route::get('/services', function () {
 
 Route::get('/consultations', [ConsultationsController::class, 'showForm'])->name('consultations');
 Route::post('/consultations', [ConsultationsController::class, 'store']);
-// Route untuk Artikel & Edukasi (gabungan)
-Route::get('/articles', function () {
-    return view('articles');
-});
 // Route untuk FRONTEND (halaman articles/edukasi yang dilihat user)
-    Route::get('/articles', [EducationController::class, 'index'])->name('articles.index');
-    Route::get('/articles/{id}', [EducationController::class, 'show'])->name('articles.show');
+    Route::get('/education', [EducationController::class, 'index'])->name('education.index');
+Route::get('/education/{id}', [EducationController::class, 'show'])->name('education.show');
     // Route untuk lihat antrian
     Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
     Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');

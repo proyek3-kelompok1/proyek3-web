@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Storage;
+
 
 class Education extends Model
 {
@@ -57,7 +60,7 @@ class Education extends Model
 
     public function getThumbnailUrlAttribute()
     {
-        if ($this->thumbnail && \Storage::disk('public')->exists($this->thumbnail)) {
+        if ($this->thumbnail && Storage::disk('public')->exists($this->thumbnail)) {
             return asset('storage/' . $this->thumbnail);
         }
         
@@ -95,4 +98,5 @@ class Education extends Model
     {
         return $this->created_at->translatedFormat('d F Y');
     }
+    
 }

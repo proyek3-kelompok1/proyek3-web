@@ -8,85 +8,84 @@
         <div class="col-md-8">
             <div class="card shadow text-center">
                 <div class="card-body p-5">
+                    <!-- Icon Success -->
                     <div class="text-success mb-4">
-                        <i class="fas fa-calendar-check fa-5x"></i>
+                        <i class="fas fa-check-circle fa-5x"></i>
                     </div>
                     
+                    <!-- Title -->
                     <h2 class="text-purple mb-3">Pemesanan Layanan Berhasil!</h2>
                     
+                    <!-- Message -->
                     <p class="lead mb-4">
-                        Terima kasih telah memesan layanan di DV Pets Clinic. Detail pemesanan Anda telah dikirim ke email.
+                        Terima kasih telah memesan layanan di DV Pets Clinic. Kami akan mengkonfirmasi pemesanan Anda melalui email atau telepon.
                     </p>
 
-                    @if(session('booking'))
-                    @php
-                        $booking = session('booking');
-                        // Format nama layanan
-                        $serviceNames = [
-                            'vaksinasi' => 'Vaksinasi',
-                            'konsultasi_umum' => 'Konsultasi Umum',
-                            'grooming' => 'Grooming',
-                            'perawatan_gigi' => 'Perawatan Gigi',
-                            'pemeriksaan_darah' => 'Pemeriksaan Darah',
-                            'sterilisasi' => 'Sterilisasi'
-                        ];
+                    @if(session('booking') && session('service'))
+                        @php
+                            $booking = session('booking');
+                            $service = session('service');
+                        @endphp
                         
-                        $doctorNames = [
-                            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
-                            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
-                        ];
-                    @endphp
-                    
-                    <!-- Kartu Nomor Antrian -->
-                    <div class="card border-success mb-4">
-                        <div class="card-header bg-success text-white">
-                            <h4 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Nomor Antrian Anda</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="display-1 fw-bold text-success mb-2">
-                                A{{ str_pad($booking->nomor_antrian, 3, '0', STR_PAD_LEFT) }}
+                        <!-- Booking Details Card -->
+                        <div class="card border-success mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Detail Pemesanan</h5>
                             </div>
-                            <p class="text-muted mb-0">Simpan nomor ini untuk menunjukkan di klinik</p>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-info text-start">
-                        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Detail Pemesanan:</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong>Kode Booking:</strong> 
-                                    <span class="badge bg-purple">{{ $booking->booking_code }}</span>
-                                </p>
-                                <p class="mb-2"><strong>Layanan:</strong> {{ $serviceNames[$booking->service_type] ?? $booking->service_type }}</p>
-                                <p class="mb-2"><strong>Dokter:</strong> {{ $doctorNames[$booking->doctor] ?? $booking->doctor }}</p>
-                                <p class="mb-2"><strong>Nomor Antrian:</strong> 
-                                    <span class="badge bg-success fs-6">A{{ str_pad($booking->nomor_antrian, 3, '0', STR_PAD_LEFT) }}</span>
-                                </p>
+                            <div class="card-body text-start">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-2"><strong>Kode Booking:</strong></p>
+                                        <h4 class="text-success mb-3"><code>{{ $booking->booking_code }}</code></h4>
+                                        
+                                        <p class="mb-2"><strong>Nomor Antrian:</strong></p>
+                                        <h1 class="text-success mb-4">A{{ str_pad($booking->nomor_antrian, 3, '0', STR_PAD_LEFT) }}</h1>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Layanan:</strong> {{ $service->name }}</p>
+                                        <p class="mb-1"><strong>Dokter:</strong> 
+                                            @php
+                                                // Cari dokter berdasarkan ID
+                                                $doctor = \App\Models\Doctor::find($booking->doctor);
+                                            @endphp
+                                            @if($doctor)
+                                                {{ $doctor->name }} @if($doctor->specialization) - {{ $doctor->specialization }} @endif
+                                            @else
+                                                Dokter tidak ditemukan
+                                            @endif
+                                        </p>
+                                        <p class="mb-1"><strong>Tanggal:</strong> {{ date('d F Y', strtotime($booking->booking_date)) }}</p>
+                                        <p class="mb-1"><strong>Waktu:</strong> {{ $booking->booking_time }}</p>
+                                        <p class="mb-0"><strong>Hewan:</strong> {{ $booking->nama_hewan }} ({{ $booking->jenis_hewan }})</p>
+                                    </div>
+                                </div>
+                                
+                                @if($service->price)
+                                <div class="alert alert-info mt-3 mb-0">
+                                    <h6 class="alert-heading"><i class="fas fa-money-bill-wave me-2"></i>Informasi Pembayaran</h6>
+                                    <p class="mb-0">Total biaya: <strong class="fs-5">Rp {{ number_format($service->price, 0, ',', '.') }}</strong></p>
+                                    <small class="text-muted">Pembayaran dapat dilakukan di klinik sebelum pelayanan</small>
+                                </div>
+                                @endif
                             </div>
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($booking->booking_date)->format('d F Y') }}</p>
-                                <p class="mb-2"><strong>Waktu:</strong> {{ $booking->booking_time }}</p>
-                                <p class="mb-2"><strong>Hewan:</strong> {{ $booking->nama_hewan }}</p>
-                                <p class="mb-0"><strong>Jenis:</strong> {{ $booking->jenis_hewan }} - {{ $booking->ras }}</p>
-                            </div>
                         </div>
-                    </div>
                     @endif
-                    
-                    <!-- Informasi Antrian -->
+
+                    <!-- Important Information -->
                     <div class="alert alert-warning text-start">
-                        <h6 class="alert-heading"><i class="fas fa-clock me-2"></i>Informasi Antrian:</h6>
+                        <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Informasi Penting</h6>
                         <ul class="mb-0">
-                            <li><strong>Datang 15-30 menit lebih awal</strong> sebelum jadwal Anda</li>
+                            <li>Datang <strong>15-30 menit lebih awal</strong> sebelum jadwal Anda</li>
                             <li>Tunjukkan <strong>nomor antrian dan kode booking</strong> di resepsionis</li>
-                            <li>Estimasi waktu tunggu: <strong>30-45 menit</strong> tergantung antrian</li>
                             <li>Bawa hewan dalam kondisi terkontrol (gunakan carrier atau tali)</li>
+                            <li>Bawa catatan medis hewan jika ada</li>
                             <li>Hubungi klinik jika perlu membatalkan atau mereschedule</li>
                         </ul>
                     </div>
-                    
+
+                    <!-- Action Buttons -->
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                        <a href="{{ url('../after_services') }}" class="btn btn-purple me-md-2">
+                        <a href="{{ url('/') }}" class="btn btn-purple me-md-2">
                             <i class="fas fa-home me-2"></i>Kembali ke Beranda
                         </a>
                         <a href="{{ route('online-services.queue') }}" class="btn btn-info me-md-2">
@@ -95,9 +94,6 @@
                         <a href="{{ route('online-services.index') }}" class="btn btn-outline-purple">
                             <i class="fas fa-plus me-2"></i>Pesan Layanan Lain
                         </a>
-                        <button onclick="window.print()" class="btn btn-outline-success">
-                            <i class="fas fa-print me-2"></i>Cetak Tiket
-                        </button>
                     </div>
                 </div>
             </div>
@@ -129,13 +125,6 @@
 .btn-outline-purple:hover {
     background-color: #6f42c1;
     color: white;
-}
-
-/* Style untuk print */
-@media print {
-    .btn {
-        display: none !important;
-    }
 }
 </style>
 @endsection

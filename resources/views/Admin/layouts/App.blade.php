@@ -74,11 +74,11 @@
                     <a class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ url('/admin/dashboard') }}">
                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                     </a>
-                    <a class="nav-link {{ request()->is('admin/services*') ? 'active' : '' }}" href="#">
+                    <a class="nav-link {{ request()->is('admin/services*') ? 'active' : '' }}" href="{{ route('admin.services.index') }}">
                         <i class="fas fa-stethoscope me-2"></i>Kelola Layanan
                     </a>
                     <a class="nav-link {{ request()->is('admin/doctors*') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
-                    <i class="fas fa-user-md me-2"></i>Kelola Dokter
+                        <i class="fas fa-user-md me-2"></i>Kelola Dokter
                     </a>
                     <a class="nav-link {{ request()->is('admin/posts*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-newspaper me-2"></i>Kelola Artikel

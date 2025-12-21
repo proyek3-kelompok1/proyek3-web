@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\MedicalRecord;
 use App\Models\ServiceBooking;
 use App\Models\VaccinationRecord;
+use App\Models\Doctor; // TAMBAHKAN INI
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -61,12 +62,14 @@ class MedicalRecordController extends Controller
     {
         $booking = ServiceBooking::findOrFail($bookingId);
         
-        $doctors = [
-            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
-            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah', 
-            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
-            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi'
-        ];
+        // AMBIL DOKTER DARI DATABASE - GANTI DARI ARRAY DUMMY
+        $doctors = Doctor::all()
+            ->mapWithKeys(function ($doctor) {
+                return [
+                    $doctor->id => $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '')
+                ];
+            })
+            ->toArray();
 
         return view('medical-records.create', compact('booking', 'doctors'));
     }
@@ -106,6 +109,10 @@ class MedicalRecordController extends Controller
 
             $booking = ServiceBooking::find($request->service_booking_id);
             
+            // Cari dokter berdasarkan ID untuk mendapatkan nama
+            $doctor = Doctor::find($request->dokter);
+            $namaDokter = $doctor ? $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '') : 'Dokter tidak ditemukan';
+            
             // Buat rekam medis
             $medicalRecord = MedicalRecord::create([
                 'kode_rekam_medis' => $kodeRM,
@@ -122,14 +129,14 @@ class MedicalRecordController extends Controller
                 'tindakan' => $request->tindakan,
                 'resep_obat' => $request->resep_obat,
                 'catatan_dokter' => $request->catatan_dokter,
-                'dokter' => $request->dokter,
+                'dokter' => $namaDokter,
                 'tanggal_pemeriksaan' => now(),
                 'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
                 'status' => $request->status
             ]);
 
             // PERBAIKAN: Gunakan transaction untuk konsistensi data
-            DB::transaction(function () use ($medicalRecord, $request) {
+            DB::transaction(function () use ($medicalRecord, $request, $namaDokter) {
                 // Simpan data vaksinasi jika ada
                 if ($request->has('vaccinations')) {
                     foreach ($request->vaccinations as $vaccination) {
@@ -139,7 +146,7 @@ class MedicalRecordController extends Controller
                             'dosis' => $vaccination['dosis'],
                             'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
                             'tanggal_booster' => $vaccination['tanggal_booster'] ?? null,
-                            'dokter' => $request->dokter,
+                            'dokter' => $namaDokter,
                             'catatan' => $vaccination['catatan'] ?? null
                         ]);
                     }

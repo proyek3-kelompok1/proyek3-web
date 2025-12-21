@@ -14,6 +14,7 @@ class Doctor extends Model
         'schedule', 
         'photo',
         'description',
+        'is_active' // TAMBAHKAN INI
     ];
 
     protected $appends = ['photo_url'];

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MedicalRecord;
 use App\Models\ServiceBooking;
 use App\Models\VaccinationRecord;
+use App\Models\Doctor; // TAMBAHKAN INI
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,14 +25,14 @@ class MedicalRecordController extends Controller
     {
         $booking = ServiceBooking::findOrFail($bookingId);
         
-        $doctors = [
-            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
-            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah', 
-            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
-            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi',
-            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
-            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
-        ];
+        // AMBIL DOKTER DARI DATABASE - GANTI DARI ARRAY DUMMY
+        $doctors = Doctor::all()
+            ->mapWithKeys(function ($doctor) {
+                return [
+                    $doctor->id => $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '')
+                ];
+            })
+            ->toArray();
 
         return view('admin.medical-records.create', compact('booking', 'doctors'));
     }
@@ -47,7 +48,7 @@ class MedicalRecordController extends Controller
             'tindakan' => 'nullable|string',
             'resep_obat' => 'nullable|string',
             'catatan_dokter' => 'nullable|string',
-            'dokter' => 'required|string|max:255',
+            'dokter' => 'required|string|max:255', // Sekarang menyimpan ID dokter
             'kunjungan_berikutnya' => 'nullable|date',
             'status' => 'required|in:selesai,rawat,kontrol',
             'vaccinations' => 'nullable|array',
@@ -68,6 +69,10 @@ class MedicalRecordController extends Controller
             $countToday = MedicalRecord::whereDate('created_at', today())->count();
             $kodeRM = 'RM' . date('Ymd') . str_pad($countToday + 1, 3, '0', STR_PAD_LEFT);
 
+            // Cari dokter berdasarkan ID untuk mendapatkan nama
+            $doctor = Doctor::find($request->dokter);
+            $namaDokter = $doctor ? $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '') : 'Dokter tidak ditemukan';
+
             // Buat rekam medis
             $medicalRecord = MedicalRecord::create([
                 'kode_rekam_medis' => $kodeRM,
@@ -84,7 +89,7 @@ class MedicalRecordController extends Controller
                 'tindakan' => $request->tindakan,
                 'resep_obat' => $request->resep_obat,
                 'catatan_dokter' => $request->catatan_dokter,
-                'dokter' => $request->dokter,
+                'dokter' => $namaDokter, // Simpan nama dokter lengkap
                 'tanggal_pemeriksaan' => now(),
                 'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
                 'status' => $request->status
@@ -99,7 +104,7 @@ class MedicalRecordController extends Controller
                         'dosis' => $vaccination['dosis'],
                         'tanggal_vaksin' => $vaccination['tanggal_vaksin'],
                         'tanggal_booster' => $vaccination['tanggal_booster'] ?? null,
-                        'dokter' => $request->dokter,
+                        'dokter' => $namaDokter, // Gunakan nama dokter yang sama
                         'catatan' => $vaccination['catatan'] ?? null
                     ]);
                 }
@@ -120,14 +125,14 @@ class MedicalRecordController extends Controller
     {
         $medicalRecord = MedicalRecord::with(['serviceBooking', 'vaccinations'])->findOrFail($id);
         
-        $doctors = [
-            'drh_andi' => 'drh. Andi Wijaya - Spesialis Umum',
-            'drh_sari' => 'drh. Sari Dewi - Spesialis Bedah', 
-            'drh_budi' => 'drh. Budi Santoso - Spesialis Dermatologi',
-            'drh_maya' => 'drh. Maya Purnama - Spesialis Gigi',
-            'drh_roza' => 'drh. Roza Albate Chandra Adila - Dokter Umum',
-            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si - Dokter Umum'
-        ];
+        // AMBIL DOKTER DARI DATABASE - GANTI DARI ARRAY DUMMY
+        $doctors = Doctor::all()
+            ->mapWithKeys(function ($doctor) {
+                return [
+                    $doctor->id => $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '')
+                ];
+            })
+            ->toArray();
 
         return view('admin.medical-records.edit', compact('medicalRecord', 'doctors'));
     }
@@ -148,7 +153,15 @@ class MedicalRecordController extends Controller
         ]);
 
         $medicalRecord = MedicalRecord::findOrFail($id);
-        $medicalRecord->update($request->all());
+        
+        // Cari dokter berdasarkan ID untuk mendapatkan nama
+        $doctor = Doctor::find($request->dokter);
+        $namaDokter = $doctor ? $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '') : 'Dokter tidak ditemukan';
+        
+        $data = $request->all();
+        $data['dokter'] = $namaDokter;
+        
+        $medicalRecord->update($data);
 
         return redirect()->route('admin.medical-records.show', $medicalRecord->id)
                          ->with('success', 'Rekam medis berhasil diperbarui!');

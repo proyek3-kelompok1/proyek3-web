@@ -23,7 +23,7 @@
                             <div class="col-md-8">
                                 <label for="booking_code" class="form-label fw-bold text-purple">Masukkan Kode Booking</label>
                                 <input type="text" class="form-control" id="booking_code" name="booking_code" 
-                                       placeholder="Contoh: VKS20231215001" required>
+                                       placeholder="Contoh: GRM20251229001" required>
                                 <div class="form-text">Kode booking dapat ditemukan di tiket atau email konfirmasi</div>
                             </div>
                             <div class="col-md-4">
@@ -67,13 +67,15 @@
                         <div class="col-md-6">
                             <label for="serviceFilter" class="form-label fw-bold text-purple">Filter Layanan</label>
                             <select class="form-select" id="serviceFilter">
-                                <option value="">Semua Layanan</option>
-                                <option value="vaksinasi">Vaksinasi</option>
-                                <option value="konsultasi_umum">Konsultasi Umum</option>
+                                <option value="all">Semua Layanan</option>
+                                <option value="general">Konsultasi Umum</option>
+                                <option value="vaccination">Vaksinasi</option>
                                 <option value="grooming">Grooming</option>
-                                <option value="perawatan_gigi">Perawatan Gigi</option>
-                                <option value="pemeriksaan_darah">Pemeriksaan Darah</option>
-                                <option value="sterilisasi">Sterilisasi</option>
+                                <option value="dental">Perawatan Gigi</option>
+                                <option value="surgery">Operasi</option>
+                                <option value="laboratory">Laboratorium</option>
+                                <option value="inpatient">Rawat Inap</option>
+                                <option value="emergency">Darurat</option>
                             </select>
                         </div>
                     </div>
@@ -86,12 +88,9 @@
                                     <h6 class="mb-0"><i class="fas fa-user-md me-2"></i>Sedang Dilayani</h6>
                                 </div>
                                 <div class="card-body">
-                                    <!-- Container untuk semua antrian yang sedang dilayani -->
-                                    <div id="currentQueuesContainer">
-                                        <div class="text-center text-muted">
-                                            <div class="display-4 fw-bold text-success mb-2">-</div>
-                                            <p class="mb-0">Memuat data...</p>
-                                        </div>
+                                    <div id="currentQueue" class="text-center">
+                                        <div class="display-4 fw-bold text-success mb-2">-</div>
+                                        <p class="text-muted">Memuat data...</p>
                                     </div>
                                     <small class="text-muted mt-2 d-block" id="filterInfo"></small>
                                 </div>
@@ -106,14 +105,13 @@
                                     <div class="row text-center">
                                         <div class="col-6">
                                             <div class="fw-bold text-purple fs-3" id="totalQueue">0</div>
-                                            <small class="text-muted" id="totalQueueLabel">Total Antrian</small>
+                                            <small class="text-muted">Total Antrian</small>
                                         </div>
                                         <div class="col-6">
                                             <div class="fw-bold text-warning fs-3" id="waitTime">0</div>
-                                            <small class="text-muted" id="waitTimeLabel">Estimasi Menit</small>
+                                            <small class="text-muted">Estimasi Menit</small>
                                         </div>
                                     </div>
-                                    <!-- Info tambahan berdasarkan filter -->
                                     <div class="mt-2 small text-muted" id="queueStats">
                                         <div>Antrian menunggu: <span id="waitingCount">0</span></div>
                                         <div>Antrian selesai: <span id="completedCount">0</span></div>
@@ -206,55 +204,6 @@
     animation: blink 2s infinite;
     background-color: #d4edda !important;
 }
-
-/* Style untuk multiple current queues */
-.current-queue-item {
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    border-left: 4px solid #28a745;
-}
-
-.current-queue-item:last-child {
-    margin-bottom: 0;
-}
-
-.queue-service-badge {
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 12px;
-    background-color: #6f42c1;
-    color: white;
-    margin-left: 8px;
-}
-
-.queue-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #28a745;
-}
-
-.queue-service-name {
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-.no-current-queue {
-    text-align: center;
-    padding: 20px;
-    color: #6c757d;
-}
-
-.serving-indicator {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background-color: #28a745;
-    border-radius: 50%;
-    margin-right: 5px;
-    animation: blink 1.5s infinite;
-}
 </style>
 
 <script>
@@ -263,31 +212,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Format nama layanan
     const serviceNames = {
+        'general': 'Konsultasi Umum',
+        'vaccination': 'Vaksinasi',
+        'grooming': 'Grooming',
+        'dental': 'Perawatan Gigi',
+        'surgery': 'Operasi',
+        'laboratory': 'Laboratorium',
+        'inpatient': 'Rawat Inap',
+        'emergency': 'Darurat',
         'vaksinasi': 'Vaksinasi',
         'konsultasi_umum': 'Konsultasi Umum',
-        'grooming': 'Grooming',
         'perawatan_gigi': 'Perawatan Gigi',
         'pemeriksaan_darah': 'Pemeriksaan Darah',
         'sterilisasi': 'Sterilisasi'
     };
 
-    // Warna untuk setiap layanan
-    const serviceColors = {
-        'vaksinasi': '#28a745',
-        'konsultasi_umum': '#17a2b8',
-        'grooming': '#ffc107',
-        'perawatan_gigi': '#dc3545',
-        'pemeriksaan_darah': '#6f42c1',
-        'sterilisasi': '#fd7e14'
-    };
-
     // Format status
     const statusBadges = {
         'pending': '<span class="badge bg-warning">Menunggu</span>',
-        'serving': '<span class="badge bg-success">Sedang Dilayani</span>',
+        'confirmed': '<span class="badge bg-success">Sedang Dilayani</span>',
         'completed': '<span class="badge bg-secondary">Selesai</span>',
-        'cancelled': '<span class="badge bg-danger">Dibatalkan</span>',
-        'confirmed': '<span class="badge bg-info">Terkonfirmasi</span>'
+        'cancelled': '<span class="badge bg-danger">Dibatalkan</span>'
     };
 
     // Load data antrian
@@ -298,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`{{ route('online-services.queue-data') }}?date=${date}&service_type=${serviceType}`)
             .then(response => response.json())
             .then(data => {
-                updateQueueDisplay(data, serviceType);
+                updateQueueDisplay(data);
                 updateLastUpdateTime();
             })
             .catch(error => {
@@ -307,182 +252,79 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Update tampilan antrian
-    function updateQueueDisplay(data, serviceType) {
-        // Konversi today_queue ke array
-        const todayQueueArray = convertTodayQueueToArray(data.today_queue);
-        
-        // Update antrian yang sedang dilayani (PERBAIKAN UTAMA)
-        updateCurrentQueues(todayQueueArray, serviceType);
-
-        // Update statistik
-        updateQueueStatistics(todayQueueArray, serviceType);
-
-        // Update tabel
-        updateQueueTable(todayQueueArray, data.current_queue, serviceType);
+    function updateQueueDisplay(data) {
+        if (data.success) {
+            // Update antrian yang sedang dilayani
+            updateCurrentQueue(data.current_queue);
+            
+            // Update statistik
+            updateQueueStatistics(data.queue_stats);
+            
+            // Update tabel
+            updateQueueTable(data.today_queue, data.current_queue);
+            
+            // Update info filter
+            updateFilterInfo(data.queue_stats, data.today_queue.length);
+        }
     }
 
-    // Konversi today_queue object ke array
-    function convertTodayQueueToArray(todayQueue) {
-        if (!todayQueue) {
-            return [];
-        }
+    // Update antrian yang sedang dilayani
+    function updateCurrentQueue(currentQueue) {
+        const currentQueueElement = document.getElementById('currentQueue');
         
-        if (Array.isArray(todayQueue)) {
-            return todayQueue;
-        }
-        
-        if (typeof todayQueue === 'object') {
-            return Object.values(todayQueue);
-        }
-        
-        return [];
-    }
-
-    // PERBAIKAN: Update antrian yang sedang dilayani - sesuai dengan filter
-    function updateCurrentQueues(todayQueueArray, serviceType) {
-        const container = document.getElementById('currentQueuesContainer');
-        
-        // Cari semua antrian yang sedang dilayani (status === 'serving')
-        let servingQueues = todayQueueArray.filter(item => 
-            item && item.status === 'serving'
-        );
-        
-        // Filter berdasarkan layanan jika ada filter spesifik
-        if (serviceType) {
-            servingQueues = servingQueues.filter(item => 
-                item.service_type === serviceType
-            );
-        }
-        
-        // Jika tidak ada yang sedang dilayani
-        if (servingQueues.length === 0) {
-            let message = 'Tidak ada antrian yang sedang dilayani';
-            if (serviceType) {
-                const serviceName = serviceNames[serviceType] || serviceType;
-                message = `Tidak ada antrian ${serviceName} yang sedang dilayani`;
-            }
-            
-            container.innerHTML = `
-                <div class="no-current-queue">
-                    <div class="display-4 fw-bold text-muted mb-2">-</div>
-                    <p class="mb-0">${message}</p>
+        if (currentQueue) {
+            currentQueueElement.innerHTML = `
+                <div class="display-1 fw-bold text-success mb-2">
+                    A${String(currentQueue.nomor_antrian).padStart(3, '0')}
                 </div>
+                <p class="mb-1">${currentQueue.nama_hewan}</p>
+                <p class="mb-0 small text-muted">
+                    ${serviceNames[currentQueue.service_type] || currentQueue.service_type}
+                </p>
             `;
-            return;
+        } else {
+            currentQueueElement.innerHTML = `
+                <div class="display-4 fw-bold text-muted mb-2">-</div>
+                <p class="text-muted">Tidak ada antrian yang sedang dilayani</p>
+            `;
         }
-        
-        // Jika hanya 1 antrian yang sedang dilayani
-        if (servingQueues.length === 1) {
-            const queue = servingQueues[0];
-            const serviceName = serviceNames[queue.service_type] || queue.service_type;
-            const serviceColor = serviceColors[queue.service_type] || '#28a745';
-            
-            container.innerHTML = `
-                <div class="text-center">
-                    <div class="queue-number" style="color: ${serviceColor}">
-                        A${String(queue.nomor_antrian).padStart(3, '0')}
-                    </div>
-                    <p class="queue-service-name mb-0">
-                        ${serviceName}
-                        ${serviceType ? '' : `<span class="queue-service-badge" style="background-color: ${serviceColor}">${serviceName}</span>`}
-                    </p>
-                    <small class="text-muted">${queue.nama_hewan || ''}</small>
-                </div>
-            `;
-            return;
-        }
-        
-        // Jika banyak antrian yang sedang dilayani (untuk "Semua Layanan")
-        let html = '<div class="serving-queues-list">';
-        
-        servingQueues.forEach(queue => {
-            const serviceName = serviceNames[queue.service_type] || queue.service_type;
-            const serviceColor = serviceColors[queue.service_type] || '#28a745';
-            
-            html += `
-                <div class="current-queue-item mb-2" style="border-left-color: ${serviceColor}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="serving-indicator"></span>
-                            <div class="fw-bold d-inline-block" style="color: ${serviceColor}; font-size: 1.3rem;">
-                                A${String(queue.nomor_antrian).padStart(3, '0')}
-                            </div>
-                            <div class="small text-muted mt-1">${serviceName}</div>
-                        </div>
-                        <div>
-                            <span class="badge bg-light text-dark">
-                                <i class="fas fa-paw me-1"></i>${queue.nama_hewan || ''}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
     }
 
     // Update tabel antrian
-    function updateQueueTable(todayQueueArray, currentQueue, serviceType) {
+    function updateQueueTable(todayQueue, currentQueue) {
         const tableBody = document.getElementById('queueTableBody');
         
-        // Filter data berdasarkan layanan jika dipilih
-        let displayData = todayQueueArray;
-        if (serviceType) {
-            displayData = displayData.filter(item => 
-                item && item.service_type === serviceType
-            );
-        }
-        
-        if (displayData.length === 0) {
-            let message = 'Tidak ada antrian untuk tanggal ini';
-            if (serviceType) {
-                const serviceName = serviceNames[serviceType] || serviceType;
-                message = `Tidak ada antrian ${serviceName} untuk tanggal ini`;
-            }
-            
+        if (!todayQueue || todayQueue.length === 0) {
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                        <i class="fas fa-calendar-times me-2"></i>${message}
+                        <i class="fas fa-calendar-times me-2"></i>Tidak ada antrian untuk tanggal ini
                     </td>
                 </tr>
             `;
             return;
         }
 
-        // Urutkan berdasarkan nomor antrian
-        displayData.sort((a, b) => (a.nomor_antrian || 0) - (b.nomor_antrian || 0));
-        
-        // Buat tabel
         let tableHTML = '';
         
-        displayData.forEach(item => {
-            if (!item) return;
-            
-            const isServing = item.status === 'serving';
-            const rowClass = isServing ? 'queue-serving' : '';
-            
-            const statusBadge = isServing 
-                ? '<span class="badge bg-success"><i class="fas fa-play-circle me-1"></i>Sedang Dilayani</span>'
-                : statusBadges[item.status] || `<span class="badge bg-secondary">${item.status}</span>`;
+        todayQueue.forEach(item => {
+            const isCurrent = currentQueue && currentQueue.id === item.id;
+            const rowClass = isCurrent ? 'queue-serving' : '';
             
             tableHTML += `
                 <tr class="${rowClass}">
-                    <td class="fw-bold ${isServing ? 'text-success' : ''}">
-                        ${isServing ? '<span class="serving-indicator"></span>' : ''}
+                    <td class="fw-bold ${isCurrent ? 'text-success' : ''}">
                         A${String(item.nomor_antrian).padStart(3, '0')}
                     </td>
-                    <td><code class="${isServing ? 'text-success' : ''}">${item.booking_code}</code></td>
+                    <td><code>${item.booking_code}</code></td>
                     <td>
-                        <span class="badge" style="background-color: ${serviceColors[item.service_type] || '#6f42c1'}">
+                        <span class="badge bg-info">
                             ${serviceNames[item.service_type] || item.service_type}
                         </span>
                     </td>
                     <td>${item.nama_hewan}</td>
-                    <td>${item.waktu}</td>
-                    <td>${statusBadge}</td>
+                    <td>${item.booking_time}</td>
+                    <td>${statusBadges[item.status] || item.status}</td>
                 </tr>
             `;
         });
@@ -491,47 +333,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Update statistik antrian
-    function updateQueueStatistics(todayQueueArray, serviceType) {
-        let totalQueue = 0;
-        let waitingCount = 0;
-        let completedCount = 0;
-        let servingCount = 0;
-        let estimatedWait = 0;
+    function updateQueueStatistics(stats) {
+        document.getElementById('totalQueue').textContent = stats.total;
+        document.getElementById('waitingCount').textContent = stats.waiting;
+        document.getElementById('completedCount').textContent = stats.completed;
+        document.getElementById('servingCount').textContent = stats.serving;
+        document.getElementById('waitTime').textContent = stats.estimated_wait_minutes;
+    }
+
+    // Update info filter
+    function updateFilterInfo(stats, totalBookings) {
+        const filterInfo = document.getElementById('filterInfo');
+        const serviceFilter = document.getElementById('serviceFilter').value;
+        const serviceName = serviceNames[serviceFilter] || 'Semua Layanan';
         
-        if (todayQueueArray && todayQueueArray.length > 0) {
-            // Filter data
-            let filteredData = todayQueueArray;
-            if (serviceType) {
-                filteredData = filteredData.filter(item => 
-                    item && item.service_type === serviceType
-                );
-            }
-            
-            totalQueue = filteredData.length;
-            
-            // Hitung statistik
-            filteredData.forEach(item => {
-                if (!item) return;
-                
-                if (item.status === 'serving') {
-                    servingCount++;
-                } else if (item.status === 'pending' || item.status === 'confirmed') {
-                    waitingCount++;
-                } else if (item.status === 'completed') {
-                    completedCount++;
-                }
-            });
-            
-            // Estimasi waktu tunggu
-            estimatedWait = waitingCount * 15;
-        }
-        
-        // Update UI
-        document.getElementById('totalQueue').textContent = totalQueue;
-        document.getElementById('waitTime').textContent = estimatedWait;
-        document.getElementById('waitingCount').textContent = waitingCount;
-        document.getElementById('completedCount').textContent = completedCount;
-        document.getElementById('servingCount').textContent = servingCount;
+        filterInfo.textContent = `Menampilkan ${stats.total} dari ${totalBookings} antrian (${serviceName})`;
     }
 
     // Update waktu terakhir refresh
@@ -568,38 +384,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 const queueInfo = data.data.queue_info;
                 const booking = data.data.booking;
                 
-                let statusText = '';
+                let statusText = 'MENUNGGU';
                 let statusClass = 'warning';
-                let estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
                 
-                if (booking.status === 'serving') {
+                if (booking.status === 'confirmed') {
                     statusText = 'SEDANG DILAYANI';
                     statusClass = 'success';
-                    estimatedWaitDisplay = '<span class="text-success">Sedang dilayani</span>';
                 } else if (booking.status === 'completed') {
                     statusText = 'SELESAI';
                     statusClass = 'secondary';
-                    estimatedWaitDisplay = '<span class="text-secondary">Sudah selesai</span>';
                 } else if (booking.status === 'cancelled') {
                     statusText = 'DIBATALKAN';
                     statusClass = 'danger';
-                    estimatedWaitDisplay = '<span class="text-danger">Dibatalkan</span>';
-                } else if (queueInfo.current_serving === booking.nomor_antrian) {
-                    statusText = 'SILAKAN MASUK';
-                    statusClass = 'success';
-                    estimatedWaitDisplay = '<span class="text-success">Silakan masuk</span>';
-                } else if (queueInfo.current_position === 1) {
-                    statusText = 'BERSIAP-SIAP';
-                    statusClass = 'info';
-                    estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
-                } else if (queueInfo.current_position <= 0) {
-                    statusText = 'TIDAK DITEMUKAN';
-                    statusClass = 'danger';
-                    estimatedWaitDisplay = '-';
-                } else {
-                    statusText = 'MENUNGGU';
-                    statusClass = 'warning';
-                    estimatedWaitDisplay = `${queueInfo.estimated_wait_minutes} menit`;
                 }
 
                 resultContent.innerHTML = `
@@ -611,9 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p class="mb-1"><strong>Layanan:</strong> ${serviceNames[booking.service_type] || booking.service_type}</p>
                         </div>
                         <div class="col-md-6">
-                            <p class="mb-1"><strong>Posisi Antrian:</strong> ${queueInfo.current_position > 0 ? 'Ke-' + queueInfo.current_position : '-'}</p>
+                            <p class="mb-1"><strong>Posisi Antrian:</strong> ${queueInfo.current_position ? 'Ke-' + queueInfo.current_position : '-'}</p>
                             <p class="mb-1"><strong>Sedang Dilayani:</strong> ${queueInfo.current_serving ? 'A' + String(queueInfo.current_serving).padStart(3, '0') : '-'}</p>
-                            <p class="mb-1"><strong>Estimasi Tunggu:</strong> ${estimatedWaitDisplay}</p>
+                            <p class="mb-1"><strong>Estimasi Tunggu:</strong> ${queueInfo.estimated_wait_minutes} menit</p>
                             <p class="mb-0"><strong>Status:</strong> <span class="badge bg-${statusClass}">${statusText}</span></p>
                         </div>
                     </div>

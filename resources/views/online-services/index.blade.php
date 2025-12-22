@@ -202,6 +202,7 @@
                     <div class="card-header bg-purple text-white">
                         <h5 class="mb-0"><i class="fas fa-user me-2"></i>Data Pemilik & Hewan</h5>
                     </div>
+<<<<<<< HEAD
                     <div class="card-body p-4">
                         <p class="text-muted mb-4">Lengkapi data pemilik dan hewan peliharaan Anda.</p>
 
@@ -213,6 +214,14 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nama_pemilik" class="form-label fw-bold">Nama Lengkap <span class="text-danger">*</span></label>
+=======
+                    <div class="card-body">
+                        {{-- <h6 class="fw-bold text-purple mb-3">Data Pemilik</h6>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nama_pemilik" class="form-label">Nama Lengkap *</label>
+>>>>>>> 9e0241e43822ba781e3f2a0900ceea1f1edea5c8
                                     <input type="text" class="form-control" id="nama_pemilik" name="nama_pemilik" 
                                            value="{{ old('nama_pemilik') }}" required>
                                     <div class="invalid-feedback" id="nama_pemilik_error"></div>
@@ -225,16 +234,25 @@
                                     <div class="invalid-feedback" id="email_error"></div>
                                 </div>
                             </div>
+<<<<<<< HEAD
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="telepon" class="form-label fw-bold">Nomor Telepon <span class="text-danger">*</span></label>
+=======
+                        </div> --}}
+                        
+                        {{-- <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="telepon" class="form-label">Nomor Telepon *</label>
+>>>>>>> 9e0241e43822ba781e3f2a0900ceea1f1edea5c8
                                     <input type="tel" class="form-control" id="telepon" name="telepon" 
                                            value="{{ old('telepon') }}" required>
                                     <small class="text-muted">Contoh: 081234567890</small>
                                     <div class="invalid-feedback" id="telepon_error"></div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Data Hewan -->
                         <div class="mb-5">

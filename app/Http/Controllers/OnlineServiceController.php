@@ -48,9 +48,9 @@ class OnlineServiceController extends Controller
         
         // Validasi yang lebih sederhana
         $validator = Validator::make($request->all(), [
-            'nama_pemilik' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'telepon' => 'required|string|max:15',
+            // 'nama_pemilik' => 'required|string|max:255',
+            // 'email' => 'required|email|max:255',
+            // 'telepon' => 'required|string|max:15',
             'nama_hewan' => 'required|string|max:255',
             'jenis_hewan' => 'required|string|max:255',
             'ras' => 'required|string|max:255',
@@ -104,7 +104,7 @@ class OnlineServiceController extends Controller
         
         $kodeService = $serviceKode[$service->service_type] ?? 'SV';
         $bookingCode = $kodeService . date('Ymd', strtotime($request->booking_date)) . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
-
+        
         // Simpan ke database
         try {
             $booking = ServiceBooking::create([

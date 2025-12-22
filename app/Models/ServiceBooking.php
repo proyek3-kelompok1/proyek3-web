@@ -10,9 +10,9 @@ class ServiceBooking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nama_pemilik',
-        'email',
-        'telepon',
+        // 'nama_pemilik',
+        // 'email',
+        // 'telepon',
         'nama_hewan',
         'jenis_hewan',
         'ras',

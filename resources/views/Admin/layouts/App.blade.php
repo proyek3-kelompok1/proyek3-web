@@ -80,9 +80,9 @@
                     <a class="nav-link {{ request()->is('admin/doctors*') ? 'active' : '' }}" href="{{ route('admin.doctors.index') }}">
                         <i class="fas fa-user-md me-2"></i>Kelola Dokter
                     </a>
-                    <a class="nav-link {{ request()->is('admin/posts*') ? 'active' : '' }}" href="#">
+                    {{-- <a class="nav-link {{ request()->is('admin/posts*') ? 'active' : '' }}" href="#">
                         <i class="fas fa-newspaper me-2"></i>Kelola Artikel
-                    </a>
+                    </a> --}}
                     <a class="nav-link {{ request()->is('admin/education*') ? 'active' : '' }}" href="{{ route('admin.education.index') }}">
                         <i class="fas fa-graduation-cap me-2"></i>Kelola Edukasi
                     </a>
@@ -93,7 +93,7 @@
                         <i class="fas fa-file-medical me-2"></i>Kelola Rekam Medis
                     </a>
                     <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="{{ route('admin.messages.index') }}">
-                            <i class="fas fa-envelope me-2"></i>Pesan Masuk
+                            <i class="fas fa-envelope me-2"></i>Ulasan Pelanggan
                         </a>
                     <a class="nav-link" href="{{ url('/admin/logout') }}" 
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

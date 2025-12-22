@@ -38,8 +38,18 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            <img src="{{ $doctor->photo_url }}" alt="{{ $doctor->name }}" 
-                                 class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                            @if($doctor->photo)
+                                <img src="{{ asset('storage/' . $doctor->photo) }}" 
+                                     alt="{{ $doctor->name }}" 
+                                     class="rounded-circle" 
+                                     style="width: 50px; height: 50px; object-fit: cover;"
+                                     onerror="this.onerror=null; this.src='{{ asset('images/default-doctor.jpg') }}'">
+                            @else
+                                <img src="{{ asset('images/default-doctor.jpg') }}" 
+                                     alt="Default" 
+                                     class="rounded-circle" 
+                                     style="width: 50px; height: 50px; object-fit: cover;">
+                            @endif
                         </td>
                         <td>{{ $doctor->name }}</td>
                         <td>{{ $doctor->specialization ?? '-' }}</td>

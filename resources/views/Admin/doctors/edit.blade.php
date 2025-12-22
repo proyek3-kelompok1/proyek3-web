@@ -50,8 +50,11 @@
                 <label for="photo" class="form-label">Foto Dokter</label>
                 @if($doctor->photo)
                     <div class="mb-2">
-                        <img src="{{ $doctor->photo_url }}" alt="{{ $doctor->name }}" 
-                             class="rounded" style="width: 150px; height: 150px; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $doctor->photo) }}" 
+                             alt="{{ $doctor->name }}" 
+                             class="rounded" 
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             onerror="this.onerror=null; this.src='{{ asset('images/default-doctor.jpg') }}'">
                     </div>
                 @endif
                 <input type="file" class="form-control @error('photo') is-invalid @enderror" 

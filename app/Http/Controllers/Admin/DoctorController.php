@@ -21,31 +21,31 @@ class DoctorController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'specialization' => 'nullable|string|max:255',
-        'schedule' => 'required|string|max:255',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'description' => 'nullable|string',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'specialization' => 'nullable|string|max:255',
+            'schedule' => 'required|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string',
+        ]);
 
-    $doctor = new Doctor();
-    $doctor->name = $request->name;
-    $doctor->specialization = $request->specialization;
-    $doctor->schedule = $request->schedule;
-    $doctor->description = $request->description;
+        $doctor = new Doctor();
+        $doctor->name = $request->name;
+        $doctor->specialization = $request->specialization;
+        $doctor->schedule = $request->schedule;
+        $doctor->description = $request->description;
 
-    if ($request->hasFile('photo')) {
-        // Simpan di folder 'doctors' dalam storage
-        $photoPath = $request->file('photo')->store('doctors', 'public');
-        $doctor->photo = $photoPath; // Simpan path relatif
+        if ($request->hasFile('photo')) {
+            // Simpan di folder 'doctors' dalam storage
+            $photoPath = $request->file('photo')->store('doctors', 'public');
+            $doctor->photo = $photoPath; // Simpan path relatif
+        }
+
+        $doctor->save();
+
+        return redirect()->route('admin.doctors.index')->with('success', 'Dokter berhasil ditambahkan.');
     }
-
-    $doctor->save();
-
-    return redirect()->route('admin.doctors.index')->with('success', 'Dokter berhasil ditambahkan.');
-}
 
     public function edit(Doctor $doctor)
     {

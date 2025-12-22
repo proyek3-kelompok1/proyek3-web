@@ -140,6 +140,7 @@
             </div>
         </div>
     </section>
+    
     <!-- Daftar Dokter -->
 <section class="py-5">
     <div class="container text-center">
@@ -150,10 +151,19 @@
             @forelse($doctors as $doctor)
             <div class="col-md-4">
                 <div class="card h-100 p-3 text-center">
-                    <img src="{{ $doctor->photo_url }}"
-                         alt="{{ $doctor->name }}"
-                         class="img-fluid rounded mb-3"
-                         style="height: 400px; width: 100%; object-fit: cover;">
+                    @if($doctor->photo)
+                        <img src="{{ asset('storage/' . $doctor->photo) }}"
+                             alt="{{ $doctor->name }}"
+                             class="img-fluid rounded mb-3"
+                             style="height: 400px; width: 100%; object-fit: cover;"
+                             onerror="this.onerror=null; this.src='{{ asset('images/default-doctor.jpg') }}'">
+                    @else
+                        <img src="{{ asset('images/default-doctor.jpg') }}"
+                             alt="{{ $doctor->name }}"
+                             class="img-fluid rounded mb-3"
+                             style="height: 400px; width: 100%; object-fit: cover;">
+                    @endif
+                    
                     <h5 class="fw-bold text-purple">{{ $doctor->name }}</h5>
                     @if($doctor->specialization)
                         <p class="text-muted mb-1">{{ $doctor->specialization }}</p>

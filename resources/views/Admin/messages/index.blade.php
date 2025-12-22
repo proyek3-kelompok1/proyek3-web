@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">
-        <i class="fas fa-inbox me-2"></i>Pesan Masuk - Ulasan Pelanggan
+        <i class="fas fa-inbox me-2"></i>Pesan Masuk & Ulasan Pelanggan
     </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group me-2">
@@ -18,22 +18,22 @@
 
 <!-- Stats Cards -->
 <div class="row mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-primary text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title mb-0">Total Ulasan</h6>
+                        <h6 class="card-title mb-0">Total Pesan</h6>
                         <h2 class="mb-0" id="totalMessages">0</h2>
                     </div>
                     <div class="bg-white text-primary rounded-circle p-3">
-                        <i class="fas fa-comments fa-2x"></i>
+                        <i class="fas fa-inbox fa-2x"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-success text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -48,15 +48,30 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-info text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="card-title mb-0">Ulasan 5 Bintang</h6>
-                        <h2 class="mb-0" id="fiveStarMessages">0</h2>
+                        <h6 class="card-title mb-0">Konsultasi</h6>
+                        <h2 class="mb-0" id="totalConsultations">0</h2>
                     </div>
                     <div class="bg-white text-info rounded-circle p-3">
+                        <i class="fas fa-comments fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Feedback</h6>
+                        <h2 class="mb-0" id="totalFeedbacks">0</h2>
+                    </div>
+                    <div class="bg-white text-warning rounded-circle p-3">
                         <i class="fas fa-star-half-alt fa-2x"></i>
                     </div>
                 </div>
@@ -69,7 +84,7 @@
 <div class="card card-purple mb-4">
     <div class="card-body">
         <div class="row align-items-center">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="dateFilter" class="form-label fw-bold">Filter Tanggal</label>
                 <div class="input-group">
                     <input type="date" class="form-control" id="startDateFilter">
@@ -77,10 +92,11 @@
                     <input type="date" class="form-control" id="endDateFilter">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="ratingFilter" class="form-label fw-bold">Filter Rating</label>
                 <select class="form-select" id="ratingFilter">
                     <option value="">Semua Rating</option>
+                    <option value="0">Tanpa Rating (Konsultasi)</option>
                     <option value="5">★★★★★ (5)</option>
                     <option value="4">★★★★☆ (4)</option>
                     <option value="3">★★★☆☆ (3)</option>
@@ -88,18 +104,27 @@
                     <option value="1">★☆☆☆☆ (1)</option>
                 </select>
             </div>
-            <div class="col-md-3">
-                <label for="sourceFilter" class="form-label fw-bold">Filter Sumber</label>
+            <div class="col-md-2">
+                <label for="typeFilter" class="form-label fw-bold">Jenis Pesan</label>
+                <select class="form-select" id="typeFilter">
+                    <option value="">Semua Jenis</option>
+                    <option value="konsultasi">Konsultasi</option>
+                    <option value="feedback_konsultasi">Feedback Konsultasi</option>
+                    <option value="feedback_layanan">Feedback Layanan</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sourceFilter" class="form-label fw-bold">Sumber</label>
                 <select class="form-select" id="sourceFilter">
                     <option value="">Semua Sumber</option>
                     <option value="consultation">Konsultasi</option>
                     <option value="after_service">Setelah Layanan</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label for="searchInput" class="form-label fw-bold">Cari</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Cari nama atau pesan...">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Cari nama, email, atau pesan...">
                     <button class="btn btn-purple" type="button" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -113,7 +138,7 @@
 <div class="card card-purple">
     <div class="card-header bg-purple text-black d-flex justify-content-between align-items-center">
         <h5 class="mb-0">
-            <i class="fas fa-table me-2"></i>Daftar Ulasan Pelanggan
+            <i class="fas fa-table me-2"></i>Daftar Pesan & Ulasan
             <span class="badge bg-light text-purple ms-2" id="filteredCount">0</span>
         </h5>
         <div>
@@ -135,10 +160,10 @@
                         </th>
                         <th width="20%">Pelanggan</th>
                         <th width="10%">Rating</th>
-                        <th width="35%">Ulasan</th>
-                        <th width="15%">Sumber</th>
+                        <th width="30%">Pesan/Ulasan</th>
+                        <th width="15%">Jenis</th>
                         <th width="15%">Tanggal</th>
-                        <th width="4%">Aksi</th>
+                        <th width="9%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="messagesTable">
@@ -174,7 +199,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-purple text-black">
-                <h5 class="modal-title"><i class="fas fa-eye me-2"></i>Detail Ulasan</h5>
+                <h5 class="modal-title"><i class="fas fa-eye me-2"></i>Detail Pesan</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -182,7 +207,7 @@
                     <div class="col-md-6">
                         <table class="table table-sm table-borderless">
                             <tr>
-                                <th width="40%">ID Ulasan:</th>
+                                <th width="40%">ID Pesan:</th>
                                 <td id="detailId">-</td>
                             </tr>
                             <tr>
@@ -210,10 +235,8 @@
                                 <td id="detailPetType">-</td>
                             </tr>
                             <tr>
-                                <th>Sumber:</th>
-                                <td>
-                                    <span id="detailSource" class="badge bg-info">-</span>
-                                </td>
+                                <th>Jenis Pesan:</th>
+                                <td id="detailSource">-</td>
                             </tr>
                             <tr>
                                 <th>Layanan:</th>
@@ -224,13 +247,14 @@
                 </div>
                 <hr>
                 <div class="mb-3">
-                    <h6><i class="fas fa-comment me-2"></i>Ulasan:</h6>
+                    <h6><i class="fas fa-comment me-2"></i>Pesan/Ulasan:</h6>
                     <div class="card bg-light">
                         <div class="card-body">
                             <p id="detailMessage" class="mb-0"></p>
                         </div>
                     </div>
                 </div>
+                <div id="additionalInfo"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
@@ -271,13 +295,18 @@
         font-size: 0.85em;
     }
     
-    .badge-consultation {
+    .badge-konsultasi {
         background-color: #17a2b8;
         color: white;
     }
     
-    .badge-service {
-        background-color: #28a745;
+    .badge-feedback-konsultasi {
+        background-color: #20c997;
+        color: white;
+    }
+    
+    .badge-feedback-layanan {
+        background-color: #fd7e14;
         color: white;
     }
     
@@ -317,6 +346,11 @@
         background-color: #6a0dad;
         color: white;
     }
+    
+    .badge-type {
+        font-size: 0.75em;
+        padding: 3px 8px;
+    }
 </style>
 @endsection
 
@@ -341,12 +375,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const messagesApiUrl = '{{ route("admin.messages.api") }}';
     const messageDetailUrl = '{{ route("admin.messages.show", ":id") }}';
     const deleteMessageUrl = '{{ route("admin.messages.destroy", ":id") }}';
+    const messagesStatsUrl = '{{ route("admin.messages.stats") }}';
+    
+    // CSRF Token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    console.log('Admin Messages URLs:');
+    console.log('API URL:', messagesApiUrl);
+    console.log('Detail URL:', messageDetailUrl);
+    console.log('Delete URL:', deleteMessageUrl);
+    console.log('Stats URL:', messagesStatsUrl);
 
     // Elements
     const messagesTable = document.getElementById('messagesTable');
     const totalMessages = document.getElementById('totalMessages');
     const averageRating = document.getElementById('averageRating');
-    const fiveStarMessages = document.getElementById('fiveStarMessages');
+    const totalConsultations = document.getElementById('totalConsultations');
+    const totalFeedbacks = document.getElementById('totalFeedbacks');
     const filteredCount = document.getElementById('filteredCount');
     const showingFrom = document.getElementById('showingFrom');
     const showingTo = document.getElementById('showingTo');
@@ -354,52 +399,112 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     const selectAllBtn = document.getElementById('selectAllBtn');
     const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    const additionalInfo = document.getElementById('additionalInfo');
 
-    // Load messages
+    // ============================================
+    // FUNGSI UTAMA: LOAD STATISTIK
+    // ============================================
+    function loadStats() {
+        fetch(messagesStatsUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.total_messages !== undefined) {
+                totalMessages.textContent = data.total_messages;
+                averageRating.textContent = data.average_rating.toFixed(1);
+                totalConsultations.textContent = data.messages_by_type.konsultasi || 0;
+                totalFeedbacks.textContent = (data.messages_by_type.feedback_konsultasi || 0) + (data.messages_by_type.feedback_layanan || 0);
+            }
+        })
+        .catch(error => console.error('Error loading stats:', error));
+    }
+
+    // ============================================
+    // FUNGSI UTAMA: LOAD MESSAGES
+    // ============================================
     function loadMessages() {
         showLoading();
         
-        fetch(messagesApiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
+        console.log('Loading messages from:', messagesApiUrl);
+        
+        fetch(messagesApiUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Messages loaded:', data.length, 'items');
+            
+            // Pastikan data adalah array
+            if (Array.isArray(data)) {
                 allMessages = data;
-                updateStats();
-                filterMessages();
-            })
-            .catch(error => {
-                console.error('Error loading messages:', error);
-                showError('Gagal memuat pesan. Silakan refresh halaman.');
-            });
+            } else if (data.error) {
+                throw new Error(data.error);
+            } else {
+                allMessages = [];
+            }
+            
+            updateStats();
+            filterMessages();
+        })
+        .catch(error => {
+            console.error('Error loading messages:', error);
+            showError('Gagal memuat pesan. Silakan refresh halaman.');
+        });
     }
 
-    // Update statistics
+    // ============================================
+    // FUNGSI: UPDATE STATISTIK LOKAL
+    // ============================================
     function updateStats() {
         if (!allMessages || allMessages.length === 0) {
-            totalMessages.textContent = '0';
-            averageRating.textContent = '0.0';
-            fiveStarMessages.textContent = '0';
             return;
         }
 
-        // Total messages
-        totalMessages.textContent = allMessages.length;
-
-        // Average rating
-        const totalRating = allMessages.reduce((sum, msg) => sum + msg.rating, 0);
-        const avg = (totalRating / allMessages.length).toFixed(1);
-        averageRating.textContent = avg;
-
-        // 5-star messages
+        // Hitung statistik dari data lokal
+        const consultations = allMessages.filter(msg => msg.type === 'konsultasi').length;
+        const feedbacks = allMessages.filter(msg => msg.type.includes('feedback')).length;
+        
+        // Hitung rating rata-rata
+        const feedbacksWithRating = allMessages.filter(msg => msg.rating !== null && msg.rating > 0);
+        let avgRating = 0;
+        if (feedbacksWithRating.length > 0) {
+            const totalRating = feedbacksWithRating.reduce((sum, msg) => sum + msg.rating, 0);
+            avgRating = (totalRating / feedbacksWithRating.length).toFixed(1);
+        }
+        
+        // Hitung 5-star feedbacks
         const fiveStarCount = allMessages.filter(msg => msg.rating === 5).length;
-        fiveStarMessages.textContent = fiveStarCount;
+        
+        // Update tampilan
+        totalMessages.textContent = allMessages.length;
+        averageRating.textContent = avgRating;
+        totalConsultations.textContent = consultations;
+        totalFeedbacks.textContent = feedbacks;
+        
+        // Update judul five star messages
+        const fiveStarElement = document.querySelector('.col-md-3:nth-child(3) .card-title');
+        if (fiveStarElement) {
+            fiveStarElement.textContent = 'Feedback 5 Bintang';
+            document.getElementById('fiveStarMessages').textContent = fiveStarCount;
+        }
     }
 
-    // Filter messages
+    // ============================================
+    // FUNGSI: FILTER MESSAGES
+    // ============================================
     function filterMessages() {
         let filtered = [...allMessages];
         
@@ -423,8 +528,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Filter by rating
         const ratingValue = document.getElementById('ratingFilter').value;
-        if (ratingValue) {
+        if (ratingValue === "0") {
+            // Filter untuk pesan tanpa rating (konsultasi)
+            filtered = filtered.filter(msg => msg.rating === null || msg.rating === 0);
+        } else if (ratingValue) {
             filtered = filtered.filter(msg => msg.rating == ratingValue);
+        }
+        
+        // Filter by type
+        const typeValue = document.getElementById('typeFilter').value;
+        if (typeValue) {
+            filtered = filtered.filter(msg => msg.type === typeValue);
         }
         
         // Filter by source
@@ -439,7 +553,9 @@ document.addEventListener('DOMContentLoaded', function() {
             filtered = filtered.filter(msg => 
                 msg.name.toLowerCase().includes(searchTerm) ||
                 (msg.email && msg.email.toLowerCase().includes(searchTerm)) ||
-                msg.message.toLowerCase().includes(searchTerm)
+                (msg.phone && msg.phone.toLowerCase().includes(searchTerm)) ||
+                (msg.message && msg.message.toLowerCase().includes(searchTerm)) ||
+                (msg.pet_type && msg.pet_type.toLowerCase().includes(searchTerm))
             );
         }
         
@@ -447,7 +563,9 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMessages();
     }
 
-    // Show loading state
+    // ============================================
+    // FUNGSI: SHOW LOADING
+    // ============================================
     function showLoading() {
         messagesTable.innerHTML = `
             <tr>
@@ -461,7 +579,9 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Show error state
+    // ============================================
+    // FUNGSI: SHOW ERROR
+    // ============================================
     function showError(message) {
         messagesTable.innerHTML = `
             <tr>
@@ -476,7 +596,9 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Render messages table
+    // ============================================
+    // FUNGSI: RENDER MESSAGES TABLE
+    // ============================================
     function renderMessages() {
         if (filteredMessages.length === 0) {
             messagesTable.innerHTML = `
@@ -502,24 +624,38 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let html = '';
         pageMessages.forEach(message => {
-            const stars = getStarsHtml(message.rating);
-            const preview = message.message.length > 100 
-                ? message.message.substring(0, 100) + '...' 
-                : message.message;
+            // Tampilkan bintang hanya untuk feedback
+            const stars = message.rating ? getStarsHtml(message.rating) : '<span class="text-muted">-</span>';
             
-            // Format date
+            // Preview pesan
+            const preview = message.message && message.message.length > 100 
+                ? message.message.substring(0, 100) + '...' 
+                : message.message || '-';
+            
+            // Format tanggal
             const date = new Date(message.created_at);
             const formattedDate = date.toLocaleDateString('id-ID', {
                 day: 'numeric',
                 month: 'short',
-                year: 'numeric'
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
             });
             
-            // Source badge
-            const sourceBadge = getSourceBadge(message.source);
+            // Badge tipe pesan
+            const typeBadge = getTypeBadge(message.type);
             
             // Check if selected
             const isChecked = selectedMessages.has(message.id);
+            
+            // Safe email dan phone
+            const safeEmail = message.email || '-';
+            const safePhone = message.phone || '-';
+            
+            // Feedback indicator untuk konsultasi
+            const feedbackIndicator = message.has_feedback 
+                ? `<br><small class="text-success"><i class="fas fa-comment-check"></i> ${message.feedback_count} feedback</small>` 
+                : '';
             
             html += `
                 <tr class="message-row">
@@ -529,31 +665,32 @@ document.addEventListener('DOMContentLoaded', function() {
                                ${isChecked ? 'checked' : ''}
                                onclick="event.stopPropagation()">
                     </td>
-                    <td onclick="viewMessage(${message.id})" style="cursor: pointer;">
-                        <div class="fw-bold">${message.name}</div>
-                        <small class="text-muted">${message.email || '-'}</small>
-                        ${message.phone ? `<br><small class="text-muted">${message.phone}</small>` : ''}
+                    <td onclick="viewMessage('${message.id}')" style="cursor: pointer;">
+                        <div class="fw-bold">${message.name || '-'}</div>
+                        <small class="text-muted">${safeEmail}</small>
+                        ${safePhone !== '-' ? `<br><small class="text-muted">${safePhone}</small>` : ''}
+                        ${feedbackIndicator}
                     </td>
-                    <td onclick="viewMessage(${message.id})" style="cursor: pointer;">
+                    <td onclick="viewMessage('${message.id}')" style="cursor: pointer;">
                         <div class="rating-stars">${stars}</div>
-                        <small class="text-muted">${message.rating}/5</small>
+                        ${message.rating ? `<small class="text-muted">${message.rating}/5</small>` : ''}
                     </td>
-                    <td onclick="viewMessage(${message.id})" style="cursor: pointer;" title="${message.message}">
+                    <td onclick="viewMessage('${message.id}')" style="cursor: pointer;" title="${message.message || ''}">
                         <div class="message-preview">${preview}</div>
                     </td>
-                    <td onclick="viewMessage(${message.id})" style="cursor: pointer;">
-                        ${sourceBadge}
+                    <td onclick="viewMessage('${message.id}')" style="cursor: pointer;">
+                        ${typeBadge}
                     </td>
-                    <td onclick="viewMessage(${message.id})" style="cursor: pointer;">
+                    <td onclick="viewMessage('${message.id}')" style="cursor: pointer;">
                         <small>${formattedDate}</small>
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm" role="group">
-                            <button class="btn btn-outline-info" onclick="viewMessage(${message.id})" 
+                            <button class="btn btn-outline-info" onclick="viewMessage('${message.id}')" 
                                     data-bs-toggle="tooltip" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn btn-outline-danger" onclick="deleteMessage(${message.id})" 
+                            <button class="btn btn-outline-danger" onclick="deleteMessage('${message.id}')" 
                                     data-bs-toggle="tooltip" title="Hapus">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -577,8 +714,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Get stars HTML
+    // ============================================
+    // FUNGSI: GET STARS HTML
+    // ============================================
     function getStarsHtml(rating) {
+        if (!rating) return '<span class="text-muted">-</span>';
+        
         let stars = '';
         for (let i = 1; i <= 5; i++) {
             stars += i <= rating 
@@ -588,17 +729,25 @@ document.addEventListener('DOMContentLoaded', function() {
         return stars;
     }
 
-    // Get source badge
-    function getSourceBadge(source) {
-        if (source === 'consultation') {
-            return '<span class="badge badge-source badge-consultation">Konsultasi</span>';
-        } else if (source === 'after_service') {
-            return '<span class="badge badge-source badge-service">Setelah Layanan</span>';
+    // ============================================
+    // FUNGSI: GET TYPE BADGE
+    // ============================================
+    function getTypeBadge(type) {
+        switch(type) {
+            case 'konsultasi':
+                return '<span class="badge badge-type bg-primary">Konsultasi</span>';
+            case 'feedback_konsultasi':
+                return '<span class="badge badge-type bg-info">Feedback Konsultasi</span>';
+            case 'feedback_layanan':
+                return '<span class="badge badge-type bg-success">Feedback Layanan</span>';
+            default:
+                return '<span class="badge badge-type bg-secondary">Lainnya</span>';
         }
-        return '<span class="badge badge-source bg-secondary">Lainnya</span>';
     }
 
-    // Render pagination
+    // ============================================
+    // FUNGSI: RENDER PAGINATION
+    // ============================================
     function renderPagination() {
         const totalPages = Math.ceil(filteredMessages.length / perPage);
         const pagination = document.getElementById('pagination');
@@ -648,7 +797,9 @@ document.addEventListener('DOMContentLoaded', function() {
         pagination.innerHTML = html;
     }
 
-    // Update pagination info
+    // ============================================
+    // FUNGSI: UPDATE PAGINATION INFO
+    // ============================================
     function updatePaginationInfo() {
         const startIndex = (currentPage - 1) * perPage + 1;
         const endIndex = Math.min(startIndex + perPage - 1, filteredMessages.length);
@@ -658,7 +809,9 @@ document.addEventListener('DOMContentLoaded', function() {
         totalCount.textContent = filteredMessages.length;
     }
 
-    // Change page
+    // ============================================
+    // FUNGSI: CHANGE PAGE (EXPOSED TO WINDOW)
+    // ============================================
     window.changePage = function(page) {
         if (page < 1 || page > Math.ceil(filteredMessages.length / perPage)) {
             return;
@@ -670,68 +823,153 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedMessages.clear();
     }
 
-    // View message details
+    // ============================================
+    // FUNGSI: VIEW MESSAGE DETAILS (EXPOSED TO WINDOW)
+    // ============================================
     window.viewMessage = function(id) {
         currentViewMessageId = id;
         
         const url = messageDetailUrl.replace(':id', id);
         
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(message => {
-                // Populate modal
-                document.getElementById('detailId').textContent = message.id;
-                document.getElementById('detailName').textContent = message.name;
-                document.getElementById('detailEmail').textContent = message.email || '-';
-                document.getElementById('detailPhone').textContent = message.phone || '-';
-                document.getElementById('detailPetType').textContent = message.pet_type || '-';
-                document.getElementById('detailMessage').textContent = message.message;
-                document.getElementById('detailSource').innerHTML = getSourceBadge(message.source);
-                
-                // Format services
-                const services = message.services ? message.services.join(', ') : '-';
-                document.getElementById('detailServices').textContent = services;
-                
-                // Rating stars
+        console.log('Fetching message detail:', url);
+        
+        fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(message => {
+            console.log('Message detail loaded:', message);
+            
+            // Populate modal dengan data yang lebih lengkap
+            document.getElementById('detailId').textContent = message.id || '-';
+            document.getElementById('detailName').textContent = message.name || '-';
+            document.getElementById('detailEmail').textContent = message.email || '-';
+            document.getElementById('detailPhone').textContent = message.phone || '-';
+            document.getElementById('detailPetType').textContent = message.pet_type_label || message.pet_type || '-';
+            document.getElementById('detailMessage').textContent = message.message || '-';
+            
+            // Tampilkan jenis pesan
+            document.getElementById('detailSource').innerHTML = getTypeBadge(message.type) + 
+                (message.source === 'consultation' 
+                    ? ' <span class="badge bg-secondary">Sumber: Konsultasi</span>' 
+                    : ' <span class="badge bg-warning">Sumber: After Service</span>');
+            
+            // Format services
+            let servicesText = '-';
+            if (message.services && Array.isArray(message.services) && message.services.length > 0) {
+                servicesText = message.services.join(', ');
+            } else if (message.service_type) {
+                servicesText = message.service_type;
+            } else if (message.formatted_services) {
+                servicesText = message.formatted_services;
+            }
+            document.getElementById('detailServices').textContent = servicesText;
+            
+            // Rating stars - hanya untuk feedback
+            if (message.rating) {
                 const starsHtml = getStarsHtml(message.rating);
                 document.getElementById('detailRating').innerHTML = starsHtml + ` (${message.rating}/5)`;
+            } else {
+                document.getElementById('detailRating').innerHTML = '<span class="text-muted">Tidak ada rating</span>';
+            }
+            
+            // Clear additional info
+            additionalInfo.innerHTML = '';
+            
+            // Tampilkan data tambahan
+            if (message.type === 'konsultasi' && message.has_feedback) {
+                let feedbacksHtml = '';
+                if (message.feedbacks && message.feedbacks.length > 0) {
+                    feedbacksHtml = message.feedbacks.map(fb => `
+                        <div class="card bg-light mt-2">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between">
+                                    <strong>${fb.name}</strong>
+                                    <div>${fb.rating_stars || getStarsHtml(fb.rating)}</div>
+                                </div>
+                                <p class="mb-0 mt-1">${fb.message}</p>
+                                <small class="text-muted">${fb.created_at}</small>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    feedbacksHtml = '<p class="text-muted">Tidak ada feedback</p>';
+                }
                 
-                // Show modal
-                const modal = new bootstrap.Modal(document.getElementById('viewModal'));
-                modal.show();
-            })
-            .catch(error => {
-                console.error('Error loading message details:', error);
-                alert('Gagal memuat detail pesan.');
+                additionalInfo.innerHTML = `
+                    <hr>
+                    <h6><i class="fas fa-comments me-2"></i>Feedback terkait (${message.feedback_count}):</h6>
+                    ${feedbacksHtml}
+                `;
+            } else if (message.type.includes('feedback') && message.related_consultation) {
+                additionalInfo.innerHTML = `
+                    <hr>
+                    <h6><i class="fas fa-link me-2"></i>Konsultasi Terkait:</h6>
+                    <div class="card bg-light mt-2">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between">
+                                <strong>${message.related_consultation.name}</strong>
+                            </div>
+                            <p class="mb-0 mt-1">${message.related_consultation.message}</p>
+                            <small class="text-muted">${message.related_consultation.created_at}</small>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('viewModal'));
+            modal.show();
+            
+            // Reset modal content saat ditutup
+            modal._element.addEventListener('hidden.bs.modal', function() {
+                additionalInfo.innerHTML = '';
             });
+        })
+        .catch(error => {
+            console.error('Error loading message details:', error);
+            alert('Gagal memuat detail pesan.');
+        });
     }
 
-    // Delete single message
+    // ============================================
+    // FUNGSI: DELETE MESSAGE (EXPOSED TO WINDOW)
+    // ============================================
     window.deleteMessage = function(id, confirmFirst = true) {
-        if (confirmFirst && !confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
+        const messageText = id.startsWith('C-') 
+            ? 'Apakah Anda yakin ingin menghapus konsultasi ini dan semua feedback terkait?' 
+            : 'Apakah Anda yakin ingin menghapus feedback ini?';
+            
+        if (confirmFirst && !confirm(messageText)) {
             return;
         }
         
         const url = deleteMessageUrl.replace(':id', id);
+        
+        console.log('Deleting message:', url);
         
         fetch(url, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Ulasan berhasil dihapus!');
-                loadMessages();
+                alert(data.message);
+                loadMessages(); // Refresh list
+                loadStats(); // Refresh statistics dari server
                 
                 // Close modal if open
                 const modal = bootstrap.Modal.getInstance(document.getElementById('viewModal'));
@@ -739,7 +977,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     modal.hide();
                 }
             } else {
-                alert('Gagal menghapus ulasan: ' + data.message);
+                alert('Gagal menghapus: ' + (data.message || 'Unknown error'));
             }
         })
         .catch(error => {
@@ -748,15 +986,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Select all functionality
+    // ============================================
+    // EVENT LISTENERS FOR SELECT ALL
+    // ============================================
     selectAllCheckbox.addEventListener('change', function() {
         const checkboxes = document.querySelectorAll('.message-checkbox');
         checkboxes.forEach(checkbox => {
             checkbox.checked = this.checked;
             if (this.checked) {
-                selectedMessages.add(parseInt(checkbox.value));
+                selectedMessages.add(checkbox.value);
             } else {
-                selectedMessages.delete(parseInt(checkbox.value));
+                selectedMessages.delete(checkbox.value);
             }
         });
     });
@@ -769,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle individual checkbox clicks
     document.addEventListener('change', function(e) {
         if (e.target.classList.contains('message-checkbox')) {
-            const messageId = parseInt(e.target.value);
+            const messageId = e.target.value;
             if (e.target.checked) {
                 selectedMessages.add(messageId);
             } else {
@@ -779,14 +1019,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Delete selected messages
+    // ============================================
+    // DELETE SELECTED MESSAGES
+    // ============================================
     deleteSelectedBtn.addEventListener('click', function() {
         if (selectedMessages.size === 0) {
-            alert('Pilih ulasan terlebih dahulu!');
+            alert('Pilih pesan terlebih dahulu!');
             return;
         }
         
-        if (!confirm(`Hapus ${selectedMessages.size} ulasan yang dipilih?`)) {
+        if (!confirm(`Hapus ${selectedMessages.size} pesan yang dipilih?`)) {
             return;
         }
         
@@ -797,49 +1039,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': csrfToken
                 }
             });
         });
         
         Promise.all(promises)
             .then(() => {
-                alert('Ulasan berhasil dihapus!');
+                alert('Pesan berhasil dihapus!');
                 loadMessages();
+                loadStats();
                 selectedMessages.clear();
                 selectAllCheckbox.checked = false;
             })
             .catch(error => {
                 console.error('Delete error:', error);
-                alert('Terjadi kesalahan saat menghapus ulasan.');
+                alert('Terjadi kesalahan saat menghapus pesan.');
             });
     });
 
-    // Modal button actions
+    // ============================================
+    // MODAL BUTTON ACTIONS
+    // ============================================
     document.getElementById('deleteSingleBtn').addEventListener('click', function() {
         if (currentViewMessageId) {
             deleteMessage(currentViewMessageId, true);
         }
     });
 
-    // Filter event listeners
+    // ============================================
+    // FILTER EVENT LISTENERS
+    // ============================================
     document.getElementById('startDateFilter').addEventListener('change', filterMessages);
     document.getElementById('endDateFilter').addEventListener('change', filterMessages);
     document.getElementById('ratingFilter').addEventListener('change', filterMessages);
+    document.getElementById('typeFilter').addEventListener('change', filterMessages);
     document.getElementById('sourceFilter').addEventListener('change', filterMessages);
     document.getElementById('searchInput').addEventListener('input', filterMessages);
     document.getElementById('searchBtn').addEventListener('click', filterMessages);
 
-    // Refresh button
+    // ============================================
+    // REFRESH BUTTON
+    // ============================================
     document.getElementById('refreshBtn').addEventListener('click', function() {
         loadMessages();
+        loadStats();
     });
 
-    // Auto refresh every 30 seconds
-    setInterval(loadMessages, 30000);
+    // ============================================
+    // AUTO REFRESH EVERY 30 SECONDS
+    // ============================================
+    setInterval(() => {
+        loadMessages();
+        loadStats();
+    }, 30000);
 
-    // Initial load
-    loadMessages();
+    // ============================================
+    // INITIAL LOAD
+    // ============================================
+    loadStats();    // Load statistics first
+    loadMessages(); // Then load messages
 });
 </script>
 @endsection

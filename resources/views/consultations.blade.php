@@ -56,10 +56,6 @@
         gap: 10px;
     }
 
-    .form-title i {
-        font-size: 1.5rem;
-    }
-
     .form-group {
         margin-bottom: 20px;
     }
@@ -114,10 +110,6 @@
         .services-grid {
             grid-template-columns: 1fr;
         }
-    }
-
-    .service-option {
-        position: relative;
     }
 
     .service-option input {
@@ -190,10 +182,6 @@
         gap: 10px;
     }
 
-    .info-title i {
-        font-size: 1.5rem;
-    }
-
     .info-item {
         display: flex;
         align-items: flex-start;
@@ -263,360 +251,8 @@
         font-size: 1.2rem;
         color: #777;
     }
-</style>
 
-<div class="consultation-container">
-    <div class="container">
-        <div class="page-title">
-            <h1>Konsultasi & Kontak</h1>
-            <p>Hubungi kami untuk konsultasi mengenai hewan peliharaan Anda</p>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle"></i> {{ session('success') }}
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i> 
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                
-            </div>
-        @endif
-
-        <div class="pet-decoration">
-            <i class="fas fa-cat"></i>
-            <i class="fas fa-dog"></i>
-            <i class="fas fa-heart"></i>
-            <i class="fas fa-dove"></i>
-            <i class="fas fa-kiwi-bird"></i>
-        </div>
-
-        <div class="main-content">
-            <div class="form-container">
-                <h2 class="form-title"><i class="fas fa-edit"></i> Form Konsultasi</h2>
-                <form method="POST" action="{{ route('consultations') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label for="name">Nama Lengkap</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap Anda" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Alamat Email</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="contoh@email.com" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="phone">Nomor Telepon/WhatsApp</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-phone"></i>
-                            <input type="text" id="phone" name="phone" value="{{ old('phone') }}" placeholder="08xxxxxxxxxx">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pet_type">Jenis Hewan Peliharaan</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-paw"></i>
-                            <select id="pet_type" name="pet_type" required>
-                                <option value="">-- Pilih Jenis Hewan --</option>
-                                <option value="kucing" {{ old('pet_type') == 'kucing' ? 'selected' : '' }}>Kucing</option>
-                                <option value="anjing" {{ old('pet_type') == 'anjing' ? 'selected' : '' }}>Anjing</option>
-                                <option value="burung" {{ old('pet_type') == 'burung' ? 'selected' : '' }}>Burung</option>
-                                <option value="kelinci" {{ old('pet_type') == 'kelinci' ? 'selected' : '' }}>Kelinci</option>
-                                <option value="hamster" {{ old('pet_type') == 'hamster' ? 'selected' : '' }}>Hamster</option>
-                                <option value="lainnya" {{ old('pet_type') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Layanan yang Diinginkan</label>
-                        <div class="services-grid">
-                            <div class="service-option">
-                                <input type="checkbox" id="service1" name="services[]" value="rawat-inap" {{ is_array(old('services')) && in_array('rawat-inap', old('services')) ? 'checked' : '' }}>
-                                <label for="service1" class="service-label">
-                                    <i class="fas fa-procedures service-icon"></i>
-                                    Rawat Inap
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service2" name="services[]" value="vaksinasi" {{ is_array(old('services')) && in_array('vaksinasi', old('services')) ? 'checked' : '' }}>
-                                <label for="service2" class="service-label">
-                                    <i class="fas fa-syringe service-icon"></i>
-                                    Vaksinasi
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service3" name="services[]" value="konsultasi-umum" {{ is_array(old('services')) && in_array('konsultasi-umum', old('services')) ? 'checked' : '' }}>
-                                <label for="service3" class="service-label">
-                                    <i class="fas fa-stethoscope service-icon"></i>
-                                    Konsultasi Umum
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service4" name="services[]" value="grooming" {{ is_array(old('services')) && in_array('grooming', old('services')) ? 'checked' : '' }}>
-                                <label for="service4" class="service-label">
-                                    <i class="fas fa-bath service-icon"></i>
-                                    Grooming
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service5" name="services[]" value="operasi" {{ is_array(old('services')) && in_array('operasi', old('services')) ? 'checked' : '' }}>
-                                <label for="service5" class="service-label">
-                                    <i class="fas fa-cut service-icon"></i>
-                                    Operasi
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service6" name="services[]" value="pemeriksaan-lab" {{ is_array(old('services')) && in_array('pemeriksaan-lab', old('services')) ? 'checked' : '' }}>
-                                <label for="service6" class="service-label">
-                                    <i class="fas fa-microscope service-icon"></i>
-                                    Pemeriksaan Lab
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service7" name="services[]" value="dental-care" {{ is_array(old('services')) && in_array('dental-care', old('services')) ? 'checked' : '' }}>
-                                <label for="service7" class="service-label">
-                                    <i class="fas fa-tooth service-icon"></i>
-                                    Perawatan Gigi
-                                </label>
-                            </div>
-                            <div class="service-option">
-                                <input type="checkbox" id="service8" name="services[]" value="penitipan" {{ is_array(old('services')) && in_array('penitipan', old('services')) ? 'checked' : '' }}>
-                                <label for="service8" class="service-label">
-                                    <i class="fas fa-home service-icon"></i>
-                                    Penitipan
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="message">Pesan Konsultasi</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-comment-dots"></i>
-                            <textarea id="message" name="message" placeholder="Jelaskan keluhan atau pertanyaan Anda mengenai hewan peliharaan..." required>{{ old('message') }}</textarea>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn-submit">
-                        <i class="fas fa-paper-plane"></i> Kirim Konsultasi
-                    </button>
-                </form>
-            </div>
-            
-            <div class="info-container">
-                <h2 class="info-title"><i class="fas fa-info-circle"></i> Informasi Klinik</h2>
-                
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>Jam Operasional</h3>
-                        <p>Buka Setiap hari</p>
-                        <p>08:00 - 20:00 WIB</p>
-                    </div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>Lokasi Klinik</h3>
-                        <p>l. Tj. Pura No.15, Karanganyar, Indramayu</p>
-                        
-                    </div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-phone-alt"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>Kontak Darurat</h3>
-                        <p>Telepon: (021) 7654-3210</p>
-                    </div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-stethoscope"></i>
-                    </div>
-                    <div class="info-text">
-                        <h3>Layanan Unggulan</h3>
-                        <p>Rawat inap 24 jam, vaksinasi, konsultasi umum, operasi, pemeriksaan lab, scalling gigi, dan penitipan hewan.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<div class="feedback-section">
-    <div class="container">
-        <div class="feedback-header">
-            <h2><i class="fas fa-comments"></i> Ulasan & Testimoni</h2>
-            <p>Bagikan pengalaman Anda menggunakan layanan kami</p>
-        </div>
-        
-        <div class="feedback-container">
-            <!-- Form Feedback -->
-            <div class="feedback-form-container">
-                <h3><i class="fas fa-edit"></i> Beri Ulasan</h3>
-                <form id="feedbackForm">
-                    <div class="form-group">
-                        <label for="feedbackName">Nama Anda</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="feedbackName" name="name" placeholder="Masukkan nama Anda" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Rating</label>
-                        <div class="rating-stars">
-                            <input type="radio" id="star5" name="rating" value="5">
-                            <label for="star5"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star4" name="rating" value="4">
-                            <label for="star4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star3" name="rating" value="3">
-                            <label for="star3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star2" name="rating" value="2">
-                            <label for="star2"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="star1" name="rating" value="1">
-                            <label for="star1"><i class="fas fa-star"></i></label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="feedbackMessage">Ulasan Anda</label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-comment"></i>
-                            <textarea id="feedbackMessage" name="message" placeholder="Bagikan pengalaman Anda menggunakan layanan klinik kami..." required></textarea>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn-submit-feedback">
-                        <i class="fas fa-paper-plane"></i> Kirim Ulasan
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Daftar Feedback -->
-            <div class="feedback-list-container">
-                <h3> Ulasan Pelanggan</h3>
-                <div id="feedbackList" class="feedback-list">
-                    <!-- Feedback akan ditampilkan di sini -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    /* Style untuk section feedback */
-    /* Tambahkan di CSS consultations.blade.php */
-    .loading-feedback {
-    text-align: center;
-    padding: 40px;
-    color: #6a3093;
-}
-
-.loading-feedback .fa-spinner {
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
-
-.error-feedback {
-    text-align: center;
-    padding: 30px;
-    background: #fde8e8;
-    border-radius: 10px;
-    color: #c53030;
-}
-
-.error-feedback small {
-    display: block;
-    margin: 10px 0;
-    color: #777;
-    font-size: 0.9rem;
-}
-
-.btn-retry {
-    background: #6a3093;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px;
-    font-size: 0.9rem;
-}
-
-.btn-retry:hover {
-    background: #8a4dcc;
-}
-.badge-source {
-    display: inline-block;
-    background: #e1d5f5;
-    color: #6a3093;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-left: 10px;
-    vertical-align: middle;
-}
-
-.service-info {
-    display: block;
-    color: #888;
-    font-size: 0.85rem;
-    margin-top: 3px;
-}
-
-.feedback-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-
-.empty-feedback, .error-feedback {
-    text-align: center;
-    padding: 30px;
-    color: #888;
-}
-
-.empty-feedback i, .error-feedback i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
-
-.error-feedback button {
-    background: #6a3093;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
+    /* FEEDBACK SECTION */
     .feedback-section {
         background-color: #f0e6ff;
         padding: 40px 0;
@@ -772,7 +408,6 @@
         padding-right: 40px;
     }
     
-    /* Tombol hapus - dipindahkan ke samping kanan atas */
     .delete-feedback {
         position: absolute;
         top: 20px;
@@ -798,7 +433,69 @@
         background-color: rgba(197, 48, 48, 0.1);
     }
     
-    /* Scrollbar styling */
+    .badge-source {
+        display: inline-block;
+        background: #e1d5f5;
+        color: #6a3093;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+    
+    .loading-feedback {
+        text-align: center;
+        padding: 40px;
+        color: #6a3093;
+    }
+    
+    .loading-feedback .fa-spinner {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+    
+    .error-feedback {
+        text-align: center;
+        padding: 30px;
+        background: #fde8e8;
+        border-radius: 10px;
+        color: #c53030;
+    }
+    
+    .error-feedback small {
+        display: block;
+        margin: 10px 0;
+        color: #777;
+        font-size: 0.9rem;
+    }
+    
+    .btn-retry {
+        background: #6a3093;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-retry:hover {
+        background: #8a4dcc;
+    }
+    
+    .empty-feedback {
+        text-align: center;
+        padding: 30px;
+        color: #888;
+    }
+    
+    .empty-feedback i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
     .feedback-list::-webkit-scrollbar {
         width: 8px;
     }
@@ -817,87 +514,353 @@
         background: #6a3093;
     }
 </style>
+
+<div class="consultation-container">
+    <div class="container">
+        <div class="page-title">
+            <h1>Konsultasi & Kontak</h1>
+            <p>Hubungi kami untuk konsultasi mengenai hewan peliharaan Anda</p>
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> 
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="pet-decoration">
+            <i class="fas fa-cat"></i>
+            <i class="fas fa-dog"></i>
+            <i class="fas fa-heart"></i>
+            <i class="fas fa-dove"></i>
+            <i class="fas fa-kiwi-bird"></i>
+        </div>
+
+        <div class="main-content">
+            <div class="form-container">
+                <h2 class="form-title"><i class="fas fa-edit"></i> Form Konsultasi</h2>
+                <form method="POST" action="{{ route('consultations.store') }}">
+                    @csrf
+                    <div class="form-group">
+                        <label for="name">Nama Lengkap</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Masukkan nama lengkap Anda" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Alamat Email</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Nomor Telepon/WhatsApp</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="text" id="phone" name="phone" value="{{ old('phone') }}" placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pet_type">Jenis Hewan Peliharaan</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-paw"></i>
+                            <select id="pet_type" name="pet_type" required>
+                                <option value="">-- Pilih Jenis Hewan --</option>
+                                <option value="kucing" {{ old('pet_type') == 'kucing' ? 'selected' : '' }}>Kucing</option>
+                                <option value="anjing" {{ old('pet_type') == 'anjing' ? 'selected' : '' }}>Anjing</option>
+                                <option value="burung" {{ old('pet_type') == 'burung' ? 'selected' : '' }}>Burung</option>
+                                <option value="kelinci" {{ old('pet_type') == 'kelinci' ? 'selected' : '' }}>Kelinci</option>
+                                <option value="hamster" {{ old('pet_type') == 'hamster' ? 'selected' : '' }}>Hamster</option>
+                                <option value="lainnya" {{ old('pet_type') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Layanan yang Diinginkan</label>
+                        <div class="services-grid">
+                            <div class="service-option">
+                                <input type="checkbox" id="service1" name="services[]" value="rawat-inap" {{ is_array(old('services')) && in_array('rawat-inap', old('services')) ? 'checked' : '' }}>
+                                <label for="service1" class="service-label">
+                                    <i class="fas fa-procedures service-icon"></i>
+                                    Rawat Inap
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service2" name="services[]" value="vaksinasi" {{ is_array(old('services')) && in_array('vaksinasi', old('services')) ? 'checked' : '' }}>
+                                <label for="service2" class="service-label">
+                                    <i class="fas fa-syringe service-icon"></i>
+                                    Vaksinasi
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service3" name="services[]" value="konsultasi-umum" {{ is_array(old('services')) && in_array('konsultasi-umum', old('services')) ? 'checked' : '' }}>
+                                <label for="service3" class="service-label">
+                                    <i class="fas fa-stethoscope service-icon"></i>
+                                    Konsultasi Umum
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service4" name="services[]" value="grooming" {{ is_array(old('services')) && in_array('grooming', old('services')) ? 'checked' : '' }}>
+                                <label for="service4" class="service-label">
+                                    <i class="fas fa-bath service-icon"></i>
+                                    Grooming
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service5" name="services[]" value="operasi" {{ is_array(old('services')) && in_array('operasi', old('services')) ? 'checked' : '' }}>
+                                <label for="service5" class="service-label">
+                                    <i class="fas fa-cut service-icon"></i>
+                                    Operasi
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service6" name="services[]" value="pemeriksaan-lab" {{ is_array(old('services')) && in_array('pemeriksaan-lab', old('services')) ? 'checked' : '' }}>
+                                <label for="service6" class="service-label">
+                                    <i class="fas fa-microscope service-icon"></i>
+                                    Pemeriksaan Lab
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service7" name="services[]" value="dental-care" {{ is_array(old('services')) && in_array('dental-care', old('services')) ? 'checked' : '' }}>
+                                <label for="service7" class="service-label">
+                                    <i class="fas fa-tooth service-icon"></i>
+                                    Perawatan Gigi
+                                </label>
+                            </div>
+                            <div class="service-option">
+                                <input type="checkbox" id="service8" name="services[]" value="penitipan" {{ is_array(old('services')) && in_array('penitipan', old('services')) ? 'checked' : '' }}>
+                                <label for="service8" class="service-label">
+                                    <i class="fas fa-home service-icon"></i>
+                                    Penitipan
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Pesan Konsultasi</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-comment-dots"></i>
+                            <textarea id="message" name="message" placeholder="Jelaskan keluhan atau pertanyaan Anda mengenai hewan peliharaan..." required>{{ old('message') }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Kirim Konsultasi
+                    </button>
+                </form>
+            </div>
+            
+            <div class="info-container">
+                <h2 class="info-title"><i class="fas fa-info-circle"></i> Informasi Klinik</h2>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>Jam Operasional</h3>
+                        <p>Buka Setiap hari</p>
+                        <p>08:00 - 20:00 WIB</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>Lokasi Klinik</h3>
+                        <p>l. Tj. Pura No.15, Karanganyar, Indramayu</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>Kontak Darurat</h3>
+                        <p>Telepon: (021) 7654-3210</p>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div class="info-text">
+                        <h3>Layanan Unggulan</h3>
+                        <p>Rawat inap 24 jam, vaksinasi, konsultasi umum, operasi, pemeriksaan lab, scalling gigi, dan penitipan hewan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FEEDBACK SECTION -->
+        <div class="feedback-section">
+            <div class="container">
+                <div class="feedback-header">
+                    <h2><i class="fas fa-comments"></i> Ulasan & Testimoni</h2>
+                    <p>Bagikan pengalaman Anda menggunakan layanan kami</p>
+                </div>
+                
+                <div class="feedback-container">
+                    <!-- Form Feedback -->
+                    <div class="feedback-form-container">
+                        <h3><i class="fas fa-edit"></i> Beri Ulasan</h3>
+                        <form id="feedbackForm">
+                            <div class="form-group">
+                                <label for="feedbackName">Nama Anda</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" id="feedbackName" name="name" placeholder="Masukkan nama Anda" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Rating</label>
+                                <div class="rating-stars">
+                                    <input type="radio" id="star5" name="rating" value="5">
+                                    <label for="star5"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <label for="star4"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <label for="star3"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <label for="star2"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <label for="star1"><i class="fas fa-star"></i></label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="feedbackMessage">Ulasan Anda</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-comment"></i>
+                                    <textarea id="feedbackMessage" name="message" placeholder="Bagikan pengalaman Anda menggunakan layanan klinik kami..." required></textarea>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit-feedback">
+                                <i class="fas fa-paper-plane"></i> Kirim Ulasan
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Daftar Feedback -->
+                    <div class="feedback-list-container">
+                        <h3><i class="fas fa-list"></i> Ulasan Pelanggan</h3>
+                        <div id="feedbackList" class="feedback-list">
+                            <div class="loading-feedback">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Memuat ulasan...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Ambil CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Elemen DOM
     const feedbackForm = document.getElementById('feedbackForm');
     const feedbackList = document.getElementById('feedbackList');
     
-    // URLs - PASTIKAN ROUTE INI SESUAI
+    // URLs dari route Laravel
     const feedbackStoreUrl = '{{ route("feedback.consultation.store") }}';
     const feedbackIndexUrl = '{{ route("feedback.index") }}';
     const feedbackDeleteUrl = '{{ route("feedback.destroy", ":id") }}';
     
-    console.log('Feedback URLs:', { 
-        store: feedbackStoreUrl, 
-        index: feedbackIndexUrl,
-        delete: feedbackDeleteUrl 
-    });
+    console.log('Feedback System Initialized');
+    console.log('Store URL:', feedbackStoreUrl);
+    console.log('Index URL:', feedbackIndexUrl);
 
-    // Fungsi untuk memuat feedback dari server (SEMUA FEEDBACK)
+    // ============================================
+    // FUNGSI UNTUK MEMUAT FEEDBACK
+    // ============================================
     function loadFeedbacks() {
-    console.log('Loading feedbacks from:', feedbackIndexUrl);
-    
-    // Tampilkan loading
-    feedbackList.innerHTML = `
-        <div class="loading-feedback">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Memuat ulasan...</p>
-        </div>
-    `;
-    
-    fetch(feedbackIndexUrl, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', [...response.headers.entries()]);
+        console.log('Memuat feedback dari:', feedbackIndexUrl);
         
-        if (!response.ok) {
-            // Coba parse error message
-            return response.text().then(text => {
-                console.error('Response text:', text);
-                throw new Error(`HTTP error! status: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(feedbacks => {
-        console.log('Feedbacks loaded:', feedbacks);
-        
-        // Handle jika response adalah error object
-        if (feedbacks && feedbacks.error) {
-            throw new Error(feedbacks.error);
-        }
-        
-        updateFeedbackList(feedbacks);
-    })
-    .catch(error => {
-        console.error('Error loading feedbacks:', error);
-        console.error('Error stack:', error.stack);
-        
+        // Tampilkan loading
         feedbackList.innerHTML = `
-            <div class="error-feedback">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Gagal memuat ulasan</p>
-                <p><small>Error: ${error.message}</small></p>
-                <p><small>URL: ${feedbackIndexUrl}</small></p>
-                <button onclick="loadFeedbacks()" class="btn-retry">
-                    <i class="fas fa-redo"></i> Coba Lagi
-                </button>
+            <div class="loading-feedback">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Memuat ulasan...</p>
             </div>
         `;
-    });
-}
+        
+        // Fetch data dari server
+        fetch(feedbackIndexUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(feedbacks => {
+            console.log('Feedback diterima:', feedbacks);
+            updateFeedbackList(feedbacks);
+        })
+        .catch(error => {
+            console.error('Error loading feedbacks:', error);
+            
+            feedbackList.innerHTML = `
+                <div class="error-feedback">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Gagal memuat ulasan</p>
+                    <small>${error.message}</small>
+                    <button onclick="window.loadFeedbacks()" class="btn-retry">
+                        <i class="fas fa-redo"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+        });
+    }
     
-    // Update tampilan daftar feedback
+    // ============================================
+    // FUNGSI UNTUK UPDATE DAFTAR FEEDBACK
+    // ============================================
     function updateFeedbackList(feedbacks) {
+        // Kosongkan list
         feedbackList.innerHTML = '';
         
-        if (!feedbacks || feedbacks.length === 0) {
+        // Cek jika feedback kosong atau bukan array
+        if (!feedbacks || !Array.isArray(feedbacks)) {
+            console.error('Data feedback tidak valid:', feedbacks);
+            
             feedbackList.innerHTML = `
                 <div class="empty-feedback">
                     <i class="fas fa-comment-slash"></i>
@@ -907,17 +870,27 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Urutkan berdasarkan tanggal (terbaru dulu)
-        feedbacks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        // Jika tidak ada feedback
+        if (feedbacks.length === 0) {
+            feedbackList.innerHTML = `
+                <div class="empty-feedback">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                </div>
+            `;
+            return;
+        }
         
-        // Tampilkan maksimal 10 feedback
-        feedbacks.slice(0, 10).forEach(feedback => {
+        // Loop melalui feedback dan buat elemen
+        feedbacks.forEach(feedback => {
             const feedbackItem = createFeedbackElement(feedback);
             feedbackList.appendChild(feedbackItem);
         });
     }
     
-    // Buat elemen feedback
+    // ============================================
+    // FUNGSI UNTUK MEMBUAT ELEMEN FEEDBACK
+    // ============================================
     function createFeedbackElement(feedback) {
         const feedbackItem = document.createElement('div');
         feedbackItem.className = 'feedback-item';
@@ -928,29 +901,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const formattedDate = date.toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'long', 
-            year: 'numeric'
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
         
         // Buat bintang rating
         const starsHtml = createStarsHtml(feedback.rating);
         
-        // Tampilkan sumber feedback jika ada
+        // Tampilkan sumber feedback
         const sourceBadge = feedback.source === 'after_service' 
             ? '<span class="badge-source">📋 Dari Layanan</span>' 
             : '<span class="badge-source">💬 Dari Konsultasi</span>';
         
-        // Tampilkan jenis layanan jika ada
-        const serviceInfo = feedback.service_type 
-            ? `<small class="service-info"></small>`
-            : '';
-        
+        // HTML untuk feedback item
         feedbackItem.innerHTML = `
             <div class="feedback-item-header">
                 <div class="feedbacker-info">
                     <h4>${feedback.name}</h4>
                     <div class="feedback-rating">${starsHtml}</div>
                     ${sourceBadge}
-                    ${serviceInfo}
                 </div>
                 <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
                     <i class="fas fa-trash"></i>
@@ -972,7 +942,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return feedbackItem;
     }
     
-    // Buat HTML untuk bintang rating
+    // ============================================
+    // FUNGSI UNTUK MEMBUAT BINTANG RATING
+    // ============================================
     function createStarsHtml(rating) {
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
@@ -983,18 +955,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return starsHtml;
     }
     
-    // Tampilkan pesan error
-    function showErrorMessage(message) {
-        feedbackList.innerHTML = `
-            <div class="error-feedback">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>${message}</p>
-                <button onclick="loadFeedbacks()">Coba Lagi</button>
-            </div>
-        `;
-    }
-    
-    // Fungsi untuk menghapus feedback
+    // ============================================
+    // FUNGSI UNTUK MENGHAPUS FEEDBACK
+    // ============================================
     function deleteFeedback(feedbackId) {
         if (!confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
             return;
@@ -1003,17 +966,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const deleteUrl = feedbackDeleteUrl.replace(':id', feedbackId);
         const feedbackItem = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
         
-        // Tampilkan loading
+        // Tampilkan loading di item yang akan dihapus
         if (feedbackItem) {
             feedbackItem.style.opacity = '0.5';
         }
         
+        // Kirim request DELETE
         fetch(deleteUrl, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         .then(response => response.json())
@@ -1026,7 +990,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Jika tidak ada feedback lagi, tampilkan pesan
                 if (feedbackList.children.length === 0) {
-                    updateFeedbackList([]);
+                    feedbackList.innerHTML = `
+                        <div class="empty-feedback">
+                            <i class="fas fa-comment-slash"></i>
+                            <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                        </div>
+                    `;
                 }
                 
                 alert('Ulasan berhasil dihapus!');
@@ -1046,10 +1015,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Handle form submission feedback dari consultation page
+    // ============================================
+    // HANDLE FORM SUBMISSION
+    // ============================================
     feedbackForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Ambil data dari form
         const name = document.getElementById('feedbackName').value.trim();
         const message = document.getElementById('feedbackMessage').value.trim();
         const ratingInput = document.querySelector('input[name="rating"]:checked');
@@ -1061,16 +1033,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const rating = parseInt(ratingInput.value);
+        
+        // Buat data untuk dikirim
         const formData = {
             name: name,
             rating: rating,
             message: message
         };
         
+        console.log('Mengirim feedback:', formData);
+        
+        // Ambil tombol submit
         const submitBtn = feedbackForm.querySelector('.btn-submit-feedback');
         const originalText = submitBtn.innerHTML;
         
-        // Tampilkan loading
+        // Tampilkan loading di tombol
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
         submitBtn.disabled = true;
         
@@ -1080,22 +1057,42 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
+            
             if (data.success) {
-                // Success
+                // Success - reset form
                 feedbackForm.reset();
+                
+                // Reset rating stars
                 document.querySelectorAll('input[name="rating"]').forEach(radio => {
                     radio.checked = false;
                 });
+                
+                // Tampilkan pesan sukses
                 alert('Terima kasih atas ulasan Anda! ✅');
-                loadFeedbacks(); // Reload feedback list
+                
+                // Muat ulang daftar feedback
+                loadFeedbacks();
             } else {
-                alert('Gagal: ' + (data.message || 'Unknown error'));
+                // Tampilkan error
+                if (data.errors) {
+                    let errorMessages = '';
+                    Object.values(data.errors).forEach(errors => {
+                        errorMessages += errors.join('\n') + '\n';
+                    });
+                    alert('Validasi gagal:\n' + errorMessages);
+                } else {
+                    alert('Gagal mengirim ulasan: ' + (data.message || 'Unknown error'));
+                }
             }
         })
         .catch(error => {
@@ -1103,17 +1100,24 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Terjadi kesalahan jaringan. Coba lagi.');
         })
         .finally(() => {
+            // Reset tombol
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         });
     });
+    
+    // ============================================
+    // INISIALISASI
+    // ============================================
     
     // Muat feedback saat halaman dimuat
     loadFeedbacks();
     
     // Auto refresh setiap 30 detik
     setInterval(loadFeedbacks, 30000);
+    
+    // Expose fungsi ke window untuk debugging
+    window.loadFeedbacks = loadFeedbacks;
 });
 </script>
-</div>
 @endsection

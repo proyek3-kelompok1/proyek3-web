@@ -136,7 +136,7 @@
                         <h5 class="mb-0">Data Pemilik & Hewan</h5>
                     </div>
                     <div class="card-body">
-                        <h6 class="fw-bold text-purple mb-3">Data Pemilik</h6>
+                        {{-- <h6 class="fw-bold text-purple mb-3">Data Pemilik</h6>
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -152,9 +152,9 @@
                                            value="{{ old('email') }}" required>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         
-                        <div class="row mb-4">
+                        {{-- <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="telepon" class="form-label">Nomor Telepon *</label>
@@ -162,7 +162,7 @@
                                            value="{{ old('telepon') }}" required>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <h6 class="fw-bold text-purple mb-3">Data Hewan Peliharaan</h6>
                         <div class="row mb-4">

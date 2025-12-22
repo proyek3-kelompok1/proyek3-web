@@ -102,20 +102,20 @@
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <a href="#" class="btn btn-purple btn-block">
+                        <a href="/admin/admin/doctors/create" class="btn btn-purple btn-block">
                             <i class="fas fa-user-plus me-2"></i>Tambah Dokter
                         </a>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <a href="#" class="btn btn-purple btn-block">
-                            <i class="fas fa-edit me-2"></i>Tulis Artikel
+                        <a href="/admin/admin/education/create" class="btn btn-purple btn-block">
+                            <i class="fas fa-edit me-2"></i>Tulis Education
                         </a>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    {{-- <div class="col-md-6 mb-3">
                         <a href="#" class="btn btn-purple btn-block">
                             <i class="fas fa-image me-2"></i>Upload Galeri
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

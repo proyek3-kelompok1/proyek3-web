@@ -37,6 +37,8 @@ Route::post('/consultations', [ConsultationsController::class, 'store']);
 Route::get('/education/{id}', [EducationController::class, 'show'])->name('education.show');
     // Route untuk lihat antrian
     Route::get('/online-services/queue', [OnlineServiceController::class, 'queue'])->name('online-services.queue');
+    Route::get('/online-services', [OnlineServiceController::class, 'index'])
+        ->name('online-services.index');
     Route::get('/online-services/queue-data', [OnlineServiceController::class, 'getQueueData'])->name('online-services.queue-data');
     Route::post('/online-services/check-my-queue', [OnlineServiceController::class, 'checkMyQueue'])->name('online-services.check-my-queue');
     
@@ -91,7 +93,6 @@ Route::prefix('admin')->group(function () {
     Route::resource('/services', App\Http\Controllers\Admin\ServiceController::class);
     Route::resource('doctors', App\Http\Controllers\Admin\DoctorController::class);
     Route::resource('/posts', App\Http\Controllers\Admin\PostController::class);
-    Route::resource('/galleries', App\Http\Controllers\Admin\GalleryController::class);
 
         Route::get('/', [AdminMessageController::class, 'index'])->name('admin.messages.index');
         Route::get('/api', [AdminMessageController::class, 'api'])->name('admin.messages.api');

@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('service_bookings', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_pemilik');
-            $table->string('email');
-            $table->string('telepon');
+            // $table->string('nama_pemilik');
+            // $table->string('email');
+            // $table->string('telepon');
             $table->string('nama_hewan');
             $table->string('jenis_hewan');
             $table->string('ras');

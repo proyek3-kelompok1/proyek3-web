@@ -25,8 +25,8 @@
             <table class="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Thumbnail</th>
+                        <th>No</th>
+                        <th>Gambar</th>
                         <th>Judul</th>
                         <th>Kategori</th>
                         <th>Tipe</th>
@@ -39,8 +39,10 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            <img src="{{ $education->thumbnail_url }}" alt="{{ $education->title }}" 
-                                 class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                            <img src="{{ asset($education->thumbnail) }}"
+                                alt="{{ $education->title }}"
+                                class="rounded"
+                                style="width:60px;height:60px;object-fit:cover;">
                         </td>
                         <td>
                             <strong>{{ $education->title }}</strong>

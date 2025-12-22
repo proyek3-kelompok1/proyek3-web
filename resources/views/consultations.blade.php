@@ -528,9 +528,7 @@
 </div>
 
 <style>
-    /* Style untuk section feedback */
-    /* Tambahkan di CSS consultations.blade.php */
-    .loading-feedback {
+.loading-feedback {
     text-align: center;
     padding: 40px;
     color: #6a3093;
@@ -617,17 +615,17 @@
     cursor: pointer;
     margin-top: 10px;
 }
-    .feedback-section {
+.feedback-section {
         background-color: #f0e6ff;
         padding: 40px 0;
         margin-top: 40px;
         border-top: 2px solid #e1d5f5;
-    }
+}
     
-    .feedback-header {
+.feedback-header {
         text-align: center;
         margin-bottom: 40px;
-    }
+}
     
     .feedback-header h2 {
         color: #6a3093;

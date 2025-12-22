@@ -89,9 +89,9 @@ class OnlineServiceController extends Controller
     public function book(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nama_pemilik' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'telepon' => 'required|string|max:15',
+            // 'nama_pemilik' => 'required|string|max:255',
+            // 'email' => 'required|email|max:255',
+            // 'telepon' => 'required|string|max:15',
             'nama_hewan' => 'required|string|max:255',
             'jenis_hewan' => 'required|string|max:255',
             'ras' => 'required|string|max:255',
@@ -127,9 +127,9 @@ class OnlineServiceController extends Controller
 
         // Simpan booking
         $booking = ServiceBooking::create([
-            'nama_pemilik' => $request->nama_pemilik,
-            'email' => $request->email,
-            'telepon' => $request->telepon,
+            // 'nama_pemilik' => $request->nama_pemilik,
+            // 'email' => $request->email,
+            // 'telepon' => $request->telepon,
             'nama_hewan' => $request->nama_hewan,
             'jenis_hewan' => $request->jenis_hewan,
             'ras' => $request->ras,

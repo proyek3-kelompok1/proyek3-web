@@ -4,6 +4,120 @@
 
 @section('content')
 <style>
+    /* ===== ABOUT / WHY CHOOSE US ===== */
+.about-why {
+    background: linear-gradient(135deg, #f9f6ff, #ffffff);
+    padding: 80px 0;
+}
+
+.about-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.08);
+}
+
+.about-card ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.about-card i {
+    background: rgba(111,66,193,.1);
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+.about-image {
+    position: relative;
+}
+
+.about-image img {
+    border-radius: 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.2);
+}
+
+.about-image::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #6f42c1, #9b6dff);
+    z-index: -1;
+}
+
+.hero-section {
+    /* background: linear-gradient(135deg, #6f42c1, #9b6dff); */
+    color: #fff;
+    padding: 120px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,.15);
+    border-radius: 50%;
+}
+
+.btn-container a {
+    backdrop-filter: blur(5px);
+    background: rgba(255,255,255,.15);
+}
+
+/* ===== SERVICE CARD ===== */
+.service-card {
+    border: none;
+    border-radius: 20px;
+    transition: all .4s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+/* ===== ABOUT ===== */
+.about-section {
+    background: linear-gradient(180deg, #faf8ff, #ffffff);
+}
+
+/* ===== DOCTOR CARD ===== */
+.doctor-card {
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all .4s ease;
+    box-shadow: 0 15px 30px rgba(0,0,0,.1);
+}
+
+.doctor-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,0,0,.2);
+}
+
+.doctor-card img {
+    transition: transform .4s ease;
+}
+
+.doctor-card:hover img {
+    transform: scale(1.05);
+}
+
+/* ===== SECTION TITLE ===== */
+.text-purple {
+    color: #6f42c1 !important;
+}
 .btn-container {
     display: flex;
     flex-wrap: wrap;
@@ -38,14 +152,13 @@
 
             <h1 class="display-4 fw-bold mb-4">Perawatan Terbaik untuk Sahabat Setia Anda</h1>
             <p class="lead mb-5">Klinik hewan terpercaya dengan pelayanan profesional dan penuh kasih sayang</p>
-<div class="btn-container">
-            {{-- <a href="{{ route('appointments.create') }}" class="btn btn-outline-light btn-lg px-4">Buat Janji Temu</a> --}}
+            <div class="btn-container">
             <a href="{{ url('/services') }}" class="btn btn-outline-light btn-lg px-4">Lihat Layanan</a>
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
             <a href="{{ route('medical-records.index') }}" class="btn btn-outline-light btn-lg px-4">Rekam Medis</a>
             <a href="{{ route('online-services.queue') }}" class="btn btn-outline-light btn-lg px-4">Lihat Antrian</a>
             
-</div>
+            </div>
         </div>
     </section>
 
@@ -104,42 +217,60 @@
 </section>
 
     <!-- Tentang Kami Singkat -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h2 class="fw-bold text-purple mb-4">Mengapa Memilih Klinik DV Pets?</h2>
-                    <p class="mb-4">Kami adalah klinik hewan yang berkomitmen memberikan perawatan terbaik dengan tim dokter hewan berpengalaman dan fasilitas modern.</p>
-                    
+   <section class="about-why">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+
+            <!-- KIRI: TEKS -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="about-card">
+                    <h2 class="fw-bold text-purple mb-4">
+                        Mengapa Memilih Klinik DV Pets?
+                    </h2>
+
+                    <p class="mb-4">
+                        Kami adalah klinik hewan yang berkomitmen memberikan perawatan terbaik
+                        dengan tim dokter hewan berpengalaman dan fasilitas modern.
+                    </p>
+
                     <ul class="list-unstyled">
-                        <li class="mb-3">
-                            <i class="fas fa-check text-purple me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check text-purple me-2 mt-1"></i>
                             Dokter hewan berpengalaman dan bersertifikat
                         </li>
-                        <li class="mb-3">
-                            <i class="fas fa-check text-purple me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check text-purple me-2 mt-1"></i>
                             Peralatan medis modern dan lengkap
                         </li>
-                        <li class="mb-3">
-                            <i class="fas fa-check text-purple me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check text-purple me-2 mt-1"></i>
                             Layanan 24 jam untuk keadaan darurat
                         </li>
-                        <li class="mb-3">
-                            <i class="fas fa-check text-purple me-2"></i>
+                        <li class="mb-3 d-flex align-items-start">
+                            <i class="fas fa-check text-purple me-2 mt-1"></i>
                             Harga transparan dan kompetitif
                         </li>
                     </ul>
-                    
-                    <a href="{{ url('/about') }}" class="btn btn-purple mt-3">Selengkapnya Tentang Kami</a>
-                </div>
-                
-                <div class="col-lg-6">
-                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
-                         alt="Dokter Hewan" class="img-fluid rounded shadow">
+
+                    <a href="{{ url('/about') }}" class="btn btn-purple mt-3">
+                        Selengkapnya Tentang Kami
+                    </a>
                 </div>
             </div>
+
+            <!-- KANAN: GAMBAR -->
+            <div class="col-lg-6 position-relative">
+                <div class="about-image-floating">
+                    <img src="/image/thumbnails/kucing.jpg"
+                         alt="Dokter Hewan"
+                         class="img-fluid">
+                </div>
+            </div>
+
         </div>
-    </section>
+    </div>
+</section>
+
     <!-- Daftar Dokter -->
 <section class="py-5">
     <div class="container text-center">

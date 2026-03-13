@@ -10,16 +10,16 @@ class ServiceBooking extends Model
     use HasFactory;
 
     protected $fillable = [
-        // 'nama_pemilik',
-        // 'email',
-        // 'telepon',
+        'nama_pemilik',
+        'email',
+        'telepon',
         'nama_hewan',
         'jenis_hewan',
         'ras',
         'umur',
         'service_type',
         'service_id',
-        'doctor',
+        'doctor_id',
         'booking_date',
         'booking_time',
         'catatan',
@@ -44,9 +44,9 @@ class ServiceBooking extends Model
     /**
      * Relasi ke Dokter
      */
-    public function doctorInfo()
+    public function doctor()
     {
-        return $this->belongsTo(Doctor::class, 'doctor');
+        return $this->belongsTo(Doctor::class);
     }
 
     /**
@@ -110,8 +110,9 @@ class ServiceBooking extends Model
      */
     public function getDoctorNameAttribute()
     {
-        $doctor = Doctor::find($this->doctor);
-        return $doctor ? $doctor->name . ($doctor->specialization ? ' - ' . $doctor->specialization : '') : $this->doctor;
+        return $this->doctor
+            ? $this->doctor->name . ($this->doctor->specialization ? ' - ' . $this->doctor->specialization : '')
+            : null;
     }
 
     /**
@@ -125,7 +126,7 @@ class ServiceBooking extends Model
             ->orderBy('nomor_antrian')
             ->get();
 
-        $position = $queueToday->search(function($booking) {
+        $position = $queueToday->search(function ($booking) {
             return $booking->id === $this->id;
         });
 

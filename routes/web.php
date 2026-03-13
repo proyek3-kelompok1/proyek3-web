@@ -63,16 +63,16 @@ Route::get('/services/{id}/detail', function ($id) {
 })->name('services.detail');
 
 // =======================
-// CONSULTATIONS & FEEDBACK - PERBAIKAN BESAR DI SINI
+// CONSULTATIONS & FEEDBACK
 // =======================
 Route::get('/consultations', [ConsultationsController::class, 'showForm'])->name('consultations');
 Route::post('/consultations', [ConsultationsController::class, 'store'])->name('consultations.store');
 
 // =======================
-// FEEDBACK ROUTES - INI YANG PERLU DIPERBAIKI
+// FEEDBACK ROUTES
 // =======================
 Route::prefix('feedback')->name('feedback.')->group(function () {
-    // Store feedback dari consultation page (AJAX) - PASTIKAN INI ADA
+    // Store feedback dari consultation page (AJAX)
     Route::post('/consultation/store', [FeedbackController::class, 'storeFromConsultation'])
         ->name('consultation.store');
     
@@ -121,7 +121,7 @@ Route::prefix('online-services')->name('online-services.')->group(function () {
 });
 
 // =======================
-// AUTHENTICATION
+// AUTHENTICATION - USER
 // =======================
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -143,7 +143,7 @@ Route::post('/medical-records', [MedicalRecordController::class, 'store'])->name
 // ADMIN AREA
 // =======================
 Route::prefix('admin')->group(function () {
-    // Authentication
+    // Authentication - ADMIN
     Route::get('/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('admin.login');
     Route::post('/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('admin.login.post');
     Route::post('/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
@@ -206,9 +206,7 @@ Route::prefix('admin')->group(function () {
             Route::put('/{id}', [AdminMedicalRecordController::class, 'update'])->name('update');
         });
         
-        // Messages Management - INI HARUS DIPERBAIKI
-        // Dalam Route::prefix('messages')->name('admin.messages.')->group(function () {
-
+        // Messages Management
         Route::prefix('messages')->name('admin.messages.')->group(function () {
             Route::get('/stats', [AdminMessageController::class, 'stats'])->name('stats');
             Route::get('/', [AdminMessageController::class, 'index'])->name('index');
@@ -222,4 +220,11 @@ Route::prefix('admin')->group(function () {
             Route::get('/', function() { return redirect()->route('admin.dashboard'); })->name('index');
         });
     });
+});
+
+// =======================
+// ROUTE UNTUK DATABASE ERROR (FALLBACK)
+// =======================
+Route::fallback(function () {
+    return response()->view('errors.database', [], 500);
 });

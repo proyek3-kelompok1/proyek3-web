@@ -9,10 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+   public function up()
 {
-    Schema::table('feedbacks', function (Blueprint $table) {
-        $table->boolean('is_read')->default(false)->after('message');
+    Schema::table('service_bookings', function (Blueprint $table) {
+        $table->unsignedBigInteger('doctor_id')->nullable()->after('service_id');
+        $table->foreign('doctor_id')->references('id')->on('doctors')->onDelete('set null');
     });
 }
 
@@ -21,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('feedbacks', function (Blueprint $table) {
+        Schema::table('service_bookings', function (Blueprint $table) {
             //
         });
     }

@@ -23,7 +23,8 @@ class Education extends Model
         'duration',
         'level',
         'reading_time',
-        'is_published'
+        'is_published',
+        'view'
     ];
 
     protected $casts = [

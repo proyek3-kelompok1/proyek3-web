@@ -11,7 +11,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <img src="{{ $education->thumbnail_url }}" alt="{{ $education->title }}" 
+                <img src="{{ asset("storage/" . $education->thumbnail_url) }}" alt="{{ $education->title }}" 
                      class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: cover;">
             </div>
             <div class="col-md-8">

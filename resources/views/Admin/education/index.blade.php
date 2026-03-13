@@ -39,7 +39,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            <img src="{{ asset($education->thumbnail) }}"
+                            <img src="{{ asset("storage/" . $education->thumbnail) }}"
                                 alt="{{ $education->title }}"
                                 class="rounded"
                                 style="width:60px;height:60px;object-fit:cover;">

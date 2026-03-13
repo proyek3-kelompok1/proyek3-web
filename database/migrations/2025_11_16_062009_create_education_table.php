@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('level')->nullable();
             $table->string('reading_time')->nullable();
             $table->boolean('is_published')->default(false);
+            $table->integer('view')->default(0);
             $table->timestamps();
         });
     }

@@ -70,6 +70,23 @@
             box-shadow: 0 4px 10px rgba(157, 78, 221, 0.4);
         }
 
+        .btn-outline-purple {
+            border: 2px solid #9D4EDD;
+            color: #9D4EDD;
+            background: transparent;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-purple:hover {
+            background: #9D4EDD;
+            color: white;
+            transform: translateY(-2px);
+        }
+
         .auth-footer {
             text-align: center;
             margin-top: 20px;
@@ -84,6 +101,19 @@
 
         .auth-footer a:hover {
             text-decoration: underline;
+        }
+
+        .admin-login-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        .admin-login-section p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -110,11 +140,22 @@
             <button type="submit" class="btn btn-primary w-100">Masuk</button>
         </form>
 
+        <!-- Tambahkan tombol login admin di sini -->
+        <div class="admin-login-section">
+            <p>Staff atau Admin?</p>
+            <a href="{{ url('/admin/login') }}" class="btn btn-outline-purple w-100">
+                <i class="fas fa-user-shield me-2"></i>Login sebagai Admin
+            </a>
+        </div>
+
         <div class="auth-footer">
             <p>Belum punya akun? <a href="{{ route('register') }}">Daftar Sekarang</a></p>
         </div>
     </div>
 </div>
+
+<!-- Tambahkan Font Awesome untuk icon -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 </body>
 </html>

@@ -14,7 +14,7 @@ class AuthController extends Controller
         if (Auth::guard('admin')->check()) {
             return redirect('/admin/dashboard');
         }
-        
+
         return view('admin.auth.login');
     }
 
@@ -41,6 +41,6 @@ class AuthController extends Controller
         Auth::guard('admin')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/admin/login');
+        return redirect('/');
     }
 }

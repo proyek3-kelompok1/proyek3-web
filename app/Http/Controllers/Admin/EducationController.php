@@ -101,7 +101,7 @@ class EducationController extends Controller
             if ($education->thumbnail) {
                 Storage::disk('public')->delete($education->thumbnail);
             }
-            
+
             $thumbnailPath = $request->file('thumbnail')->store('education/thumbnails', 'public');
             $validated['thumbnail'] = $thumbnailPath;
         }

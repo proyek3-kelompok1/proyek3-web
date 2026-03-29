@@ -6,7 +6,7 @@
                 <h5 class="fw-bold mb-3">Lokasi Klinik Kami</h5>
                 <div class="map-container-square rounded shadow">
                     <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.925536235237!2d108.3155113143171!3d-6.327564663932123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6ebd8a7d1b2b5f%3A0x7a1b4ef5f5f5f5f5!2sDV%20Pets%20Clinic!5e0!3m2!1sid!2sid!4v1640000000000!5m2!1sid!2sid" 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.4368720994107!2d108.33155197476493!3d-6.337416193652282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6ebfec24d0af95%3A0x692b65c54c4f3a1f!2sKLINIK%20HEWAN%20DV%20PETS%20CLINIC!5e0!3m2!1sid!2sid!4v1774424266483!5m2!1sid!2sid" 
                         width="100%" 
                         height="100%" 
                         style="border:0;" 

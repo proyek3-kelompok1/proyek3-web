@@ -3,59 +3,53 @@
 @section('title', 'Tentang Kami')
 
 @section('content')
-    <section class="py-5 bg-light about-hero text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="fw-bold text-purple mb-4">Tentang Klinik DV Pets</h1>
-                    <p class="lead">Kami berkomitmen memberikan perawatan kesehatan terbaik untuk hewan peliharaan Anda</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="py-5 about-section">
-    <div class="container">
-        <div class="row align-items-start gy-5">
 
-            <!-- KIRI: TEKS -->
-            <div class="col-lg-6">
-                <div class="about-card">
-
-                    <h2 class="fw-bold text-purple mb-3">Tentang Kami</h2>
-
-                    <p class="text-justify mb-4">
-                        Klinik Hewan DV Pets lahir dari kepedulian dan kecintaan kami terhadap
-                        hewan peliharaan yang sudah menjadi bagian dari keluarga.
-                    </p>
-
-                    <p class="text-justify mb-4">
-                        Kami percaya bahwa setiap hewan berhak mendapatkan perawatan yang aman,
-                        nyaman, dan penuh kasih sayang. Berawal dari keinginan untuk menghadirkan
-                        layanan kesehatan hewan yang tidak hanya profesional tetapi juga ramah,
-                        DV Pets hadir sebagai tempat di mana pemilik dan hewan peliharaan merasa
-                        didengar dan dihargai.
-                    </p>
-
-                    <p class="text-justify mb-5">
-                        Dengan dukungan dokter hewan berpengalaman serta fasilitas medis modern,
-                        kami memberikan layanan yang menyeluruh mulai dari pemeriksaan rutin
-                        hingga penanganan medis lanjutan dengan pendekatan yang personal untuk
-                        setiap hewan.
-                    </p>
-                </div>
-            </div>
-
-            <!-- KANAN: GAMBAR -->
-            <!-- KANAN: KOLESA GAMBAR -->
-<div class="col-lg-6">
-    <div class="about-image-collage">
-        <img src="/image/thumbnails/njing.jpg" alt="Hewan 1">
-        <img src="/image/thumbnails/persia.jpg" alt="Hewan 2">
-        <img src="/image/thumbnails/cingg.jpg" alt="Hewan 3">
-        <img src="/image/thumbnails/persiaa.jpg" alt="Hewan 4">
+<section class="py-5 text-center about-hero position-relative">
+    <div class="container position-relative">
+        <h1 class="fw-semibold mb-3">
+            Tentang DV Pets
+        </h1>
+        <p class="text-muted mb-0">
+            Kami berkomitmen memberikan perawatan kesehatan terbaik untuk hewan peliharaan Anda
+        </p>
     </div>
-</div>
+</section>
 
+<section class="py-5 my-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <!-- TEXT -->
+            <div class="col-lg-6">
+                <h3 class="fw-semibold mb-4">Tentang Kami</h3>
+
+                <p class="text-muted">
+                    Klinik Hewan DV Pets lahir dari kepedulian dan kecintaan kami terhadap 
+                    hewan peliharaan yang sudah menjadi bagian dari keluarga.
+                </p>
+
+                <p class="text-muted">
+                    Kami percaya bahwa setiap hewan berhak mendapatkan perawatan yang aman, nyaman, dan penuh kasih sayang. 
+                    Berawal dari keinginan untuk menghadirkan layanan kesehatan hewan yang tidak hanya profesional tetapi juga ramah, 
+                    DV Pets hadir sebagai tempat di mana pemilik dan hewan peliharaan merasa didengar dan dihargai.
+                </p>
+
+                <p class="text-muted">
+                    Dengan dukungan dokter hewan berpengalaman serta fasilitas medis modern, 
+                    kami memberikan layanan yang menyeluruh mulai dari pemeriksaan rutin hingga penanganan medis lanjutan 
+                    dengan pendekatan yang personal untuk setiap hewan.
+                </p>
+            </div>
+
+            <!-- IMAGE -->
+            <div class="col-lg-6">
+                <div class="image-collage">
+                    <img src="/image/thumbnails/njing.jpg" class="img-main">
+                    <img src="/image/thumbnails/persia.jpg" class="img-small top">
+                    <img src="/image/thumbnails/cingg.jpg" class="img-small bottom">
+                    <img src="/image/thumbnails/persiaa.jpg" class="img-small right">
+                </div>
+            </div>
 
         </div>
     </div>
@@ -65,89 +59,132 @@
 
 @push('styles')
 <style>
-/* ===== HERO ABOUT ===== */
-.about-hero {
-    background: linear-gradient(135deg, #6f42c1, #9b6dff);
-    color: white;
-}
+    /* ===== HERO ===== */
+    .about-hero {
+        position: relative;
+        background: linear-gradient(180deg, #f8f6ff, #ffffff);
+        overflow: hidden;
+    }
 
-.about-hero p {
-    color: rgba(255,255,255,.9);
-}
+    .about-hero h1 {
+        color: #6f42c1;
+    }
 
-/* ===== ABOUT CONTENT ===== */
-.about-section {
-    background: linear-gradient(180deg, #f9f6ff, #ffffff);
-}
+    /* efek blur background */
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        background: #6f42c1;
+        opacity: 0.1;
+        filter: blur(100px);
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 
-.about-card {
-    background: #ffffff;
-    padding: 50px;
-    border-radius: 24px;
-    box-shadow: 0 25px 50px rgba(0,0,0,.08);
-}
+    /* ===== TEXT ===== */
+    .text-muted {
+        line-height: 1.8;
+    }
 
-.about-card h2,
-.about-card h5 {
-    position: relative;
-}
+    /* underline */
+    h3::after {
+        content: '';
+        display: block;
+        width: 45px;
+        height: 3px;
+        background: #6f42c1;
+        margin-top: 10px;
+        border-radius: 10px;
+    }
 
-.about-card h2::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 4px;
-    background: #6f42c1;
-    border-radius: 10px;
-    margin-top: 10px;
-}
+    /* ===== IMAGE ===== */
+    .image-collage {
+        position: relative;
+        height: 400px;
+    }
 
-/* ===== LIST MISI ===== */
-.about-card ul {
-    padding-left: 0;
-}
+    .img-main {
+        width: 70%;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,.15);
+        transition: 0.4s ease;
+    }
 
-.about-card ul li {
-    list-style: none;
-    padding-left: 30px;
-    position: relative;
-}
+    .img-small {
+        position: absolute;
+        width: 45%;
+        border-radius: 18px;
+        box-shadow: 0 15px 30px rgba(0,0,0,.12);
+        transition: 0.4s ease;
+    }
 
-.about-card ul li::before {
-    content: "✔";
-    position: absolute;
-    left: 0;
-    color: #6f42c1;
-    font-weight: bold;
-}
+    /* posisi gambar */
+    .img-small.top {
+        top: -20px;
+        right: 0;
+    }
 
-/* ===== IMAGE STYLE ===== */
-.about-image-wrapper {
-    position: relative;
-}
+    .img-small.bottom {
+        bottom: -20px;
+        left: 10%;
+    }
 
-.about-image-wrapper img {
-    border-radius: 30px;
-    box-shadow: 0 30px 60px rgba(0,0,0,.2);
-}
+    .img-small.right {
+        bottom: 20%;
+        right: -10px;
+    }
 
-.about-image-wrapper::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #6f42c1, #9b6dff);
-    border-radius: 30px;
-    z-index: -1;
-}
+    /* hover */
+    .image-collage img:hover {
+        transform: translateY(-5px) scale(1.03);
+    }
 
-/* ===== TEXT ===== */
-.text-justify {
-    text-align: justify;
-    text-justify: inter-word;
-}
+    /* ===== ANIMASI ===== */
+    .image-collage img {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .image-collage img:nth-child(1) { animation-delay: 0.2s; }
+    .image-collage img:nth-child(2) { animation-delay: 0.4s; }
+    .image-collage img:nth-child(3) { animation-delay: 0.6s; }
+    .image-collage img:nth-child(4) { animation-delay: 0.8s; }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 991px) {
+
+        .image-collage {
+            position: static;
+            height: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .image-collage img {
+            position: static !important;
+            width: 100%;
+            opacity: 1 !important;
+            transform: none !important;
+            animation: none !important;
+            border-radius: 14px;
+        }
+
+        .img-main,
+        .img-small {
+            width: 100%;
+        }
+    }
 </style>
 @endpush
-

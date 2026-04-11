@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('Admin.layouts.App')
 
 @section('title', 'Kelola Antrian - Admin DV Pets')
 

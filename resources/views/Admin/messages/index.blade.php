@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Hitung 5-star feedbacks
-        const fiveStarCount = allMessages.filter(msg => msg.rating === 5).length;
+        // const fiveStarCount = allMessages.filter(msg => msg.rating === 5).length;
         
         // Update tampilan
         totalMessages.textContent = allMessages.length;
@@ -495,11 +495,11 @@ document.addEventListener('DOMContentLoaded', function() {
         totalFeedbacks.textContent = feedbacks;
         
         // Update judul five star messages
-        const fiveStarElement = document.querySelector('.col-md-3:nth-child(3) .card-title');
-        if (fiveStarElement) {
-            fiveStarElement.textContent = 'Feedback 5 Bintang';
-            document.getElementById('fiveStarMessages').textContent = fiveStarCount;
-        }
+        // const fiveStarElement = document.querySelector('.col-md-3:nth-child(3) .card-title');
+        // if (fiveStarElement) {
+        //     fiveStarElement.textContent = 'Feedback 5 Bintang';
+        //     document.getElementById('fiveStarMessages').textContent = fiveStarCount;
+        // }
     }
 
     // ============================================

@@ -915,6 +915,39 @@ document.addEventListener('DOMContentLoaded', function() {
             : '<span class="badge-source">💬 Dari Konsultasi</span>';
         
         // HTML untuk feedback item
+
+        // feedbackItem.innerHTML = `
+        //     <div class="feedback-item-header">
+        //         <div class="feedbacker-info">
+        //             <h4>${feedback.name}</h4>
+        //             <div class="feedback-rating">${starsHtml}</div>
+        //             ${sourceBadge}
+        //         </div>
+        //         <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
+        //             <i class="fas fa-trash"></i>
+        //         </button>
+        //     </div>
+        //     <p class="feedback-text">${feedback.message}</p>
+        //     <div class="feedback-footer">
+        //         <small class="feedback-date">${formattedDate}</small>
+        //     </div>
+        // `;
+        
+        // Tambahkan event listener untuk tombol hapus
+        // const deleteBtn = feedbackItem.querySelector('.delete-feedback');
+        // deleteBtn.addEventListener('click', function(e) {
+        //     e.stopPropagation();
+        //     deleteFeedback(feedback.id);
+        // });
+        
+        // Tombol hapus hanya muncul jika milik user ini
+        const deleteBtn = feedback.can_delete 
+            ? `<button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
+                   <i class="fas fa-trash"></i>
+               </button>` 
+            : '';
+
+        // HTML untuk feedback item
         feedbackItem.innerHTML = `
             <div class="feedback-item-header">
                 <div class="feedbacker-info">
@@ -922,23 +955,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="feedback-rating">${starsHtml}</div>
                     ${sourceBadge}
                 </div>
-                <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
-                    <i class="fas fa-trash"></i>
-                </button>
+                ${deleteBtn}
             </div>
             <p class="feedback-text">${feedback.message}</p>
             <div class="feedback-footer">
                 <small class="feedback-date">${formattedDate}</small>
             </div>
         `;
-        
-        // Tambahkan event listener untuk tombol hapus
-        const deleteBtn = feedbackItem.querySelector('.delete-feedback');
-        deleteBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            deleteFeedback(feedback.id);
-        });
-        
+
+        // Event listener hanya dipasang jika tombol ada
+        if (feedback.can_delete) {
+            const deleteBtnEl = feedbackItem.querySelector('.delete-feedback');
+            deleteBtnEl.addEventListener('click', function(e) {
+                e.stopPropagation();
+                deleteFeedback(feedback.id);
+            });
+        }
+
         return feedbackItem;
     }
     
@@ -1000,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 alert('Ulasan berhasil dihapus!');
             } else {
-                alert('Gagal menghapus ulasan: ' + (data.message || 'Unknown error'));
+                alert(data.message || 'Gagal menghapus ulasan.');
                 if (feedbackItem) {
                     feedbackItem.style.opacity = '1';
                 }

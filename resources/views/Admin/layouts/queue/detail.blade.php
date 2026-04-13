@@ -67,13 +67,14 @@
             <tr>
                 <th>Dokter</th>
                 <td>
-                    @php
-                        $doctorNames = [
-                            'drh_roza' => 'drh. Roza Albate Chandra Adila',
-                            'drh_arundhina' => 'drh. Arundhina Girishanta M.Si',
-                        ];
-                    @endphp
-                    {{ $doctorNames[$booking->doctor] ?? $booking->doctor ?? '-' }}
+                    @if($booking->doctor)
+                        {{ $booking->doctor->name }}
+                        @if($booking->doctor->specialization)
+                            <small class="text-muted">- {{ $booking->doctor->specialization }}</small>
+                        @endif
+                    @else
+                        <span class="text-muted">-</span>
+                    @endif
                 </td>
             </tr>
             <tr>

@@ -16,7 +16,7 @@ class OnlineServiceController extends Controller
             ->orderBy('order')
             ->orderBy('name')
             ->get();
-        
+
         // AMBIL DATA DOKTER DARI DATABASE
         $doctors = Doctor::all()
             ->mapWithKeys(function ($doctor) {
@@ -43,10 +43,7 @@ class OnlineServiceController extends Controller
      */
     public function book(Request $request)
     {
-        // Debug: Lihat data yang dikirim
-        // dd($request->all());
-        
-        // Validasi yang lebih sederhana
+        // Validasi
         $validator = Validator::make($request->all(), [
             'nama_pemilik' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -85,12 +82,7 @@ class OnlineServiceController extends Controller
                 ->withInput();
         }
 
-        // Generate nomor antrian
-        $nomorAntrian = ServiceBooking::whereDate('booking_date', $request->booking_date)
-                                     ->where('service_id', $service->id)
-                                     ->count() + 1;
-
-        // Generate kode booking
+        // Generate kode booking yang UNIK
         $serviceKode = [
             'general' => 'KON',
             'vaccination' => 'VKS',
@@ -101,9 +93,34 @@ class OnlineServiceController extends Controller
             'inpatient' => 'RWT',
             'emergency' => 'DGL'
         ];
-        
+
         $kodeService = $serviceKode[$service->service_type] ?? 'SV';
-        $bookingCode = $kodeService . date('Ymd', strtotime($request->booking_date)) . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
+        $dateCode = date('Ymd', strtotime($request->booking_date));
+
+        // ══════════════════════════════════════════════════════
+        //  FIX: Cari nomor terakhir berdasarkan booking_code
+        //  agar tidak terjadi duplikat
+        // ══════════════════════════════════════════════════════
+        $prefix = $kodeService . $dateCode;
+
+        $lastBooking = ServiceBooking::where('booking_code', 'like', $prefix . '%')
+            ->orderByRaw('CAST(SUBSTRING(booking_code, ' . (strlen($prefix) + 1) . ') AS UNSIGNED) DESC')
+            ->first();
+
+        if ($lastBooking) {
+            $lastNumber = (int) substr($lastBooking->booking_code, strlen($prefix));
+            $nomorAntrian = $lastNumber + 1;
+        } else {
+            $nomorAntrian = 1;
+        }
+
+        $bookingCode = $prefix . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
+
+        // Double check — kalau masih duplikat, increment terus
+        while (ServiceBooking::where('booking_code', $bookingCode)->exists()) {
+            $nomorAntrian++;
+            $bookingCode = $prefix . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
+        }
 
         // Simpan ke database
         try {
@@ -117,7 +134,7 @@ class OnlineServiceController extends Controller
                 'umur' => $request->umur,
                 'service_type' => $service->service_type,
                 'service_id' => $service->id,
-                'doctor' => $doctor->id,
+                'doctor_id' => $doctor->id,
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
                 'catatan' => $request->catatan,
@@ -159,15 +176,22 @@ class OnlineServiceController extends Controller
 
         // Default available hours
         $availableHours = [
-            '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'
+            '09:00',
+            '10:00',
+            '11:00',
+            '13:00',
+            '14:00',
+            '15:00',
+            '16:00',
+            '17:00'
         ];
 
         // Cek jam yang sudah dibooking
         $bookedHours = ServiceBooking::whereDate('booking_date', $selectedDate)
-                                   ->where('doctor', $doctorId)
-                                   ->whereIn('status', ['pending', 'confirmed'])
-                                   ->pluck('booking_time')
-                                   ->toArray();
+            ->where('doctor_id', $doctorId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->pluck('booking_time')
+            ->toArray();
 
         $availableHours = array_diff($availableHours, $bookedHours);
 
@@ -175,26 +199,17 @@ class OnlineServiceController extends Controller
             'available_hours' => array_values($availableHours)
         ]);
     }
-    
-    // Method untuk menampilkan antrian
+
     public function queue()
     {
         return view('online-services.queue');
     }
-    
-    /**
-     * Method untuk mendapatkan data antrian (PUBLIC VIEW)
-     */
+
     public function getQueueData(Request $request)
     {
         try {
             $date = $request->get('date', now()->format('Y-m-d'));
             $serviceType = $request->get('service_type');
-
-            \Log::info('Public Queue Data Request:', [
-                'date' => $date,
-                'service_type' => $serviceType
-            ]);
 
             $query = ServiceBooking::whereDate('booking_date', $date);
 
@@ -204,22 +219,12 @@ class OnlineServiceController extends Controller
 
             $bookings = $query->orderBy('nomor_antrian')->get();
 
-            // Hitung statistik
             $totalQueue = $bookings->whereIn('status', ['pending', 'confirmed'])->count();
             $currentServing = $bookings->where('status', 'confirmed')->first();
             $waitingCount = $bookings->where('status', 'pending')->count();
             $completedCount = $bookings->where('status', 'completed')->count();
             $cancelledCount = $bookings->where('status', 'cancelled')->count();
-            
-            // Estimasi waktu tunggu (15 menit per antrian)
             $estimatedWait = $waitingCount * 15;
-
-            \Log::info('Public Queue Data Found:', [
-                'date' => $date,
-                'total_bookings' => $bookings->count(),
-                'total_queue' => $totalQueue,
-                'current_serving' => $currentServing ? $currentServing->nomor_antrian : null
-            ]);
 
             return response()->json([
                 'success' => true,
@@ -236,11 +241,6 @@ class OnlineServiceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error in getQueueData:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
             return response()->json([
                 'success' => false,
                 'message' => 'Error loading queue data',
@@ -256,10 +256,7 @@ class OnlineServiceController extends Controller
             ], 500);
         }
     }
-    
-    /**
-     * Method untuk cek antrian saya (pencarian berdasarkan kode booking)
-     */
+
     public function checkMyQueue(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -274,42 +271,39 @@ class OnlineServiceController extends Controller
         }
 
         $bookingCode = $request->get('booking_code');
-        
         $booking = ServiceBooking::where('booking_code', $bookingCode)->first();
-        
+
         if (!$booking) {
             return response()->json([
                 'success' => false,
                 'message' => 'Kode booking tidak ditemukan'
             ]);
         }
-        
-        // Hitung posisi antrian
+
         $queueToday = ServiceBooking::whereDate('booking_date', $booking->booking_date)
             ->where('service_type', $booking->service_type)
             ->whereIn('status', ['pending', 'confirmed'])
             ->orderBy('nomor_antrian')
             ->get();
-        
-        $position = $queueToday->search(function($item) use ($booking) {
+
+        $position = $queueToday->search(function ($item) use ($booking) {
             return $item->id === $booking->id;
         });
-        
+
         $currentServing = ServiceBooking::whereDate('booking_date', $booking->booking_date)
             ->where('service_type', $booking->service_type)
             ->where('status', 'confirmed')
             ->orderBy('nomor_antrian')
             ->first();
-        
+
         $waitingBefore = ServiceBooking::whereDate('booking_date', $booking->booking_date)
             ->where('service_type', $booking->service_type)
             ->where('status', 'pending')
             ->where('nomor_antrian', '<', $booking->nomor_antrian)
             ->count();
-        
-        // Estimasi waktu tunggu (15 menit per antrian)
+
         $estimatedWaitMinutes = $waitingBefore * 15;
-        
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -325,23 +319,8 @@ class OnlineServiceController extends Controller
         ]);
     }
 
-    /**
-     * Method untuk mendapatkan posisi antrian (API endpoint)
-     */
     public function getQueuePosition(Request $request)
     {
-        $bookingCode = $request->get('booking_code');
-        
-        $booking = ServiceBooking::where('booking_code', $bookingCode)->first();
-        
-        if (!$booking) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode booking tidak ditemukan'
-            ]);
-        }
-        
-        // Gunakan method yang sama dengan checkMyQueue
         return $this->checkMyQueue($request);
     }
 }

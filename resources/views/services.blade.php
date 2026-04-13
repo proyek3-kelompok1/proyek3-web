@@ -106,6 +106,10 @@
     </div>
 
     <style>
+        body {
+            padding-top: 80px;
+        }
+
         .service-card {
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -192,59 +196,59 @@
                         document.getElementById('serviceModalLabel').textContent = data.service.name;
 
                         let content = `
-                                <div class="service-detail">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="d-flex align-items-center mb-4">
-                                                <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                                    <i class="${data.service.icon} text-white fa-lg"></i>
+                                    <div class="service-detail">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="d-flex align-items-center mb-4">
+                                                    <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                                        <i class="${data.service.icon} text-white fa-lg"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-1">${data.service.name}</h5>
+                                                        <span class="badge bg-info">${data.service.service_type_label}</span>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h5 class="mb-1">${data.service.name}</h5>
-                                                    <span class="badge bg-info">${data.service.service_type_label}</span>
+
+                                                <p class="lead">${data.service.description}</p>
+
+                                                <div class="row mb-4">
+                                                    ${data.service.price ? `
+                                                    <div class="col-md-6">
+                                                        <div class="info-box p-3 bg-light rounded mb-3">
+                                                            <strong>💰 Harga:</strong>
+                                                            <div class="fs-4 text-purple fw-bold mt-1">${data.service.formatted_price}</div>
+                                                        </div>
+                                                    </div>
+                                                    ` : ''}
+
+                                                    ${data.service.duration_minutes ? `
+                                                    <div class="col-md-6">
+                                                        <div class="info-box p-3 bg-light rounded mb-3">
+                                                            <strong>⏱️ Durasi:</strong>
+                                                            <div class="fs-4 fw-bold mt-1">${data.service.formatted_duration}</div>
+                                                        </div>
+                                                    </div>
+                                                    ` : ''}
                                                 </div>
                                             </div>
-
-                                            <p class="lead">${data.service.description}</p>
-
-                                            <div class="row mb-4">
-                                                ${data.service.price ? `
-                                                <div class="col-md-6">
-                                                    <div class="info-box p-3 bg-light rounded mb-3">
-                                                        <strong>💰 Harga:</strong>
-                                                        <div class="fs-4 text-purple fw-bold mt-1">${data.service.formatted_price}</div>
+                                            <div class="col-md-4">
+                                                <div class="card bg-light">
+                                                    <div class="card-body text-center">
+                                                        <i class="${data.service.icon} fa-4x text-purple mb-3"></i>
+                                                        <h6>Icon Layanan</h6>
                                                     </div>
                                                 </div>
-                                                ` : ''}
-
-                                                ${data.service.duration_minutes ? `
-                                                <div class="col-md-6">
-                                                    <div class="info-box p-3 bg-light rounded mb-3">
-                                                        <strong>⏱️ Durasi:</strong>
-                                                        <div class="fs-4 fw-bold mt-1">${data.service.formatted_duration}</div>
-                                                    </div>
-                                                </div>
-                                                ` : ''}
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light">
-                                                <div class="card-body text-center">
-                                                    <i class="${data.service.icon} fa-4x text-purple mb-3"></i>
-                                                    <h6>Icon Layanan</h6>
-                                                </div>
+
+                                        <div class="mt-4">
+                                            <h5 class="text-purple mb-3">📋 Detail Layanan</h5>
+                                            <div class="bg-light p-4 rounded">
+                                                ${data.service.details.replace(/\n/g, '<br>')}
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="mt-4">
-                                        <h5 class="text-purple mb-3">📋 Detail Layanan</h5>
-                                        <div class="bg-light p-4 rounded">
-                                            ${data.service.details.replace(/\n/g, '<br>')}
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
+                                `;
 
                         document.getElementById('serviceContent').innerHTML = content;
                         const modal = new bootstrap.Modal(document.getElementById('serviceModal'));

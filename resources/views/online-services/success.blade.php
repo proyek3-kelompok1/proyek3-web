@@ -45,11 +45,11 @@
                                         <p class="mb-1"><strong>Layanan:</strong> {{ $service->name }}</p>
                                         <p class="mb-1"><strong>Dokter:</strong> 
                                             @php
-                                                // Cari dokter berdasarkan ID
-                                                $doctor = \App\Models\Doctor::find($booking->doctor);
+                                                // Cari dokter berdasarkan doctor_id
+                                                $doctorData = \App\Models\Doctor::find($booking->doctor_id);
                                             @endphp
-                                            @if($doctor)
-                                                {{ $doctor->name }} @if($doctor->specialization) - {{ $doctor->specialization }} @endif
+                                            @if($doctorData)
+                                                {{ $doctorData->name }} @if($doctorData->specialization) - {{ $doctorData->specialization }} @endif
                                             @else
                                                 Dokter tidak ditemukan
                                             @endif

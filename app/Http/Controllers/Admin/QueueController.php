@@ -166,7 +166,7 @@ class QueueController extends Controller
      */
     public function showDetail($id)
     {
-        $booking = ServiceBooking::with(['service', 'doctorInfo'])->findOrFail($id);
+        $booking = ServiceBooking::with(['service', 'doctor'])->findOrFail($id);
         
         // Tambahkan informasi rekam medis
         $booking->has_medical_record = $booking->medicalRecords()->exists();
@@ -179,7 +179,7 @@ class QueueController extends Controller
      */
     public function show($id)
     {
-        $booking = ServiceBooking::with(['service', 'doctorInfo'])->findOrFail($id);
+        $booking = ServiceBooking::with(['service', 'doctor'])->findOrFail($id);
         return view('admin.queue.show', compact('booking'));
     }
 

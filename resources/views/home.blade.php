@@ -4,142 +4,108 @@
 
 @section('content')
 <style>
-    /* ===== ABOUT / WHY CHOOSE US ===== */
-.about-why {
-    background: linear-gradient(135deg, #f9f6ff, #ffffff);
-    padding: 80px 0;
-}
+    /* ===== SECTION WRAPPER ===== */
+    .section-soft {
+        background: #f8f9fc;
+        padding: 80px 0;
+    }
 
-.about-card {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(0,0,0,.08);
-}
+    /* ===== CARD CLEAN ===== */
+    .clean-card {
+        border: none;
+        border-radius: 18px;
+        padding: 18px;
+        background: #fff;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        transition: all .3s ease;
+    }
 
-.about-card ul li {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
+    .clean-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
 
-.about-card i {
-    background: rgba(111,66,193,.1);
-    padding: 8px;
-    border-radius: 50%;
-    font-size: 14px;
-}
+    /* ===== ICON STYLE ===== */
+    .icon-soft {
+        width: 55px;
+        height: 55px;
+        border-radius: 12px;
+        background: rgba(111,66,193,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6f42c1;
+        font-size: 20px;
+    }
 
-.about-image {
-    position: relative;
-}
+    /* ===== ABOUT IMAGE ===== */
+    .about-img-card img {
+        border-radius: 20px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
-.about-image img {
-    border-radius: 30px;
-    box-shadow: 0 30px 60px rgba(0,0,0,.2);
-}
+    /* ===== DOCTOR CARD ===== */
+    .doctor-card {
+        border: none;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 10px 25px rgba(0,0,0,.05);
+        transition: all .3s ease;
+    }
 
-.about-image::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    width: 100%;
-    height: 100%;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #6f42c1, #9b6dff);
-    z-index: -1;
-}
+    .doctor-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(0,0,0,.08);
+    }
 
-.hero-section {
-    /* background: linear-gradient(135deg, #6f42c1, #9b6dff); */
-    color: #fff;
-    padding: 120px 0;
-    position: relative;
-    overflow: hidden;
-}
+    .doctor-card img {
+        width: 100%;
+        aspect-ratio: 4 / 4;
+        object-fit: cover;
+    }
 
-.hero-section::after {
-    content: '';
-    position: absolute;
-    top: -100px;
-    right: -100px;
-    width: 300px;
-    height: 300px;
-    background: rgba(255,255,255,.15);
-    border-radius: 50%;
-}
+    .doctor-info {
+        padding: 20px;
+    }
 
-.btn-container a {
-    backdrop-filter: blur(5px);
-    background: rgba(255,255,255,.15);
-}
+    /* ===== TEXT ===== */
+    .text-purple {
+        color: #6f42c1;
+    }
 
-/* ===== SERVICE CARD ===== */
-.service-card {
-    border: none;
-    border-radius: 20px;
-    transition: all .4s ease;
-    box-shadow: 0 10px 25px rgba(0,0,0,.08);
-}
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
 
-.service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,.15);
-}
+    .section-subtitle {
+        color: #6c757d;
+        font-size: 15px;
+    }
 
-/* ===== ABOUT ===== */
-.about-section {
-    background: linear-gradient(180deg, #faf8ff, #ffffff);
-}
-
-/* ===== DOCTOR CARD ===== */
-.doctor-card {
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all .4s ease;
-    box-shadow: 0 15px 30px rgba(0,0,0,.1);
-}
-
-.doctor-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 30px 60px rgba(0,0,0,.2);
-}
-
-.doctor-card img {
-    transition: transform .4s ease;
-}
-
-.doctor-card:hover img {
-    transform: scale(1.05);
-}
-
-/* ===== SECTION TITLE ===== */
-.text-purple {
-    color: #6f42c1 !important;
-}
-.btn-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.btn-container a {
-    padding: 12px 25px;
-    border-radius: 10px;
-    border: 2px solid #fff;
-    color: #fff;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn-container a:hover {
-    background-color: #fff;
-    color: #6f42c1; /* ungu lembut biar serasi */
-    transform: scale(1.05);
-}
+    /* Hero Buttons */
+    .btn-container { 
+        display: flex; 
+        flex-wrap: wrap; 
+        justify-content: center; 
+        gap: 15px; 
+        margin-top: 20px; 
+    }
+    .btn-container a { 
+        padding: 12px 25px; 
+        border-radius: 10px; 
+        border: 2px solid #fff; 
+        color: #fff; 
+        font-weight: 500; 
+        transition: all 0.3s ease; 
+    }
+    .btn-container a:hover { 
+        background-color: #fff; 
+        color: #6f42c1; /* ungu lembut biar serasi */ 
+        transform: scale(1.05); 
+    }
 </style>
 
     <!-- Hero Section -->
@@ -157,159 +123,198 @@
             <a href="{{ route('online-services.index') }}" class="btn btn-outline-light btn-lg px-4">Pemesanan Layanan Online</a>
             <a href="{{ route('medical-records.index') }}" class="btn btn-outline-light btn-lg px-4">Rekam Medis</a>
             <a href="{{ route('online-services.queue') }}" class="btn btn-outline-light btn-lg px-4">Lihat Antrian</a>
-            
             </div>
         </div>
     </section>
 
     <!-- Layanan Unggulan -->
-<section class="py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold text-purple">Layanan Unggulan Kami</h2>
-            <p class="text-muted">Berbagai layanan kesehatan hewan dengan standar tertinggi</p>
-        </div>
-        
-        <div class="row g-4">
-            <!-- Konsultasi Umum -->
-            <div class="col-md-4">
-                <div class="card service-card h-100 text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                             style="width: 80px; height: 80px;">
-                            <i class="fas fa-stethoscope text-white fs-3"></i>
-                        </div>
-                        <h5 class="card-title fw-bold text-purple">Konsultasi Umum</h5>
-                        <p class="card-text">Pemeriksaan kesehatan rutin dan konsultasi untuk hewan peliharaan Anda.</p>
-                    </div>
-                </div>
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-purple">Layanan Unggulan Kami</h2>
+                <p class="text-muted">Berbagai layanan kesehatan hewan dengan standar tertinggi</p>
             </div>
             
-            <!-- Vaksinasi -->
-            <div class="col-md-4">
-                <div class="card service-card h-100 text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                             style="width: 80px; height: 80px;">
-                            <i class="fas fa-syringe text-white fs-3"></i>
+            <div class="row g-4">
+                <!-- Konsultasi Umum -->
+                <div class="col-md-4">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-stethoscope text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-purple">Konsultasi Umum</h5>
+                            <p class="card-text">Pemeriksaan kesehatan rutin dan konsultasi untuk hewan peliharaan Anda.</p>
                         </div>
-                        <h5 class="card-title fw-bold text-purple">Vaksinasi</h5>
-                        <p class="card-text">Program vaksinasi lengkap untuk melindungi hewan dari berbagai penyakit.</p>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Perawatan Gigi -->
-            <div class="col-md-4">
-                <div class="card service-card h-100 text-center p-4">
-                    <div class="card-body">
-                        <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                             style="width: 80px; height: 80px;">
-                            <i class="fas fa-tooth text-white fs-3"></i>
+                
+                <!-- Vaksinasi -->
+                <div class="col-md-4">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-syringe text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-purple">Vaksinasi</h5>
+                            <p class="card-text">Program vaksinasi lengkap untuk melindungi hewan dari berbagai penyakit.</p>
                         </div>
-                        <h5 class="card-title fw-bold text-purple">Perawatan Gigi</h5>
-                        <p class="card-text">Pembersihan gigi dan perawatan kesehatan mulut untuk hewan kesayangan.</p>
+                    </div>
+                </div>
+                
+                <!-- Perawatan Gigi -->
+                <div class="col-md-4">
+                    <div class="card service-card h-100 text-center p-4">
+                        <div class="card-body">
+                            <div class="bg-purple rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-tooth text-white fs-3"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-purple">Perawatan Gigi</h5>
+                            <p class="card-text">Pembersihan gigi dan perawatan kesehatan mulut untuk hewan kesayangan.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Tentang Kami Singkat -->
-   <section class="about-why">
-    <div class="container position-relative">
-        <div class="row align-items-center">
+    <section class="section-soft">
+        <div class="container">
+            <div class="row align-items-stretch g-5">
 
-            <!-- KIRI: TEKS -->
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="about-card">
-                    <h2 class="fw-bold text-purple mb-4">
-                        Mengapa Memilih Klinik DV Pets?
+                <!-- TEXT -->
+                <div class="col-lg-6">
+                    <h2 class="section-title text-purple">
+                        Mengapa Memilih DV Pets?
                     </h2>
-
-                    <p class="mb-4">
-                        Kami adalah klinik hewan yang berkomitmen memberikan perawatan terbaik
-                        dengan tim dokter hewan berpengalaman dan fasilitas modern.
+                    <p class="section-subtitle mb-4">
+                        Kami menghadirkan layanan kesehatan hewan yang profesional, nyaman, dan terpercaya.
                     </p>
 
-                    <ul class="list-unstyled">
-                        <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-check text-purple me-2 mt-1"></i>
-                            Dokter hewan berpengalaman dan bersertifikat
-                        </li>
-                        <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-check text-purple me-2 mt-1"></i>
-                            Peralatan medis modern dan lengkap
-                        </li>
-                        <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-check text-purple me-2 mt-1"></i>
-                            Layanan 24 jam untuk keadaan darurat
-                        </li>
-                        <li class="mb-3 d-flex align-items-start">
-                            <i class="fas fa-check text-purple me-2 mt-1"></i>
-                            Harga transparan dan kompetitif
-                        </li>
-                    </ul>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="clean-card d-flex gap-3">
+                                <div class="icon-soft">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold">Dokter Profesional</h6>
+                                    <small class="text-muted">Berpengalaman & bersertifikat</small>
+                                </div>
+                            </div>
+                        </div>
 
-                    <a href="{{ url('/about') }}" class="btn btn-purple mt-3">
-                        Selengkapnya Tentang Kami
+                        <div class="col-6">
+                            <div class="clean-card d-flex gap-3">
+                                <div class="icon-soft">
+                                    <i class="fas fa-clinic-medical"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold">Fasilitas Modern</h6>
+                                    <small class="text-muted">Peralatan lengkap & terbaru</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="clean-card d-flex gap-3">
+                                <div class="icon-soft">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold">Layanan Cepat</h6>
+                                    <small class="text-muted">Responsif & efisien</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="clean-card d-flex gap-3">
+                                <div class="icon-soft">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold">Harga Transparan</h6>
+                                    <small class="text-muted">Tanpa biaya tersembunyi</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{{ url('/about') }}" 
+                        class="btn bg-white text-purple mt-4 px-4 py-2 rounded-pill shadow-sm border-0">
+                        Selengkapnya →
                     </a>
                 </div>
-            </div>
 
-            <!-- KANAN: GAMBAR -->
-            <div class="col-lg-6 position-relative">
-                <div class="about-image-floating">
-                    <img src="/image/thumbnails/kucing.jpg"
-                         alt="Dokter Hewan"
-                         class="img-fluid">
+                <!-- IMAGE -->
+                <div class="col-lg-6">
+                    <div class="about-img-card">
+                        <img src="/image/thumbnails/kucing.jpg" alt="Klinik Hewan">
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </section>
     
     <!-- Daftar Dokter -->
-<section class="py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold text-purple mb-4">Tim Dokter Kami</h2>
-        <p class="text-muted mb-5">Dokter berpengalaman dan penuh kasih dalam merawat hewan kesayangan Anda</p>
+    <section class="py-5">
+        <div class="container text-center">
 
-        <div class="row g-4 justify-content-center">
-            @forelse($doctors as $doctor)
-            <div class="col-md-4">
-                <div class="card h-100 p-3 text-center">
-                    @if($doctor->photo)
-                        <img src="{{ asset('storage/' . $doctor->photo) }}"
-                             alt="{{ $doctor->name }}"
-                             class="img-fluid rounded mb-3"
-                             style="height: 400px; width: 100%; object-fit: cover;"
-                             onerror="this.onerror=null; this.src='{{ asset('images/default-doctor.jpg') }}'">
-                    @else
-                        <img src="{{ asset('images/default-doctor.jpg') }}"
-                             alt="{{ $doctor->name }}"
-                             class="img-fluid rounded mb-3"
-                             style="height: 400px; width: 100%; object-fit: cover;">
-                    @endif
-                    
-                    <h5 class="fw-bold text-purple">{{ $doctor->name }}</h5>
-                    @if($doctor->specialization)
-                        <p class="text-muted mb-1">{{ $doctor->specialization }}</p>
-                    @endif
-                    <p class="text-muted mb-2">{{ $doctor->schedule }}</p>
-                    @if($doctor->description)
-                        <p class="small text-muted">{{ Str::limit($doctor->description, 100) }}</p>
-                    @endif
+            <h2 class="section-title text-purple">Tim Dokter Kami</h2>
+            <p class="section-subtitle mb-5">
+                Profesional yang siap merawat hewan kesayangan Anda
+            </p>
+
+            <div class="row g-4 justify-content-center">
+                @forelse($doctors as $doctor)
+                <div class="col-md-4 col-sm-6">
+                    <div class="doctor-card h-100">
+
+                        @if($doctor->photo)
+                            <img src="{{ asset('storage/' . $doctor->photo) }}"
+                                alt="{{ $doctor->name }}"
+                                onerror="this.onerror=null; this.src='{{ asset('image/default-doctor.jpg') }}'">
+                        @else
+                            <img src="{{ asset('image/default-doctor.jpg') }}"
+                                alt="{{ $doctor->name }}">
+                        @endif
+
+                        <div class="doctor-info text-start">
+                            <h6 class="fw-bold mb-1">{{ $doctor->name }}</h6>
+
+                            @if($doctor->specialization)
+                                <small class="text-purple d-block mb-1">
+                                    {{ $doctor->specialization }}
+                                </small>
+                            @endif
+
+                            <small class="text-muted d-block mb-2">
+                                {{ $doctor->schedule }}
+                            </small>
+
+                            @if($doctor->description)
+                                <p class="small text-muted mb-0">
+                                    {{ Str::limit($doctor->description, 80) }}
+                                </p>
+                            @endif
+                        </div>
+
+                    </div>
                 </div>
+                @empty
+                <div class="col-12">
+                    <p class="text-muted">Data dokter belum tersedia.</p>
+                </div>
+                @endforelse
             </div>
-            @empty
-            <div class="col-12">
-                <p class="text-muted">Data dokter sedang tidak tersedia.</p>
-            </div>
-            @endforelse
+
         </div>
-    </div>
-</section>
+    </section>
 
 @endsection

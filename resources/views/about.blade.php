@@ -57,9 +57,9 @@
 </div>
 
 
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 @endsection
 
@@ -150,4 +150,3 @@
 }
 </style>
 @endpush
-

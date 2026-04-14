@@ -44,6 +44,11 @@ class FeedbackController extends Controller
                 'is_verified' => true,
             ]);
 
+            // Simpan ID ulasan ini ke session milik user
+            $myFeedbacks = session()->get('my_feedbacks', []);
+            $myFeedbacks[] = $feedback->id;
+            session()->put('my_feedbacks', $myFeedbacks);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Ulasan berhasil dikirim! Terima kasih atas feedback Anda.',
@@ -54,6 +59,7 @@ class FeedbackController extends Controller
                     'message' => $feedback->message,
                     'source' => $feedback->source,
                     'created_at' => $feedback->created_at->toISOString(),
+                    'can_delete' => true,
                 ]
             ], 201);
 
@@ -71,11 +77,14 @@ class FeedbackController extends Controller
     public function index()
     {
         try {
+            // Ambil daftar ID milik user dari session
+            $myFeedbacks = session()->get('my_feedbacks', []);
+
             $feedbacks = Feedback::verified()
                 ->orderBy('created_at', 'desc')
                 ->take(20)
                 ->get()
-                ->map(function ($feedback) {
+                ->map(function ($feedback) use ($myFeedbacks) { // ← PERBAIKAN: tambah use ($myFeedbacks)
                     return [
                         'id' => $feedback->id,
                         'name' => $feedback->name,
@@ -85,6 +94,7 @@ class FeedbackController extends Controller
                         'service_type' => $feedback->service_type,
                         'created_at' => $feedback->created_at->toISOString(),
                         'formatted_date' => $feedback->formatted_date,
+                        'can_delete' => in_array($feedback->id, $myFeedbacks), // ← PERBAIKAN: tambah can_delete
                     ];
                 });
 
@@ -101,8 +111,21 @@ class FeedbackController extends Controller
     public function destroy($id)
     {
         try {
+            // Cek apakah ulasan ini milik user yang request
+            $myFeedbacks = session()->get('my_feedbacks', []);
+
+            if (!in_array($id, $myFeedbacks)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak berhak menghapus ulasan ini.'
+                ], 403);
+            }
+
             $feedback = Feedback::findOrFail($id);
             $feedback->delete();
+
+            // Hapus ID dari session setelah berhasil dihapus
+            session()->put('my_feedbacks', array_values(array_diff($myFeedbacks, [(int)$id])));
 
             return response()->json([
                 'success' => true,
@@ -149,7 +172,7 @@ class FeedbackController extends Controller
 
             return redirect()->back()
                 ->with('success', 'Terima kasih atas ulasan Anda!');
-                
+
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal mengirim ulasan. Silakan coba lagi.');

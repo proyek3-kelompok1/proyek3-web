@@ -7,7 +7,7 @@ use App\Http\Controllers\EducationController;
 use App\Http\Controllers\Admin\EducationController as AdminEducationController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\AdminMessageController;
+use App\Http\Controllers\Admin\AdminMessageController;
 use App\Http\Controllers\ConsultationsController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\AuthController;

@@ -830,11 +830,11 @@
 
                 // Tampilkan loading
                 feedbackList.innerHTML = `
-                    <div class="loading-feedback">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <p>Memuat ulasan...</p>
-                    </div>
-                `;
+                <div class="loading-feedback">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Memuat ulasan...</p>
+                </div>
+            `;
 
                 // Fetch data dari server
                 fetch(feedbackIndexUrl, {
@@ -861,15 +861,15 @@
                         console.error('Error loading feedbacks:', error);
 
                         feedbackList.innerHTML = `
-                        <div class="error-feedback">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>Gagal memuat ulasan</p>
-                            <small>${error.message}</small>
-                            <button onclick="window.loadFeedbacks()" class="btn-retry">
-                                <i class="fas fa-redo"></i> Coba Lagi
-                            </button>
-                        </div>
-                    `;
+                    <div class="error-feedback">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Gagal memuat ulasan</p>
+                        <small>${error.message}</small>
+                        <button onclick="window.loadFeedbacks()" class="btn-retry">
+                            <i class="fas fa-redo"></i> Coba Lagi
+                        </button>
+                    </div>
+                `;
                     });
             }
 

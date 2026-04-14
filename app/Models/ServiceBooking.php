@@ -26,7 +26,10 @@ class ServiceBooking extends Model
         'status',
         'booking_code',
         'nomor_antrian',
-        'total_price'
+        'total_price',
+        'alamat',
+        'ciri_warna',
+        'jenis_kelamin'
     ];
 
     protected $casts = [

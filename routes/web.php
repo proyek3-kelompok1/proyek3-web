@@ -204,6 +204,7 @@ Route::prefix('admin')->group(function () {
             Route::get('/{id}', [AdminMedicalRecordController::class, 'show'])->name('show');
             Route::get('/{id}/edit', [AdminMedicalRecordController::class, 'edit'])->name('edit');
             Route::put('/{id}', [AdminMedicalRecordController::class, 'update'])->name('update');
+            Route::get('/{id}/pdf', [AdminMedicalRecordController::class, 'downloadPdf'])->name('pdf');
         });
         
         // Messages Management
@@ -225,6 +226,6 @@ Route::prefix('admin')->group(function () {
 // =======================
 // ROUTE UNTUK DATABASE ERROR (FALLBACK)
 // =======================
-Route::fallback(function () {
-    return response()->view('errors.database', [], 500);
-});
+// Route::fallback(function () {
+//     return response()->view('errors.database', [], 500);
+// });

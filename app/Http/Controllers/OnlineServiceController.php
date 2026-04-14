@@ -56,7 +56,10 @@ class OnlineServiceController extends Controller
             'doctor' => 'required|string',
             'booking_date' => 'required|date',
             'booking_time' => 'required|string',
-            'catatan' => 'nullable|string'
+            'catatan' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'ciri_warna' => 'nullable|string',
+            'jenis_kelamin' => 'nullable|string|in:Jantan,Betina'
         ]);
 
         if ($validator->fails()) {
@@ -141,7 +144,10 @@ class OnlineServiceController extends Controller
                 'status' => 'pending',
                 'booking_code' => $bookingCode,
                 'nomor_antrian' => $nomorAntrian,
-                'total_price' => $service->price
+                'total_price' => $service->price,
+                'alamat' => $request->alamat,
+                'ciri_warna' => $request->ciri_warna,
+                'jenis_kelamin' => $request->jenis_kelamin
             ]);
 
             // Redirect ke halaman sukses

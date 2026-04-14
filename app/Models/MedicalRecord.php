@@ -27,7 +27,12 @@ class MedicalRecord extends Model
         'dokter',
         'tanggal_pemeriksaan',
         'kunjungan_berikutnya',
-        'status'
+        'status',
+        'alamat',
+        'telepon',
+        'ciri_warna',
+        'jenis_kelamin',
+        'prognosa'
     ];
 
     protected $casts = [

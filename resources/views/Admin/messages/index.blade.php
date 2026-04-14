@@ -498,7 +498,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const fiveStarElement = document.querySelector('.col-md-3:nth-child(3) .card-title');
         if (fiveStarElement) {
             fiveStarElement.textContent = 'Feedback 5 Bintang';
-            document.getElementById('fiveStarMessages').textContent = fiveStarCount;
+            const fiveStarEl = document.getElementById('fiveStarMessages');
+            if (fiveStarEl) fiveStarEl.textContent = fiveStarCount;
         }
     }
 

@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        } */
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            } */
 
         body {
             padding-top: 80px;
@@ -24,7 +24,7 @@
             min-height: calc(100vh - 160px);
         }
 
-        .container {
+        .consultation-wrapper {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
@@ -526,7 +526,7 @@
     </style>
 
     <div class="consultation-container">
-        <div class="container">
+        <div class="container-wrapper">
             <div class="page-title">
                 <h1>Konsultasi & Kontak</h1>
                 <p>Hubungi kami untuk konsultasi mengenai hewan peliharaan Anda</p>
@@ -830,11 +830,11 @@
 
                 // Tampilkan loading
                 feedbackList.innerHTML = `
-                <div class="loading-feedback">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Memuat ulasan...</p>
-                </div>
-            `;
+                    <div class="loading-feedback">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Memuat ulasan...</p>
+                    </div>
+                `;
 
                 // Fetch data dari server
                 fetch(feedbackIndexUrl, {
@@ -861,15 +861,15 @@
                         console.error('Error loading feedbacks:', error);
 
                         feedbackList.innerHTML = `
-                    <div class="error-feedback">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Gagal memuat ulasan</p>
-                        <small>${error.message}</small>
-                        <button onclick="window.loadFeedbacks()" class="btn-retry">
-                            <i class="fas fa-redo"></i> Coba Lagi
-                        </button>
-                    </div>
-                `;
+                        <div class="error-feedback">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Gagal memuat ulasan</p>
+                            <small>${error.message}</small>
+                            <button onclick="window.loadFeedbacks()" class="btn-retry">
+                                <i class="fas fa-redo"></i> Coba Lagi
+                            </button>
+                        </div>
+                    `;
                     });
             }
 
@@ -885,22 +885,22 @@
                     console.error('Data feedback tidak valid:', feedbacks);
 
                     feedbackList.innerHTML = `
-                    <div class="empty-feedback">
-                        <i class="fas fa-comment-slash"></i>
-                        <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                    </div>
-                `;
+                        <div class="empty-feedback">
+                            <i class="fas fa-comment-slash"></i>
+                            <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                        </div>
+                    `;
                     return;
                 }
 
                 // Jika tidak ada feedback
                 if (feedbacks.length === 0) {
                     feedbackList.innerHTML = `
-                    <div class="empty-feedback">
-                        <i class="fas fa-comment-slash"></i>
-                        <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                    </div>
-                `;
+                        <div class="empty-feedback">
+                            <i class="fas fa-comment-slash"></i>
+                            <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -939,19 +939,19 @@
 
                 // HTML untuk feedback item
                 feedbackItem.innerHTML = `
-                <div class="feedback-item-header">
-                    <div class="feedbacker-info">
-                        <h4>${feedback.name}</h4>
-                        <div class="feedback-rating">${starsHtml}</div>
-                        ${sourceBadge}
-                    </div>
+                    <div class="feedback-item-header">
+                        <div class="feedbacker-info">
+                            <h4>${feedback.name}</h4>
+                            <div class="feedback-rating">${starsHtml}</div>
+                            ${sourceBadge}
+                        </div>
 
-                </div>
-                <p class="feedback-text">${feedback.message}</p>
-                <div class="feedback-footer">
-                    <small class="feedback-date">${formattedDate}</small>
-                </div>
-            `;
+                    </div>
+                    <p class="feedback-text">${feedback.message}</p>
+                    <div class="feedback-footer">
+                        <small class="feedback-date">${formattedDate}</small>
+                    </div>
+                `;
 
                 // Tambahkan event listener untuk tombol hapus
 
@@ -1008,11 +1008,11 @@
                             // Jika tidak ada feedback lagi, tampilkan pesan
                             if (feedbackList.children.length === 0) {
                                 feedbackList.innerHTML = `
-                            <div class="empty-feedback">
-                                <i class="fas fa-comment-slash"></i>
-                                <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                            </div>
-                        `;
+                                <div class="empty-feedback">
+                                    <i class="fas fa-comment-slash"></i>
+                                    <p>Belum ada ulasan. Jadilah yang pertama!</p>
+                                </div>
+                            `;
                             }
 
                             alert('Ulasan berhasil dihapus!');

@@ -125,9 +125,9 @@
             color: #6a3093 !important;
         }
 
-        .bg-purple {
+        /* .bg-purple {
             background: linear-gradient(135deg, #6a3093, #8a4dcc) !important;
-        }
+        } */
 
         .bg-light-purple {
             background-color: #f8f5ff !important;
@@ -214,18 +214,22 @@
                                                 <div class="row mb-4">
                                                     ${data.service.price ? `
                                                     <div class="col-md-6">
-                                                        <div class="info-box p-3 bg-light rounded mb-3">
-                                                            <strong>💰 Harga:</strong>
-                                                            <div class="fs-4 text-purple fw-bold mt-1">${data.service.formatted_price}</div>
+                                                        <div class="info-box p-3 bg-white border rounded shadow-sm mb-3">
+                                                            <div class="d-flex align-items-center fw-bold text-muted text-uppercase" style="font-size: 0.85rem">
+                                                                <i class="fas fa-tag me-2 text-purple"></i> Harga Layanan
+                                                            </div>
+                                                            <div class="fs-4 text-dark fw-bold mt-2">${data.service.formatted_price}</div>
                                                         </div>
                                                     </div>
                                                     ` : ''}
 
                                                     ${data.service.duration_minutes ? `
                                                     <div class="col-md-6">
-                                                        <div class="info-box p-3 bg-light rounded mb-3">
-                                                            <strong>⏱️ Durasi:</strong>
-                                                            <div class="fs-4 fw-bold mt-1">${data.service.formatted_duration}</div>
+                                                        <div class="info-box p-3 bg-white border rounded shadow-sm mb-3">
+                                                            <div class="d-flex align-items-center fw-bold text-muted text-uppercase" style="font-size: 0.85rem">
+                                                                <i class="fas fa-clock me-2 text-purple"></i> Estimasi Durasi
+                                                            </div>
+                                                            <div class="fs-4 text-dark fw-bold mt-2">${data.service.formatted_duration}</div>
                                                         </div>
                                                     </div>
                                                     ` : ''}
@@ -242,7 +246,9 @@
                                         </div>
 
                                         <div class="mt-4">
-                                            <h5 class="text-purple mb-3">📋 Detail Layanan</h5>
+                                            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">
+                                                <i class="fas fa-file-invoice text-purple me-2"></i>Deskripsi Lengkap
+                                            </h5>
                                             <div class="bg-light p-4 rounded">
                                                 ${data.service.details.replace(/\n/g, '<br>')}
                                             </div>

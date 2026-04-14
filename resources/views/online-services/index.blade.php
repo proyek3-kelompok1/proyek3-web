@@ -226,12 +226,17 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <label for="telepon" class="form-label fw-bold">Nomor Telepon <span class="text-danger">*</span></label>
                                     <input type="tel" class="form-control" id="telepon" name="telepon" 
                                            value="{{ old('telepon') }}" required>
                                     <small class="text-muted">Contoh: 081234567890</small>
                                     <div class="invalid-feedback" id="telepon_error"></div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="alamat" class="form-label fw-bold">Alamat Rumah</label>
+                                    <textarea class="form-control" id="alamat" name="alamat" rows="2"
+                                              placeholder="Contoh: Jl. Sudirman No 123">{{ old('alamat') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -275,6 +280,21 @@
                                            value="{{ old('umur') }}" required min="0" max="600">
                                     <small class="text-muted">Maksimal 50 tahun (600 bulan)</small>
                                     <div class="invalid-feedback" id="umur_error"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="jenis_kelamin" class="form-label fw-bold">Jenis Kelamin</label>
+                                    <select class="form-select" id="jenis_kelamin" name="jenis_kelamin">
+                                        <option value="">Pilih Kelamin</option>
+                                        <option value="Jantan" {{ old('jenis_kelamin') == 'Jantan' ? 'selected' : '' }}>Jantan</option>
+                                        <option value="Betina" {{ old('jenis_kelamin') == 'Betina' ? 'selected' : '' }}>Betina</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ciri_warna" class="form-label fw-bold">Ciri/Warna bulu</label>
+                                    <input type="text" class="form-control" id="ciri_warna" name="ciri_warna" 
+                                           value="{{ old('ciri_warna') }}" placeholder="Contoh: Putih corak hitam">
                                 </div>
                             </div>
                         </div>

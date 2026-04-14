@@ -97,11 +97,11 @@
                 <select class="form-select" id="ratingFilter">
                     <option value="">Semua Rating</option>
                     <option value="0">Tanpa Rating (Konsultasi)</option>
-                    <option value="5">★★★★★ (5)</option>
-                    <option value="4">★★★★☆ (4)</option>
-                    <option value="3">★★★☆☆ (3)</option>
-                    <option value="2">★★☆☆☆ (2)</option>
-                    <option value="1">★☆☆☆☆ (1)</option>
+                    <option value="5">5 Bintang (★★★★★)</option>
+                    <option value="4">4 Bintang (★★★★☆)</option>
+                    <option value="3">3 Bintang (★★★☆☆)</option>
+                    <option value="2">2 Bintang (★★☆☆☆)</option>
+                    <option value="1">1 Bintang (★☆☆☆☆)</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -377,8 +377,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const deleteMessageUrl = '{{ route("admin.messages.destroy", ":id") }}';
     const messagesStatsUrl = '{{ route("admin.messages.stats") }}';
     
-    // CSRF Token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    // CSRF Token - with safety check
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+    
+    if (!csrfToken) {
+        console.warn('CSRF token not found. Some actions may fail.');
+    }
 
     console.log('Admin Messages URLs:');
     console.log('API URL:', messagesApiUrl);
@@ -469,24 +474,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // FUNGSI: UPDATE STATISTIK LOKAL
     // ============================================
     function updateStats() {
-        if (!allMessages || allMessages.length === 0) {
-            return;
-        }
-
-        // Hitung statistik dari data lokal
-        const consultations = allMessages.filter(msg => msg.type === 'konsultasi').length;
-        const feedbacks = allMessages.filter(msg => msg.type.includes('feedback')).length;
-        
-        // Hitung rating rata-rata
-        const feedbacksWithRating = allMessages.filter(msg => msg.rating !== null && msg.rating > 0);
+        // Default values
+        let consultations = 0;
+        let feedbacks = 0;
         let avgRating = 0;
-        if (feedbacksWithRating.length > 0) {
-            const totalRating = feedbacksWithRating.reduce((sum, msg) => sum + msg.rating, 0);
-            avgRating = (totalRating / feedbacksWithRating.length).toFixed(1);
+        let fiveStarCount = 0;
+
+        if (allMessages && allMessages.length > 0) {
+            // Hitung statistik dari data lokal
+            consultations = allMessages.filter(msg => msg.type === 'konsultasi').length;
+            feedbacks = allMessages.filter(msg => msg.type.includes('feedback')).length;
+            
+            // Hitung rating rata-rata
+            const feedbacksWithRating = allMessages.filter(msg => msg.rating !== null && msg.rating > 0);
+            if (feedbacksWithRating.length > 0) {
+                const totalRating = feedbacksWithRating.reduce((sum, msg) => sum + msg.rating, 0);
+                avgRating = (totalRating / feedbacksWithRating.length).toFixed(1);
+            }
+            
+            // Hitung 5-star feedbacks
+            fiveStarCount = allMessages.filter(msg => msg.rating === 5).length;
         }
-        
-        // Hitung 5-star feedbacks
-        // const fiveStarCount = allMessages.filter(msg => msg.rating === 5).length;
         
         // Update tampilan
         totalMessages.textContent = allMessages.length;
@@ -494,11 +502,10 @@ document.addEventListener('DOMContentLoaded', function() {
         totalConsultations.textContent = consultations;
         totalFeedbacks.textContent = feedbacks;
         
-        // Update judul five star messages
-        const fiveStarElement = document.querySelector('.col-md-3:nth-child(3) .card-title');
-        if (fiveStarElement) {
-            fiveStarElement.textContent = 'Feedback 5 Bintang';
-            document.getElementById('fiveStarMessages').textContent = fiveStarCount;
+        // Update five star count card if exists
+        const fiveStarValueElement = document.getElementById('fiveStarMessages');
+        if (fiveStarValueElement) {
+            fiveStarValueElement.textContent = fiveStarCount;
         }
     }
 

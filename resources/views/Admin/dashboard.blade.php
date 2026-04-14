@@ -398,9 +398,9 @@
                 <div class="py-2 border-bottom">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="fw-600" style="font-size: 0.875rem; color: #111827;">{{ $fb->name }}</div>
-                        <div class="rating-stars" style="font-size: 0.75rem;">
+                        <div class="rating-stars" style="font-size: 0.75rem; color: #f59e0b;">
                             @for($i=1;$i<=5;$i++)
-                                @if($i <= $fb->rating)★@else☆@endif
+                                <i class="{{ $i <= $fb->rating ? 'fas' : 'far' }} fa-star"></i>
                             @endfor
                         </div>
                     </div>

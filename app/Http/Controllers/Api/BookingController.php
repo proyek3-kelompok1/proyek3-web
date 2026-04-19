@@ -9,90 +9,252 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    /**
+     * GET /api/bookings
+     * Ambil semua data booking (riwayat)
+     */
+    public function index(Request $request)
+    {
+        $query = ServiceBooking::with(['service', 'doctor'])
+            ->orderBy('booking_date', 'desc')
+            ->orderBy('nomor_antrian', 'asc');
+
+        // Filter by email jika ada
+        if ($request->has('email') && $request->email) {
+            $query->where('email', $request->email);
+        }
+
+        $bookings = $query->get();
+
+        $data = $bookings->map(function ($b) {
+            return [
+                'id'             => $b->id,
+                'booking_code'   => $b->booking_code,
+                'nomor_antrian'  => $b->nomor_antrian,
+                'nama_pemilik'   => $b->nama_pemilik,
+                'email'          => $b->email,
+                'telepon'        => $b->telepon,
+                'alamat'         => $b->alamat,
+                'nama_hewan'     => $b->nama_hewan,
+                'jenis_hewan'    => $b->jenis_hewan,
+                'jenis_kelamin'  => $b->jenis_kelamin,
+                'ras'            => $b->ras,
+                'umur'           => $b->umur,
+                'ciri_warna'     => $b->ciri_warna,
+                'service_type'   => $b->service_type,
+                'service_id'     => $b->service_id,
+                'doctor_id'      => $b->doctor_id,
+                'booking_date'   => $b->booking_date,
+                'booking_time'   => $b->booking_time,
+                'catatan'        => $b->catatan,
+                'status'         => $b->status,
+                'total_price'    => $b->total_price,
+                'service_name'   => $b->service ? $b->service->name : null,
+                'doctor_name'    => $b->doctor ? $b->doctor->name : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $data,
+        ]);
+    }
+
+    /**
+     * POST /api/bookings
+     * Buat booking baru
+     */
     public function store(Request $request)
     {
         $request->validate([
             'nama_pemilik' => 'required',
-            'email' => 'required|email',
-            'telepon' => 'required',
-            'nama_hewan' => 'required',
-            'jenis_hewan' => 'required',
-            'umur' => 'required|integer',
-            'service_id' => 'required|exists:services,id',
-            'doctor_id' => 'required|exists:doctors,id',
+            'email'        => 'required|email',
+            'telepon'      => 'required',
+            'alamat'       => 'required',
+            'nama_hewan'   => 'required',
+            'jenis_hewan'  => 'required',
+            'umur'         => 'required|integer',
+            'service_id'   => 'required|exists:services,id',
+            'doctor_id'    => 'required|exists:doctors,id',
             'booking_date' => 'required|date',
             'booking_time' => 'required',
         ]);
 
         $service = Service::findOrFail($request->service_id);
 
-        // Ambil nomor antrian terakhir hari itu untuk service yang sama
+        // Nomor antrian: hitung booking pada tanggal yang sama (global, bukan per service)
         $lastQueue = ServiceBooking::whereDate('booking_date', $request->booking_date)
-            ->where('service_id', $request->service_id)
             ->max('nomor_antrian');
 
         $nomorAntrian = $lastQueue ? $lastQueue + 1 : 1;
 
-        // ══════════════════════════════════════════════════════
-        //  FIX: Generate booking code yang UNIK
-        //  Cari nomor terakhir dari SEMUA booking dengan prefix sama
-        // ══════════════════════════════════════════════════════
-        $dateCode = now()->format('Ymd');
-        $prefix = 'BK-' . $dateCode . '-';
-
-        $lastBooking = ServiceBooking::where('booking_code', 'like', $prefix . '%')
-            ->orderByRaw("CAST(SUBSTRING(booking_code, " . (strlen($prefix) + 1) . ") AS UNSIGNED) DESC")
-            ->first();
-
-        if ($lastBooking) {
-            $lastNumber = (int) substr($lastBooking->booking_code, strlen($prefix));
-            $codeNumber = $lastNumber + 1;
-        } else {
-            $codeNumber = 1;
-        }
-
-        $bookingCode = $prefix . str_pad($codeNumber, 3, '0', STR_PAD_LEFT);
-
-        // Safety check — kalau masih duplikat, increment terus
-        while (ServiceBooking::where('booking_code', $bookingCode)->exists()) {
-            $codeNumber++;
-            $bookingCode = $prefix . str_pad($codeNumber, 3, '0', STR_PAD_LEFT);
-        }
+        // Generate booking code
+        $bookingCode = 'BK-' . now()->format('Ymd') . '-' . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
 
         $booking = ServiceBooking::create([
-            'nama_pemilik' => $request->nama_pemilik,
-            'email' => $request->email,
-            'telepon' => $request->telepon,
-            'nama_hewan' => $request->nama_hewan,
-            'jenis_hewan' => $request->jenis_hewan,
-            'ras' => $request->ras,
-            'umur' => $request->umur,
-            'service_id' => $service->id,
-            'service_type' => $service->service_type,
-            'doctor_id' => $request->doctor_id,
-            'booking_date' => $request->booking_date,
-            'booking_time' => $request->booking_time,
-            'catatan' => $request->catatan,
-            'total_price' => $service->price,
+            'nama_pemilik'  => $request->nama_pemilik,
+            'email'         => $request->email,
+            'telepon'       => $request->telepon,
+            'alamat'        => $request->alamat,
+            'nama_hewan'    => $request->nama_hewan,
+            'jenis_hewan'   => $request->jenis_hewan,
+            'jenis_kelamin' => $request->jenis_kelamin ?? 'Jantan',
+            'ras'           => $request->ras,
+            'umur'          => $request->umur,
+            'ciri_warna'    => $request->ciri_warna,
+            'service_id'    => $service->id,
+            'service_type'  => $service->service_type,
+            'doctor_id'     => $request->doctor_id,
+            'booking_date'  => $request->booking_date,
+            'booking_time'  => $request->booking_time,
+            'catatan'       => $request->catatan,
+            'total_price'   => $service->price,
             'nomor_antrian' => $nomorAntrian,
-            'booking_code' => $bookingCode,
-            'status' => 'pending',
+            'booking_code'  => $bookingCode,
+            'status'        => 'pending',
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Booking berhasil dibuat',
-            'data' => [
-                'booking_code' => $booking->booking_code,
+            'data'    => [
+                'booking_code'  => $booking->booking_code,
                 'nomor_antrian' => $booking->nomor_antrian,
-                'service_name' => $service->name,
-                'doctor_name' => optional($booking->doctor)->name ?? null,
-                'booking_date' => $booking->booking_date->format('d F Y'),
-                'booking_time' => $booking->booking_time,
-                'total_price' => $booking->total_price,
-                'nama_hewan' => $booking->nama_hewan,
-                'jenis_hewan' => $booking->jenis_hewan,
+                'service_name'  => $service->name,
+                'doctor_name'   => $booking->doctor->name ?? null,
+                'booking_date'  => $booking->booking_date,
+                'booking_time'  => $booking->booking_time,
+                'total_price'   => $booking->total_price,
             ]
+        ]);
+    }
+
+    /**
+     * GET /api/bookings/queue?date=2026-04-15&service_type=all
+     * Ambil daftar antrian untuk tanggal tertentu
+     */
+    public function queue(Request $request)
+    {
+        $date        = $request->get('date', now()->toDateString());
+        $serviceType = $request->get('service_type', 'all');
+
+        $query = ServiceBooking::with(['service', 'doctor'])
+            ->whereDate('booking_date', $date)
+            ->whereIn('status', ['pending', 'confirmed', 'completed'])
+            ->orderBy('nomor_antrian', 'asc');
+
+        if ($serviceType && $serviceType !== 'all') {
+            $query->where('service_type', $serviceType);
+        }
+
+        $allQueue = $query->get();
+
+        // Yang sedang dilayani (status confirmed)
+        $currentQueue = $allQueue->firstWhere('status', 'confirmed');
+
+        // Stats
+        $stats = [
+            'total'                  => $allQueue->count(),
+            'waiting'                => $allQueue->where('status', 'pending')->count(),
+            'completed'              => $allQueue->where('status', 'completed')->count(),
+            'serving'                => $allQueue->where('status', 'confirmed')->count(),
+            'estimated_wait_minutes' => $allQueue->where('status', 'pending')->count() * 15,
+        ];
+
+        $queueData = $allQueue->map(function ($b) {
+            return [
+                'id'            => $b->id,
+                'nomor_antrian' => $b->nomor_antrian,
+                'booking_code'  => $b->booking_code,
+                'nama_hewan'    => $b->nama_hewan,
+                'jenis_hewan'   => $b->jenis_hewan,
+                'service_type'  => $b->service_type,
+                'booking_time'  => $b->booking_time,
+                'status'        => $b->status,
+                'service_name'  => $b->service ? $b->service->name : null,
+                'doctor_name'   => $b->doctor ? $b->doctor->name : null,
+            ];
+        });
+
+        $currentData = $currentQueue ? [
+            'id'            => $currentQueue->id,
+            'nomor_antrian' => $currentQueue->nomor_antrian,
+            'nama_hewan'    => $currentQueue->nama_hewan,
+            'service_type'  => $currentQueue->service_type,
+        ] : null;
+
+        return response()->json([
+            'success'       => true,
+            'today_queue'   => $queueData->values(),
+            'current_queue' => $currentData,
+            'queue_stats'   => $stats,
+        ]);
+    }
+
+    /**
+     * POST /api/bookings/check-queue
+     * Cek status antrian berdasarkan booking code
+     */
+    public function checkQueue(Request $request)
+    {
+        $request->validate([
+            'booking_code' => 'required|string',
+        ]);
+
+        $booking = ServiceBooking::with(['service', 'doctor'])
+            ->where('booking_code', $request->booking_code)
+            ->first();
+
+        if (!$booking) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode booking tidak ditemukan. Pastikan kode sudah benar.',
+            ], 404);
+        }
+
+        // Hitung posisi antrian (berapa pending sebelumnya)
+        $position = ServiceBooking::whereDate('booking_date', $booking->booking_date)
+            ->where('nomor_antrian', '<', $booking->nomor_antrian)
+            ->where('status', 'pending')
+            ->count() + 1;
+
+        // Sedang dilayani nomor berapa
+        $currentServing = ServiceBooking::whereDate('booking_date', $booking->booking_date)
+            ->where('status', 'confirmed')
+            ->value('nomor_antrian');
+
+        // Estimasi tunggu
+        $waitingBefore = ServiceBooking::whereDate('booking_date', $booking->booking_date)
+            ->where('nomor_antrian', '<', $booking->nomor_antrian)
+            ->where('status', 'pending')
+            ->count();
+
+        $estimatedWait = $waitingBefore * 15;
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'booking' => [
+                    'id'            => $booking->id,
+                    'booking_code'  => $booking->booking_code,
+                    'nomor_antrian' => $booking->nomor_antrian,
+                    'nama_pemilik'  => $booking->nama_pemilik,
+                    'nama_hewan'    => $booking->nama_hewan,
+                    'jenis_hewan'   => $booking->jenis_hewan,
+                    'service_type'  => $booking->service_type,
+                    'service_name'  => $booking->service ? $booking->service->name : null,
+                    'doctor_name'   => $booking->doctor ? $booking->doctor->name : null,
+                    'booking_date'  => $booking->booking_date,
+                    'booking_time'  => $booking->booking_time,
+                    'status'        => $booking->status,
+                    'total_price'   => $booking->total_price,
+                ],
+                'queue_info' => [
+                    'current_position'       => $booking->status === 'pending' ? $position : null,
+                    'current_serving'        => $currentServing,
+                    'estimated_wait_minutes' => $estimatedWait,
+                ],
+            ],
         ]);
     }
 }

@@ -15,13 +15,25 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ServiceBooking::with(['service', 'doctor'])
+        $query = ServiceBooking::with(['service', 'doctor', 'medicalRecords'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('nomor_antrian', 'asc');
 
-        // Filter by email jika ada
-        if ($request->has('email') && $request->email) {
+        // Filter by authenticated user atau email
+        if (auth()->check()) {
+            $user = auth()->user();
+            $query->where(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('email', $user->email);
+            });
+        } elseif ($request->has('email') && $request->email) {
             $query->where('email', $request->email);
+        } else {
+            // Jika tidak login dan tidak ada email, kembalikan kosong (privasi)
+            return response()->json([
+                'success' => true,
+                'data'    => [],
+            ]);
         }
 
         $bookings = $query->get();
@@ -51,6 +63,8 @@ class BookingController extends Controller
                 'total_price'    => $b->total_price,
                 'service_name'   => $b->service ? $b->service->name : null,
                 'doctor_name'    => $b->doctor ? $b->doctor->name : null,
+                'has_medical_record' => $b->medicalRecords->count() > 0,
+                'medical_records' => $b->medicalRecords // Sertakan rekam medis jika ada
             ];
         });
 
@@ -82,16 +96,17 @@ class BookingController extends Controller
 
         $service = Service::findOrFail($request->service_id);
 
-        // Nomor antrian: hitung booking pada tanggal yang sama (global, bukan per service)
+        // Nomor antrian: hitung booking pada tanggal yang sama
         $lastQueue = ServiceBooking::whereDate('booking_date', $request->booking_date)
             ->max('nomor_antrian');
 
         $nomorAntrian = $lastQueue ? $lastQueue + 1 : 1;
 
-        // Generate booking code
-        $bookingCode = 'BK-' . now()->format('Ymd') . '-' . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
+        // Generate booking code based on appointment date
+        $datePrefix = date('Ymd', strtotime($request->booking_date));
+        $bookingCode = 'BK-' . $datePrefix . '-' . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT);
 
-        $booking = ServiceBooking::create([
+        $bookingData = [
             'nama_pemilik'  => $request->nama_pemilik,
             'email'         => $request->email,
             'telepon'       => $request->telepon,
@@ -112,7 +127,10 @@ class BookingController extends Controller
             'nomor_antrian' => $nomorAntrian,
             'booking_code'  => $bookingCode,
             'status'        => 'pending',
-        ]);
+            'user_id'       => auth()->id(), // Simpan ID User yang sedang login
+        ];
+
+        $booking = ServiceBooking::create($bookingData);
 
         return response()->json([
             'success' => true,

@@ -54,6 +54,23 @@
             </div>
 
             <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label fw-bold">Alamat</label>
+                        <input type="text" class="form-control" id="alamat" name="alamat" 
+                               value="{{ old('alamat', $medicalRecord->alamat) }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="telepon" class="form-label fw-bold">No. Telpon</label>
+                        <input type="text" class="form-control" id="telepon" name="telepon" 
+                               value="{{ old('telepon', $medicalRecord->telepon) }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label for="jenis_hewan" class="form-label fw-bold">Jenis Hewan <span class="text-danger">*</span></label>
@@ -73,6 +90,26 @@
                         <label for="umur" class="form-label fw-bold">Umur (bulan) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control" id="umur" name="umur" 
                                value="{{ old('umur', $medicalRecord->umur) }}" min="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="ciri_warna" class="form-label fw-bold">Ciri/Warna bulu</label>
+                        <input type="text" class="form-control" id="ciri_warna" name="ciri_warna" 
+                               value="{{ old('ciri_warna', $medicalRecord->ciri_warna) }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="jenis_kelamin" class="form-label fw-bold">Jenis Kelamin</label>
+                        <select class="form-select" id="jenis_kelamin" name="jenis_kelamin">
+                            <option value="">Pilih Kelamin</option>
+                            <option value="Jantan" {{ old('jenis_kelamin', $medicalRecord->jenis_kelamin) == 'Jantan' ? 'selected' : '' }}>Jantan</option>
+                            <option value="Betina" {{ old('jenis_kelamin', $medicalRecord->jenis_kelamin) == 'Betina' ? 'selected' : '' }}>Betina</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -151,8 +188,13 @@
             </div>
 
             <div class="mb-3">
-                <label for="diagnosa" class="form-label fw-bold">Diagnosa <span class="text-danger">*</span></label>
+                <label for="diagnosa" class="form-label fw-bold">Diagnosa (Penemuan Klinis) <span class="text-danger">*</span></label>
                 <textarea class="form-control" id="diagnosa" name="diagnosa" rows="3" required>{{ old('diagnosa', $medicalRecord->diagnosa) }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="prognosa" class="form-label fw-bold">Prognosa</label>
+                <textarea class="form-control" id="prognosa" name="prognosa" rows="3">{{ old('prognosa', $medicalRecord->prognosa) }}</textarea>
             </div>
 
             <div class="mb-3">

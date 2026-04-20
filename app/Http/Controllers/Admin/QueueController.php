@@ -10,88 +10,66 @@ class QueueController extends Controller
 {
     /**
      * Display queue management page
+     * Default: tampilkan semua booking, bisa difilter by date
      */
     public function index()
     {
         $today = now()->format('Y-m-d');
-        
-        // DEBUG: Cek data di database
-        $allBookings = ServiceBooking::all();
-        \Log::info('All ServiceBookings:', [
-            'total' => $allBookings->count(),
-            'data' => $allBookings->map(function($booking) {
-                return [
-                    'id' => $booking->id,
-                    'booking_date' => $booking->booking_date,
-                    'status' => $booking->status,
-                    'nomor_antrian' => $booking->nomor_antrian,
-                    'booking_code' => $booking->booking_code
-                ];
-            })->toArray()
-        ]);
 
-        // Ambil data hari ini
-        $todayBookings = ServiceBooking::whereDate('booking_date', $today)
+        // Default: ambil SEMUA booking (terbaru dulu), bisa difilter via AJAX
+        $allBookings = ServiceBooking::with('doctor')
+            ->orderBy('booking_date', 'desc')
             ->orderBy('nomor_antrian')
             ->get();
 
-        \Log::info('Today Bookings Filter:', [
-            'date' => $today,
-            'count' => $todayBookings->count(),
-            'bookings' => $todayBookings->map(function($booking) {
-                return [
-                    'id' => $booking->id,
-                    'booking_date' => $booking->booking_date,
-                    'status' => $booking->status,
-                    'nomor_antrian' => $booking->nomor_antrian,
-                    'booking_code' => $booking->booking_code
-                ];
-            })->toArray()
-        ]);
-
         // Tambahkan informasi rekam medis
-        foreach ($todayBookings as $booking) {
+        foreach ($allBookings as $booking) {
             $booking->has_medical_record = $booking->medicalRecords()->exists();
         }
 
         $stats = [
-            'total' => $todayBookings->count(),
-            'pending' => $todayBookings->where('status', 'pending')->count(),
-            'confirmed' => $todayBookings->where('status', 'confirmed')->count(),
-            'completed' => $todayBookings->where('status', 'completed')->count(),
-            'cancelled' => $todayBookings->where('status', 'cancelled')->count(),
+            'total'     => $allBookings->count(),
+            'pending'   => $allBookings->where('status', 'pending')->count(),
+            'confirmed' => $allBookings->where('status', 'confirmed')->count(),
+            'completed' => $allBookings->where('status', 'completed')->count(),
+            'cancelled' => $allBookings->where('status', 'cancelled')->count(),
         ];
 
-        \Log::info('Stats:', $stats);
+        // Tanggal-tanggal yang punya booking untuk smart hint
+        $availableDates = ServiceBooking::selectRaw('DATE(booking_date) as date, COUNT(*) as total')
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->limit(30)
+            ->pluck('total', 'date');
 
-        return view('admin.queue.index', compact('todayBookings', 'stats', 'today'));
+        return view('admin.queue.index', compact('allBookings', 'stats', 'today', 'availableDates'));
     }
 
     /**
      * Get queue data for AJAX requests
+     * Jika date kosong = tampilkan semua booking
      */
     public function getQueueData(Request $request)
     {
         try {
-            $date = $request->get('date', now()->format('Y-m-d'));
-            $serviceType = $request->get('service_type');
-            $status = $request->get('status');
+            $date        = $request->get('date', '');
+            $serviceType = $request->get('service_type', '');
+            $status      = $request->get('status', '');
 
-            \Log::info('Queue Data Request:', [
-                'date' => $date,
-                'service_type' => $serviceType,
-                'status' => $status
-            ]);
+            $query = ServiceBooking::with('doctor');
 
-            // Query dengan whereDate
-            $query = ServiceBooking::whereDate('booking_date', $date);
+            // Filter tanggal hanya jika diisi
+            if ($date && $date !== '') {
+                $query->whereDate('booking_date', $date);
+            }
 
+            // Filter jenis layanan
             if ($serviceType && $serviceType !== '') {
                 $query->where('service_type', $serviceType);
             }
 
+            // Filter status
             if ($status && $status !== '') {
-                // Handle special case for completed_no_record
                 if ($status === 'completed_no_record') {
                     $query->where('status', 'completed')
                           ->whereDoesntHave('medicalRecords');
@@ -100,82 +78,57 @@ class QueueController extends Controller
                 }
             }
 
-            $bookings = $query->orderBy('nomor_antrian')->get();
+            $bookings = $query->orderBy('booking_date', 'desc')
+                              ->orderBy('nomor_antrian')
+                              ->get();
 
-            // Tambahkan informasi rekam medis
+            // Tambahkan informasi rekam medis & nama
             foreach ($bookings as $booking) {
                 $booking->has_medical_record = $booking->medicalRecords()->exists();
-                $booking->service_name = $booking->service_name;
-                $booking->doctor_name = $booking->doctor_name;
+                $booking->service_name_label = $booking->service_name;
+                $booking->doctor_name_label  = $booking->doctor_name;
             }
 
-            \Log::info('Queue Data Found:', [
-                'date' => $date,
-                'total_bookings' => $bookings->count(),
-                'booking_ids' => $bookings->pluck('id')->toArray(),
-                'status_counts' => [
-                    'pending' => $bookings->where('status', 'pending')->count(),
-                    'confirmed' => $bookings->where('status', 'confirmed')->count(),
-                    'completed' => $bookings->where('status', 'completed')->count(),
-                    'cancelled' => $bookings->where('status', 'cancelled')->count(),
-                ]
-            ]);
-
             $stats = [
-                'total' => $bookings->count(),
-                'pending' => $bookings->where('status', 'pending')->count(),
-                'confirmed' => $bookings->where('status', 'confirmed')->count(),
-                'completed' => $bookings->where('status', 'completed')->count(),
-                'cancelled' => $bookings->where('status', 'cancelled')->count(),
+                'total'               => $bookings->count(),
+                'pending'             => $bookings->where('status', 'pending')->count(),
+                'confirmed'           => $bookings->where('status', 'confirmed')->count(),
+                'completed'           => $bookings->where('status', 'completed')->count(),
+                'cancelled'           => $bookings->where('status', 'cancelled')->count(),
                 'completed_no_record' => $bookings->where('status', 'completed')
-                    ->filter(function($booking) {
-                        return !$booking->has_medical_record;
-                    })->count()
+                    ->filter(fn($b) => !$b->has_medical_record)->count(),
             ];
 
             return response()->json([
-                'success' => true,
+                'success'  => true,
                 'bookings' => $bookings,
-                'stats' => $stats
+                'stats'    => $stats,
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error in getQueueData:', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('Error in getQueueData: ' . $e->getMessage());
 
             return response()->json([
-                'success' => false,
-                'message' => 'Error loading queue data',
+                'success'  => false,
+                'message'  => 'Error loading queue data: ' . $e->getMessage(),
                 'bookings' => [],
-                'stats' => [
-                    'total' => 0,
-                    'pending' => 0,
-                    'confirmed' => 0,
-                    'completed' => 0,
-                    'cancelled' => 0,
-                    'completed_no_record' => 0
-                ]
+                'stats'    => ['total' => 0, 'pending' => 0, 'confirmed' => 0, 'completed' => 0, 'cancelled' => 0, 'completed_no_record' => 0],
             ], 500);
         }
     }
 
     /**
-     * Show booking details modal
+     * Show booking details (modal partial)
      */
     public function showDetail($id)
     {
         $booking = ServiceBooking::with(['service', 'doctor'])->findOrFail($id);
-        
-        // Tambahkan informasi rekam medis
         $booking->has_medical_record = $booking->medicalRecords()->exists();
-        
         return view('admin.queue.detail', compact('booking'));
     }
-    
+
     /**
-     * Show single booking
+     * Show single booking page
      */
     public function show($id)
     {
@@ -189,29 +142,21 @@ class QueueController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,completed,cancelled'
+            'status' => 'required|in:pending,confirmed,completed,cancelled',
         ]);
 
-        $booking = ServiceBooking::findOrFail($id);
-        $oldStatus = $booking->status;
-        $newStatus = $request->status;
-        
-        $booking->update([
-            'status' => $newStatus
-        ]);
+        $booking    = ServiceBooking::findOrFail($id);
+        $oldStatus  = $booking->status;
+        $newStatus  = $request->status;
 
-        // Log perubahan status
-        \Log::info('Booking status updated:', [
-            'booking_id' => $id,
-            'booking_code' => $booking->booking_code,
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus
-        ]);
+        $booking->update(['status' => $newStatus]);
+
+        \Log::info("Booking #{$id} status: {$oldStatus} → {$newStatus}");
 
         return response()->json([
             'success' => true,
             'message' => 'Status berhasil diperbarui',
-            'booking' => $booking
+            'booking' => $booking,
         ]);
     }
 
@@ -220,19 +165,15 @@ class QueueController extends Controller
      */
     public function destroy($id)
     {
-        $booking = ServiceBooking::findOrFail($id);
+        $booking     = ServiceBooking::findOrFail($id);
         $bookingCode = $booking->booking_code;
-        
         $booking->delete();
 
-        \Log::info('Booking deleted:', [
-            'booking_id' => $id,
-            'booking_code' => $bookingCode
-        ]);
+        \Log::info("Booking #{$id} ({$bookingCode}) deleted");
 
         return response()->json([
             'success' => true,
-            'message' => 'Booking berhasil dihapus'
+            'message' => "Booking {$bookingCode} berhasil dihapus",
         ]);
     }
 }

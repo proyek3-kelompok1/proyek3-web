@@ -4,113 +4,135 @@
 
 @section('content')
 
-    <div class="articles-education-page" style="background:#f7ecff; min-height:100vh;">
-        <div class="container py-5">
+<style>
+    .text-purple {
+        color: #6f42c1;
+    }
 
-            {{-- HEADER --}}
-            <div class="text-center mb-4">
-                <h1 class="fw-bold text-purple" style="font-size:45px;">
-                    <i class="fas fa-book-open me-2"></i> Edukasi
-                </h1>
-                <p class="text-muted" style="font-size:18px;">
-                    Informasi, tips, dan panduan lengkap untuk perawatan hewan peliharaan
-                </p>
+    .btn-purple {
+        background: #6f42c1;
+        color: #fff;
+        border-radius: 8px;
+    }
 
-                <div class="d-flex justify-content-center gap-3 mt-3">
-                    <a href="/" class="btn btn-purple px-4 py-2">
-                        <i class="fas fa-newspaper me-1"></i> Edukasi
-                    </a>
-                </div>
-            </div>
+    .btn-purple:hover {
+        background: #5a35a0;
+        color: #fff;
+    }
 
-            {{-- FEATURED CONTENT --}}
-            @if($featuredContent)
-                <div class="card mb-5 shadow-lg overflow-hidden" style="border-radius:15px;">
-                    <div class="row g-0">
-                        <div class="col-md-6">
-                            @if($featuredContent->thumbnail)
-                                <img src="{{ asset('storage/' . $featuredContent->thumbnail) }}" class="img-fluid w-100"
-                                    style="object-fit:cover; height:350px;">
-                            @endif
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .featured-card {
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .featured-img {
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+
+<div style="background:#f8f6ff; min-height:100vh;">
+    <div class="container py-5">
+
+        <!-- HEADER -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-purple">
+                Edukasi Hewan 🐾
+            </h1>
+            <p class="text-muted">
+                Tips, panduan, dan informasi terbaik untuk kesehatan peliharaanmu
+            </p>
+        </div>
+
+        <!-- FEATURED -->
+        @if($featuredContent)
+            <div class="card featured-card shadow-sm mb-5 card-hover">
+                <div class="row g-0">
+
+                    <div class="col-md-6">
+                        <img src="{{ asset('storage/' . $featuredContent->thumbnail) }}"
+                            class="w-100 featured-img">
+                    </div>
+
+                    <div class="col-md-6 p-4 d-flex flex-column">
+
+                        <span class="badge bg-purple mb-2" style="width:max-content;">
+                            Highlight
+                        </span>
+
+                        <h3 class="fw-bold">
+                            {{ $featuredContent->title }}
+                        </h3>
+
+                        <p class="text-muted flex-grow-1">
+                            {{ Str::limit($featuredContent->description, 150) }}
+                        </p>
+
+                        <div class="text-muted small mb-3">
+                            {{ $featuredContent->created_at->format('d M Y') }}
                         </div>
 
-                        <div class="col-md-6 p-4 d-flex flex-column">
+                        <a href="{{ route('education.show', $featuredContent->id) }}"
+                            class="btn btn-purple">
+                            Baca Artikel
+                        </a>
 
-                            <!-- <span class="badge bg-purple mb-3">Featured</span> -->
+                    </div>
+                </div>
+            </div>
+        @endif
 
-                            <h2 class="fw-bold text-dark">{{ $featuredContent->title }}</h2>
+        <!-- LIST -->
+        <div class="row g-4">
+            @foreach($educations as $item)
+                <div class="col-md-4">
 
-                            <p class="text-muted flex-grow-1">
-                                {{ $featuredContent->description }}
+                    <div class="card h-100 border-0 shadow-sm card-hover">
+
+                        @if($item->thumbnail)
+                            <img src="{{ asset('storage/' . $item->thumbnail) }}"
+                                style="height:200px; object-fit:cover;">
+                        @endif
+
+                        <div class="card-body">
+
+                            <span class="badge bg-light text-dark mb-2">
+                                {{ $item->category }}
+                            </span>
+
+                            <h5 class="fw-bold">
+                                {{ $item->title }}
+                            </h5>
+
+                            <p class="text-muted small">
+                                {{ Str::limit($item->description, 100) }}
                             </p>
 
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="rounded-circle bg-purple text-white d-flex justify-content-center align-items-center"
-                                    style="width:40px; height:40px;">
-                                    DW
-                                </div>
+                        </div>
 
-                                <div class="ms-2">
-                                    <strong>Dr. Wahyudi</strong>
-                                    <div class="text-muted small">
-                                        {{ $featuredContent->created_at->diffForHumans() }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <a href="{{ route('education.show', $featuredContent->id) }}" class="btn btn-purple mt-auto">
-                                Baca Selengkapnya →
+                        <div class="card-footer bg-white border-0">
+                            <a href="{{ route('education.show', $item->id) }}"
+                                class="btn btn-sm btn-purple w-100">
+                                Lihat Detail
                             </a>
                         </div>
+
                     </div>
+
                 </div>
-            @endif
-
-            {{-- LIST EDUKASI --}}
-            <div class="row">
-
-                @foreach($educations as $item)
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm h-100" style="border-radius:12px; overflow:hidden;">
-
-                            {{-- Thumbnail --}}
-                            @if($item->thumbnail)
-                                <img src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->title }}" class="img-fluid"
-                                    style="height:220px; object-fit:cover; width:100%;">
-                            @endif
-
-                            <div class="card-body">
-
-                                <span class="badge bg-purple mb-2">
-                                    {{ $item->category }}
-                                </span>
-
-                                <h5 class="fw-bold">{{ $item->title }}</h5>
-
-                                <p class="text-muted small">
-                                    {{ Str::limit($item->description, 120) }}
-                                </p>
-
-                                <div class="text-muted small mt-3">
-                                    <i class="far fa-clock me-1"></i>
-                                    {{ $item->created_at->diffForHumans() }}
-                                </div>
-
-                            </div>
-
-                            <div class="card-footer bg-white border-0">
-                                <a href="{{ route('education.show', $item->id) }}" class="btn btn-purple w-100 text-white">
-                                    Baca Selengkapnya →
-                                </a>
-                            </div>
-
-                        </div>
-                    </div>
-                @endforeach
-
-            </div>
-
+            @endforeach
         </div>
+
     </div>
+</div>
 
 @endsection

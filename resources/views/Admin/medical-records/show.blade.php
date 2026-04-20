@@ -12,8 +12,8 @@
             <a href="{{ route('admin.medical-records.edit', $medicalRecord->id) }}" class="btn btn-sm btn-warning">
                 <i class="fas fa-edit me-1"></i>Edit
             </a>
-            <a href="{{ route('admin.medical-records.print', $medicalRecord->id) }}" class="btn btn-sm btn-success" target="_blank">
-                <i class="fas fa-print me-1"></i>Print
+            <a href="{{ route('admin.medical-records.pdf', $medicalRecord->id) }}" class="btn btn-sm btn-success">
+                <i class="fas fa-file-pdf me-1"></i>Download PDF
             </a>
             <a href="{{ route('admin.medical-records.index') }}" class="btn btn-sm btn-outline-purple">
                 <i class="fas fa-arrow-left me-1"></i>Kembali
@@ -235,8 +235,8 @@
                 <a href="{{ route('admin.medical-records.edit', $medicalRecord->id) }}" class="btn btn-warning">
                     <i class="fas fa-edit me-2"></i>Edit Rekam Medis
                 </a>
-                <a href="{{ route('admin.medical-records.print', $medicalRecord->id) }}" class="btn btn-success" target="_blank">
-                    <i class="fas fa-print me-2"></i>Print
+                <a href="{{ route('admin.medical-records.pdf', $medicalRecord->id) }}" class="btn btn-success">
+                    <i class="fas fa-file-pdf me-2"></i>Download PDF
                 </a>
                 <a href="{{ route('admin.medical-records.index') }}" class="btn btn-outline-purple">
                     <i class="fas fa-list me-2"></i>Daftar Rekam Medis

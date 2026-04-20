@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\MedicalRecord;
 use App\Models\ServiceBooking;
 use App\Models\VaccinationRecord;
-use App\Models\Doctor; // TAMBAHKAN INI
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalRecordController extends Controller
 {
@@ -34,7 +35,13 @@ class MedicalRecordController extends Controller
             })
             ->toArray();
 
-        return view('admin.medical-records.create', compact('booking', 'doctors'));
+        $statuses = [
+            'selesai' => 'Selesai',
+            'rawat' => 'Dalam Perawatan',
+            'kontrol' => 'Perlu Kontrol'
+        ];
+
+        return view('admin.medical-records.create', compact('booking', 'doctors', 'statuses'));
     }
 
     public function store(Request $request)
@@ -56,7 +63,12 @@ class MedicalRecordController extends Controller
             'vaccinations.*.dosis' => 'required_with:vaccinations|string|max:100',
             'vaccinations.*.tanggal_vaksin' => 'required_with:vaccinations|date',
             'vaccinations.*.tanggal_booster' => 'nullable|date',
-            'vaccinations.*.catatan' => 'nullable|string'
+            'vaccinations.*.catatan' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'telepon' => 'nullable|string',
+            'ciri_warna' => 'nullable|string',
+            'jenis_kelamin' => 'nullable|string',
+            'prognosa' => 'nullable|string'
         ]);
 
         DB::transaction(function () use ($request) {
@@ -92,7 +104,12 @@ class MedicalRecordController extends Controller
                 'dokter' => $namaDokter, // Simpan nama dokter lengkap
                 'tanggal_pemeriksaan' => now(),
                 'kunjungan_berikutnya' => $request->kunjungan_berikutnya,
-                'status' => $request->status
+                'status' => $request->status,
+                'alamat' => $request->alamat ?? '',
+                'telepon' => $request->telepon ?? $booking->telepon,
+                'ciri_warna' => $request->ciri_warna ?? '',
+                'jenis_kelamin' => $request->jenis_kelamin ?? '',
+                'prognosa' => $request->prognosa ?? ''
             ]);
 
             // Simpan data vaksinasi jika ada
@@ -134,7 +151,13 @@ class MedicalRecordController extends Controller
             })
             ->toArray();
 
-        return view('admin.medical-records.edit', compact('medicalRecord', 'doctors'));
+        $statuses = [
+            'selesai' => 'Selesai',
+            'rawat' => 'Dalam Perawatan',
+            'kontrol' => 'Perlu Kontrol'
+        ];
+
+        return view('admin.medical-records.edit', compact('medicalRecord', 'doctors', 'statuses'));
     }
 
     public function update(Request $request, $id)
@@ -150,6 +173,11 @@ class MedicalRecordController extends Controller
             'dokter' => 'required|string|max:255',
             'kunjungan_berikutnya' => 'nullable|date',
             'status' => 'required|in:selesai,rawat,kontrol',
+            'alamat' => 'nullable|string',
+            'telepon' => 'nullable|string',
+            'ciri_warna' => 'nullable|string',
+            'jenis_kelamin' => 'nullable|string',
+            'prognosa' => 'nullable|string'
         ]);
 
         $medicalRecord = MedicalRecord::findOrFail($id);
@@ -165,5 +193,15 @@ class MedicalRecordController extends Controller
 
         return redirect()->route('admin.medical-records.show', $medicalRecord->id)
                          ->with('success', 'Rekam medis berhasil diperbarui!');
+    }
+
+    public function downloadPdf($id)
+    {
+        $medicalRecord = MedicalRecord::with(['serviceBooking', 'vaccinations'])->findOrFail($id);
+        
+        $pdf = Pdf::loadView('admin.medical-records.pdf', compact('medicalRecord'));
+        $pdf->setPaper('A4', 'portrait');
+        
+        return $pdf->download('Rekam_Medis_' . $medicalRecord->kode_rekam_medis . '.pdf');
     }
 }

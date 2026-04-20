@@ -41,7 +41,7 @@ class AdminMessageController extends Controller
                         'source' => 'consultation',
                         'pet_type' => $consultation->pet_type,
                         'pet_type_label' => $consultation->pet_type_label,
-                        'services' => $consultation->services ? json_decode($consultation->services, true) : [],
+                        'services' => is_array($consultation->services) ? $consultation->services : (is_string($consultation->services) ? json_decode($consultation->services, true) : []),
                         'service_type' => null,
                         'transaction_id' => null,
                         'is_verified' => true,
@@ -51,8 +51,8 @@ class AdminMessageController extends Controller
                         'created_at' => $consultation->created_at->toISOString(),
                         'updated_at' => $consultation->updated_at->toISOString(),
                         'formatted_date' => $consultation->created_at->format('d M Y, H:i'),
-                        'formatted_services' => $consultation->services 
-                            ? implode(', ', json_decode($consultation->services, true))
+                        'formatted_services' => !empty($consultation->services)
+                            ? implode(', ', (array)$consultation->services)
                             : 'Tidak ada layanan dipilih'
                     ];
                 });
@@ -88,8 +88,8 @@ class AdminMessageController extends Controller
                         'source' => $feedback->source,
                         'pet_type' => $consultation ? $consultation->pet_type : null,
                         'pet_type_label' => $consultation ? $consultation->pet_type_label : null,
-                        'services' => $consultation && $consultation->services 
-                            ? json_decode($consultation->services, true) 
+                        'services' => $consultation && $consultation->services
+                            ? (is_array($consultation->services) ? $consultation->services : json_decode($consultation->services, true))
                             : null,
                         'service_type' => $feedback->service_type,
                         'transaction_id' => $feedback->transaction_id,
@@ -101,10 +101,10 @@ class AdminMessageController extends Controller
                         'created_at' => $feedback->created_at->toISOString(),
                         'updated_at' => $feedback->updated_at->toISOString(),
                         'formatted_date' => $feedback->created_at->format('d M Y, H:i'),
-                        'formatted_services' => $feedback->service_type 
-                            ? $feedback->service_type 
-                            : ($consultation && $consultation->services 
-                                ? implode(', ', json_decode($consultation->services, true))
+                        'formatted_services' => $feedback->service_type
+                            ? $feedback->service_type
+                            : ($consultation && !empty($consultation->services)
+                                ? implode(', ', (array)$consultation->services)
                                 : 'Tidak ada layanan')
                     ];
                 });
@@ -148,9 +148,9 @@ class AdminMessageController extends Controller
                     'source' => 'consultation',
                     'pet_type' => $consultation->pet_type,
                     'pet_type_label' => $consultation->pet_type_label,
-                    'services' => $consultation->services ? json_decode($consultation->services, true) : [],
-                    'formatted_services' => $consultation->services 
-                        ? implode(', ', json_decode($consultation->services, true))
+                    'services' => is_array($consultation->services) ? $consultation->services : (!empty($consultation->services) ? json_decode($consultation->services, true) : []),
+                    'formatted_services' => !empty($consultation->services)
+                        ? implode(', ', (array)$consultation->services)
                         : 'Tidak ada layanan dipilih',
                     'service_type' => null,
                     'transaction_id' => null,
@@ -201,13 +201,13 @@ class AdminMessageController extends Controller
                     'source' => $feedback->source,
                     'pet_type' => $consultation ? $consultation->pet_type : null,
                     'pet_type_label' => $consultation ? $consultation->pet_type_label : null,
-                    'services' => $consultation && $consultation->services 
-                        ? json_decode($consultation->services, true) 
+                    'services' => $consultation && $consultation->services
+                        ? (is_array($consultation->services) ? $consultation->services : json_decode($consultation->services, true))
                         : null,
-                    'formatted_services' => $feedback->service_type 
-                        ? $feedback->service_type 
-                        : ($consultation && $consultation->services 
-                            ? implode(', ', json_decode($consultation->services, true))
+                    'formatted_services' => $feedback->service_type
+                        ? $feedback->service_type
+                        : ($consultation && !empty($consultation->services)
+                            ? implode(', ', (array)$consultation->services)
                             : 'Tidak ada layanan'),
                     'service_type' => $feedback->service_type,
                     'transaction_id' => $feedback->transaction_id,

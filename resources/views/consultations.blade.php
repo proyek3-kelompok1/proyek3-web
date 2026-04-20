@@ -835,318 +835,38 @@
                     <p>Memuat ulasan...</p>
                 </div>
             `;
-<<<<<<< HEAD
-        });
-    }
-    
-    // ============================================
-    // FUNGSI UNTUK UPDATE DAFTAR FEEDBACK
-    // ============================================
-    function updateFeedbackList(feedbacks) {
-        // Kosongkan list
-        feedbackList.innerHTML = '';
-        
-        // Cek jika feedback kosong atau bukan array
-        if (!feedbacks || !Array.isArray(feedbacks)) {
-            console.error('Data feedback tidak valid:', feedbacks);
-            
-            feedbackList.innerHTML = `
-                <div class="empty-feedback">
-                    <i class="fas fa-comment-slash"></i>
-                    <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                </div>
-            `;
-            return;
-        }
-        
-        // Jika tidak ada feedback
-        if (feedbacks.length === 0) {
-            feedbackList.innerHTML = `
-                <div class="empty-feedback">
-                    <i class="fas fa-comment-slash"></i>
-                    <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                </div>
-            `;
-            return;
-        }
-        
-        // Loop melalui feedback dan buat elemen
-        feedbacks.forEach(feedback => {
-            const feedbackItem = createFeedbackElement(feedback);
-            feedbackList.appendChild(feedbackItem);
-        });
-    }
-    
-    // ============================================
-    // FUNGSI UNTUK MEMBUAT ELEMEN FEEDBACK
-    // ============================================
-    function createFeedbackElement(feedback) {
-        const feedbackItem = document.createElement('div');
-        feedbackItem.className = 'feedback-item';
-        feedbackItem.dataset.id = feedback.id;
-        
-        // Format tanggal
-        const date = new Date(feedback.created_at);
-        const formattedDate = date.toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long', 
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        // Buat bintang rating
-        const starsHtml = createStarsHtml(feedback.rating);
-        
-        // Tampilkan sumber feedback
-        const sourceBadge = feedback.source === 'after_service' 
-            ? '<span class="badge-source">📋 Dari Layanan</span>' 
-            : '<span class="badge-source">💬 Dari Konsultasi</span>';
-        
-        // HTML untuk feedback item
-
-        // feedbackItem.innerHTML = `
-        //     <div class="feedback-item-header">
-        //         <div class="feedbacker-info">
-        //             <h4>${feedback.name}</h4>
-        //             <div class="feedback-rating">${starsHtml}</div>
-        //             ${sourceBadge}
-        //         </div>
-        //         <button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
-        //             <i class="fas fa-trash"></i>
-        //         </button>
-        //     </div>
-        //     <p class="feedback-text">${feedback.message}</p>
-        //     <div class="feedback-footer">
-        //         <small class="feedback-date">${formattedDate}</small>
-        //     </div>
-        // `;
-        
-        // Tambahkan event listener untuk tombol hapus
-        // const deleteBtn = feedbackItem.querySelector('.delete-feedback');
-        // deleteBtn.addEventListener('click', function(e) {
-        //     e.stopPropagation();
-        //     deleteFeedback(feedback.id);
-        // });
-        
-        // Tombol hapus hanya muncul jika milik user ini
-        const deleteBtn = feedback.can_delete 
-            ? `<button class="delete-feedback" data-id="${feedback.id}" title="Hapus ulasan">
-                   <i class="fas fa-trash"></i>
-               </button>` 
-            : '';
-
-        // HTML untuk feedback item
-        feedbackItem.innerHTML = `
-            <div class="feedback-item-header">
-                <div class="feedbacker-info">
-                    <h4>${feedback.name}</h4>
-                    <div class="feedback-rating">${starsHtml}</div>
-                    ${sourceBadge}
-                </div>
-                ${deleteBtn}
-            </div>
-            <p class="feedback-text">${feedback.message}</p>
-            <div class="feedback-footer">
-                <small class="feedback-date">${formattedDate}</small>
-            </div>
-        `;
-
-        // Event listener hanya dipasang jika tombol ada
-        if (feedback.can_delete) {
-            const deleteBtnEl = feedbackItem.querySelector('.delete-feedback');
-            deleteBtnEl.addEventListener('click', function(e) {
-                e.stopPropagation();
-                deleteFeedback(feedback.id);
-            });
-        }
-
-        return feedbackItem;
-    }
-    
-    // ============================================
-    // FUNGSI UNTUK MEMBUAT BINTANG RATING
-    // ============================================
-    function createStarsHtml(rating) {
-        let starsHtml = '';
-        for (let i = 1; i <= 5; i++) {
-            starsHtml += i <= rating 
-                ? '<i class="fas fa-star"></i>' 
-                : '<i class="far fa-star"></i>';
-        }
-        return starsHtml;
-    }
-    
-    // ============================================
-    // FUNGSI UNTUK MENGHAPUS FEEDBACK
-    // ============================================
-    function deleteFeedback(feedbackId) {
-        if (!confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
-            return;
-        }
-        
-        const deleteUrl = feedbackDeleteUrl.replace(':id', feedbackId);
-        const feedbackItem = document.querySelector(`.feedback-item[data-id="${feedbackId}"]`);
-        
-        // Tampilkan loading di item yang akan dihapus
-        if (feedbackItem) {
-            feedbackItem.style.opacity = '0.5';
-        }
-        
-        // Kirim request DELETE
-        fetch(deleteUrl, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Hapus dari DOM
-                if (feedbackItem) {
-                    feedbackItem.remove();
-                }
-                
-                // Jika tidak ada feedback lagi, tampilkan pesan
-                if (feedbackList.children.length === 0) {
-                    feedbackList.innerHTML = `
-                        <div class="empty-feedback">
-                            <i class="fas fa-comment-slash"></i>
-                            <p>Belum ada ulasan. Jadilah yang pertama!</p>
-                        </div>
-                    `;
-                }
-                
-                alert('Ulasan berhasil dihapus!');
-            } else {
-                alert(data.message || 'Gagal menghapus ulasan.');
-                if (feedbackItem) {
-                    feedbackItem.style.opacity = '1';
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Delete error:', error);
-            alert('Terjadi kesalahan jaringan. Coba lagi.');
-            if (feedbackItem) {
-                feedbackItem.style.opacity = '1';
-            }
-        });
-    }
-    
-    // ============================================
-    // HANDLE FORM SUBMISSION
-    // ============================================
-    feedbackForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Ambil data dari form
-        const name = document.getElementById('feedbackName').value.trim();
-        const message = document.getElementById('feedbackMessage').value.trim();
-        const ratingInput = document.querySelector('input[name="rating"]:checked');
-        
-        // Validasi
-        if (!name || !message || !ratingInput) {
-            alert('Silakan lengkapi semua field!');
-            return;
-        }
-        
-        const rating = parseInt(ratingInput.value);
-        
-        // Buat data untuk dikirim
-        const formData = {
-            name: name,
-            rating: rating,
-            message: message
-        };
-        
-        console.log('Mengirim feedback:', formData);
-        
-        // Ambil tombol submit
-        const submitBtn = feedbackForm.querySelector('.btn-submit-feedback');
-        const originalText = submitBtn.innerHTML;
-        
-        // Tampilkan loading di tombol
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
-        submitBtn.disabled = true;
-        
-        // Kirim ke server
-        fetch(feedbackStoreUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            
-            if (data.success) {
-                // Success - reset form
-                feedbackForm.reset();
-                
-                // Reset rating stars
-                document.querySelectorAll('input[name="rating"]').forEach(radio => {
-                    radio.checked = false;
-                });
-                
-                // Tampilkan pesan sukses
-                alert('Terima kasih atas ulasan Anda! ✅');
-                
-                // Muat ulang daftar feedback
-                loadFeedbacks();
-            } else {
-                // Tampilkan error
-                if (data.errors) {
-                    let errorMessages = '';
-                    Object.values(data.errors).forEach(errors => {
-                        errorMessages += errors.join('\n') + '\n';
-=======
 
                 // Fetch data dari server
                 fetch(feedbackIndexUrl, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+                    //     'Content-Type': 'application/json',
+                    //     'X-CSRF-TOKEN': csrfToken
                     }
                 })
                     .then(response => {
-                        console.log('Response status:', response.status);
+                        // console.log('Response status:', response.status);
 
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
                         }
                         return response.json();
                     })
-                    .then(feedbacks => {
-                        console.log('Feedback diterima:', feedbacks);
-                        updateFeedbackList(feedbacks);
+                    .then(data => {
+                        console.log('DATA:', data);
+                        updateFeedbackList(data);
                     })
+                    // .then(feedbacks => {
+                    //     console.log('Feedback diterima:', feedbacks);
+                    //     updateFeedbackList(feedbacks);
+                    // })
                     .catch(error => {
                         console.error('Error loading feedbacks:', error);
 
                         feedbackList.innerHTML = `
-                    <div class="error-feedback">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Gagal memuat ulasan</p>
-                        <small>${error.message}</small>
-                        <button onclick="window.loadFeedbacks()" class="btn-retry">
-                            <i class="fas fa-redo"></i> Coba Lagi
-                        </button>
-                    </div>
-                `;
->>>>>>> 68915389ecc15d80816cd6be47879dc5231d474b
+                            <p>Gagal memuat ulasan</p>
+                        `;
                     });
             }
 

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ServiceBooking;
 use App\Models\Service;
+use App\Models\MedicalRecord;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
@@ -15,28 +17,30 @@ class BookingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ServiceBooking::with(['service', 'doctor', 'medicalRecords'])
-            ->orderBy('booking_date', 'desc')
-            ->orderBy('nomor_antrian', 'asc');
+        $user = auth('sanctum')->user();
 
-        // Filter by authenticated user atau email
-        if (auth()->check()) {
-            $user = auth()->user();
-            $query->where(function($q) use ($user) {
-                $q->where('user_id', $user->id)
-                  ->orWhere('email', $user->email);
-            });
+        if ($user) {
+            // "Claim" booking lama yang belum ada user_id tapi emailnya sama (Case Insensitive)
+            \App\Models\ServiceBooking::whereNull('user_id')
+                ->whereRaw('LOWER(email) = ?', [strtolower($user->email)])
+                ->update(['user_id' => $user->id]);
+
+            $query = ServiceBooking::with(['service', 'doctor', 'medicalRecords'])
+                ->where('user_id', $user->id)
+                ->orWhere(function($q) use ($user) {
+                    $q->whereNull('user_id')
+                      ->whereRaw('LOWER(email) = ?', [strtolower($user->email)]);
+                });
         } elseif ($request->has('email') && $request->email) {
-            $query->where('email', $request->email);
+            $query = ServiceBooking::with(['service', 'doctor', 'medicalRecords'])
+                ->whereRaw('LOWER(email) = ?', [strtolower($request->email)]);
         } else {
-            // Jika tidak login dan tidak ada email, kembalikan kosong (privasi)
-            return response()->json([
-                'success' => true,
-                'data'    => [],
-            ]);
+            return response()->json(['success' => true, 'data' => []]);
         }
 
-        $bookings = $query->get();
+        $bookings = $query->orderBy('booking_date', 'desc')
+            ->orderBy('nomor_antrian', 'asc')
+            ->get();
 
         $data = $bookings->map(function ($b) {
             return [
@@ -64,7 +68,7 @@ class BookingController extends Controller
                 'service_name'   => $b->service ? $b->service->name : null,
                 'doctor_name'    => $b->doctor ? $b->doctor->name : null,
                 'has_medical_record' => $b->medicalRecords->count() > 0,
-                'medical_records' => $b->medicalRecords // Sertakan rekam medis jika ada
+                'medical_records' => $b->medicalRecords
             ];
         });
 
@@ -72,6 +76,68 @@ class BookingController extends Controller
             'success' => true,
             'data'    => $data,
         ]);
+    }
+
+    /**
+     * GET /api/medical-records
+     * Ambil semua daftar rekam medis milik user
+     */
+    public function allMedicalRecords(Request $request)
+    {
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        // "Claim" booking lama yang belum ada user_id tapi emailnya sama sebelum ambil rekam medis
+        \App\Models\ServiceBooking::whereNull('user_id')
+            ->whereRaw('LOWER(email) = ?', [strtolower($user->email)])
+            ->update(['user_id' => $user->id]);
+
+        $records = MedicalRecord::whereHas('serviceBooking', function($q) use ($user) {
+            $q->where('user_id', $user->id)
+              ->orWhereRaw('LOWER(email) = ?', [strtolower($user->email)]);
+        })
+        ->orderBy('tanggal_pemeriksaan', 'desc')
+        ->get();
+
+        \Log::info("Medical records fetched for user {$user->id}", ['count' => $records->count()]);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $records,
+        ]);
+    }
+
+    /**
+     * GET /api/medical-records/{id}/pdf
+     * Generate PDF rekam medis
+     */
+    public function downloadPdf($id)
+    {
+        // Izinkan auth via query string 'token' untuk kemudahan download PDF di mobile
+        if (!auth('sanctum')->check() && request()->has('token')) {
+            $token = request()->query('token');
+            $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+            if ($accessToken && $accessToken->tokenable) {
+                auth('sanctum')->setUser($accessToken->tokenable);
+            }
+        }
+
+        $user = auth('sanctum')->user();
+        
+        $medicalRecord = MedicalRecord::with(['serviceBooking', 'vaccinations'])->findOrFail($id);
+        
+        // Verifikasi kepemilikan (Opsional tapi disarankan)
+        $booking = $medicalRecord->serviceBooking;
+        if ($user && $booking->user_id !== $user->id && strtolower($booking->email) !== strtolower($user->email)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized access to this record'], 403);
+        }
+
+        $pdf = Pdf::loadView('admin.medical-records.pdf', compact('medicalRecord'));
+        $pdf->setPaper('A4', 'portrait');
+        
+        return $pdf->download('Rekam_Medis_' . $medicalRecord->kode_rekam_medis . '.pdf');
     }
 
     /**

@@ -30,11 +30,12 @@ class AuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
 
             if ($user) {
-                // Update data jika user sudah ada
-                $user->update([
-                    'google_id' => $googleUser->getId(),
-                    'avatar' => $googleUser->getAvatar(),
-                ]);
+                // Update google_id jika belum ada, avatar hanya jika masih kosong
+                $updateData = ['google_id' => $googleUser->getId()];
+                if (empty($user->avatar)) {
+                    $updateData['avatar'] = $googleUser->getAvatar();
+                }
+                $user->update($updateData);
             } else {
                 // Buat user baru jika belum ada
                 $user = User::create([
@@ -81,14 +82,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Cek apakah email sudah diverifikasi
-        if (!$user->email_verified_at) {
-            return response()->json([
-                'message' => 'Email Anda belum diverifikasi. Silakan cek email atau kirim ulang kode OTP.',
-                'not_verified' => true
-            ], 403);
-        }
-
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -109,26 +102,15 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        // Generate 6-digit OTP
-        $otp = rand(100000, 999999);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'otp_code' => $otp,
+            'email_verified_at' => now(), // Auto-verify, tidak perlu OTP
         ]);
 
-        // Kirim email (Driver 'log' akan menulis ke storage/logs/laravel.log)
-        try {
-            Mail::to($user->email)->send(new OTPMail($otp));
-        } catch (\Exception $e) {
-            // Kita log errornya tapi tetap lanjut daftar
-            \Log::error("Gagal mengirim email OTP: " . $e->getMessage());
-        }
-
         return response()->json([
-            'message' => 'Registrasi berhasil. Silakan cek email Anda untuk kode verifikasi.',
+            'message' => 'Registrasi berhasil! Silakan login dengan akun Anda.',
             'email' => $user->email
         ]);
     }
@@ -249,6 +231,7 @@ class AuthController extends Controller
         }
 
         $user->update($data);
+        \Log::info("Profile Updated for user {$user->id}", ['avatar' => $user->avatar]);
 
         return response()->json([
             'message' => 'Profile updated successfully',
@@ -266,5 +249,23 @@ class AuthController extends Controller
             $request->user()->currentAccessToken()->delete();
         }
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * Update FCM Token
+     */
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string'
+        ]);
+
+        $user = $request->user();
+        if ($user) {
+            $user->update(['fcm_token' => $request->fcm_token]);
+            return response()->json(['success' => true, 'message' => 'FCM Token updated']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
     }
 }

@@ -7,6 +7,8 @@ use App\Models\MedicalRecord;
 use App\Models\ServiceBooking;
 use App\Models\VaccinationRecord;
 use App\Models\Doctor;
+use App\Models\User;
+use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -124,6 +126,19 @@ class MedicalRecordController extends Controller
                         'dokter' => $namaDokter, // Gunakan nama dokter yang sama
                         'catatan' => $vaccination['catatan'] ?? null
                     ]);
+                }
+            }
+
+            // KIRIM NOTIFIKASI KE USER
+            if ($booking->user_id) {
+                $user = User::find($booking->user_id);
+                if ($user && $user->fcm_token) {
+                    FirebaseService::sendNotification(
+                        $user->fcm_token,
+                        "Rekam Medis Baru",
+                        "Hasil pemeriksaan untuk {$booking->nama_hewan} sudah tersedia.",
+                        ['type' => 'medical_record', 'record_id' => $medicalRecord->id]
+                    );
                 }
             }
         });

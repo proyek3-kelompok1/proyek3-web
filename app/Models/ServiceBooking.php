@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ServiceBooking extends Model
 {
     use HasFactory;
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $fillable = [
         'nama_pemilik',
@@ -29,7 +34,8 @@ class ServiceBooking extends Model
         'total_price',
         'alamat',
         'ciri_warna',
-        'jenis_kelamin'
+        'jenis_kelamin',
+        'user_id'
     ];
 
     protected $casts = [

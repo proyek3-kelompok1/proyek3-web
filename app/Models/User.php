@@ -25,6 +25,8 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'phone',
+        'otp_code',
+        'email_verified_at',
     ];
 
     /**
@@ -48,5 +50,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the bookings for the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(ServiceBooking::class);
+    }
+
+    /**
+     * Get the chat history for the user.
+     */
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class);
     }
 }

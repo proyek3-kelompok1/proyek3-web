@@ -526,7 +526,7 @@
     </style>
 
     <div class="consultation-container">
-        <div class="container-wrapper">
+        <div class="consultation-wrapper">
             <div class="page-title">
                 <h1>Konsultasi & Kontak</h1>
                 <p>Hubungi kami untuk konsultasi mengenai hewan peliharaan Anda</p>
@@ -865,20 +865,15 @@
                         console.error('Error loading feedbacks:', error);
 
                         feedbackList.innerHTML = `
-// <<<<<<< HEAD
-//                             <p>Gagal memuat ulasan</p>
-//                         `;
-// =======
-                    <div class="error-feedback">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>Gagal memuat ulasan</p>
-                        <small>${error.message}</small>
-                        <button onclick="window.loadFeedbacks()" class="btn-retry">
-                            <i class="fas fa-redo"></i> Coba Lagi
-                        </button>
-                    </div>
-                `;
-// >>>>>>> 989608772308f736cdb057e1e7d2144e95577cbe
+                            <div class="error-feedback">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Gagal memuat ulasan</p>
+                                <small>${error.message}</small>
+                                <button onclick="window.loadFeedbacks()" class="btn-retry">
+                                    <i class="fas fa-redo"></i> Coba Lagi
+                                </button>
+                            </div>
+                        `;
                     });
             }
 

@@ -10,12 +10,19 @@ class Doctor extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'name', 
+        'email',
         'specialization', 
         'schedule', 
         'photo', 
         'description'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     // Accessor untuk photo_url
     protected $appends = ['photo_url'];

@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AiController;
+use App\Http\Controllers\Api\ConsultationApiController;
+use App\Http\Controllers\Api\NotificationController;
 
 Route::get('/education', [EducationController::class, 'index']);
 Route::get('/education/{id}', [EducationController::class, 'show']);
@@ -37,6 +39,18 @@ Route::middleware('auth:sanctum')->group(function () {
     // AI & Chat
     Route::get('/ai/history', [AiController::class, 'getHistory']);
     Route::post('/ai/chat', [AiController::class, 'chat']);
+    Route::post('/ai/history/delete', [AiController::class, 'deleteHistory']);
+
+    // Consultations (Chat)
+    Route::get('/consultations', [ConsultationApiController::class, 'index']);
+    Route::post('/consultations', [ConsultationApiController::class, 'startSession']);
+    Route::get('/consultations/{id}/messages', [ConsultationApiController::class, 'getMessages']);
+    Route::post('/consultations/{id}/messages', [ConsultationApiController::class, 'sendMessage']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });
 
 Route::get('/bookings/queue', [BookingController::class, 'queue']);

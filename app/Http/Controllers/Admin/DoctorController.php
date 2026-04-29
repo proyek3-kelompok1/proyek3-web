@@ -24,6 +24,7 @@ class DoctorController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:doctors,email',
             'specialization' => 'nullable|string|max:255',
             'schedule' => 'required|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -32,6 +33,7 @@ class DoctorController extends Controller
 
         $doctor = new Doctor();
         $doctor->name = $request->name;
+        $doctor->email = $request->email;
         $doctor->specialization = $request->specialization;
         $doctor->schedule = $request->schedule;
         $doctor->description = $request->description;
@@ -56,6 +58,7 @@ class DoctorController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:doctors,email,' . $doctor->id,
             'specialization' => 'nullable|string|max:255',
             'schedule' => 'required|string|max:255',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -63,6 +66,7 @@ class DoctorController extends Controller
         ]);
 
         $doctor->name = $request->name;
+        $doctor->email = $request->email;
         $doctor->specialization = $request->specialization;
         $doctor->schedule = $request->schedule;
         $doctor->description = $request->description;

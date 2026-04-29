@@ -40,7 +40,36 @@
         <!-- MAIN -->
         <div class="col-lg-8">
 
-            @if($education->thumbnail)
+            @if($education->type == 'video' && $education->video_url)
+                @php
+                    // Extract YouTube ID from URL
+                    $videoId = null;
+                    if (preg_match('/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $education->video_url, $match)) {
+                        $videoId = $match[1];
+                    }
+                @endphp
+
+                @if($videoId)
+                    <div class="ratio ratio-16x9 mb-4 shadow rounded overflow-hidden">
+                        <iframe src="https://www.youtube.com/embed/{{ $videoId }}" 
+                                title="YouTube video player" frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen></iframe>
+                    </div>
+                @else
+                    <div class="alert alert-info mb-4">
+                        <i class="fab fa-youtube me-2"></i> 
+                        <a href="{{ $education->video_url }}" target="_blank" class="text-decoration-none fw-bold">
+                            Tonton Video di YouTube
+                        </a>
+                    </div>
+                    @if($education->thumbnail)
+                        <img src="{{ asset("storage/" . $education->thumbnail) }}"
+                            class="img-fluid rounded mb-4"
+                            style="max-height:400px; width:100%; object-fit:cover;">
+                    @endif
+                @endif
+            @elseif($education->thumbnail)
                 <img src="{{ asset("storage/" . $education->thumbnail) }}"
                     class="img-fluid rounded mb-4"
                     style="max-height:400px; width:100%; object-fit:cover;">

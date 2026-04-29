@@ -47,6 +47,9 @@ class AuthController extends Controller
                 ]);
             }
 
+            // Sync Doctor Role if email matches
+            $user = $this->syncDoctorRole($user);
+
             // Generate token Sanctum
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -81,6 +84,9 @@ class AuthController extends Controller
                 'message' => 'Email atau password salah.'
             ], 401);
         }
+
+        // Sync Doctor Role if email matches
+        $user = $this->syncDoctorRole($user);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -239,14 +245,13 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Logout
-     */
     public function logout(Request $request)
     {
-        // Hapus token aktif saat ini
-        if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
+        // Hapus token aktif saat ini dan FCM Token agar tidak ada notifikasi nyasar
+        $user = $request->user();
+        if ($user) {
+            $user->update(['fcm_token' => null]);
+            $user->currentAccessToken()->delete();
         }
         return response()->json(['message' => 'Logged out successfully']);
     }
@@ -262,10 +267,33 @@ class AuthController extends Controller
 
         $user = $request->user();
         if ($user) {
+            // Hapus token ini dari user lain untuk mencegah notifikasi nyasar di device yang sama
+            User::where('fcm_token', $request->fcm_token)
+                ->where('id', '!=', $user->id)
+                ->update(['fcm_token' => null]);
+
             $user->update(['fcm_token' => $request->fcm_token]);
             return response()->json(['success' => true, 'message' => 'FCM Token updated']);
         }
 
         return response()->json(['success' => false, 'message' => 'User not authenticated'], 401);
+    }
+
+
+    /**
+     * Helper to sync doctor role if email matches
+     */
+    private function syncDoctorRole($user)
+    {
+        $doctor = \App\Models\Doctor::where('email', $user->email)->first();
+        if ($doctor) {
+            $user->role = 'doctor';
+            $user->save();
+            
+            // Link doctor record to user
+            $doctor->user_id = $user->id;
+            $doctor->save();
+        }
+        return $user;
     }
 }

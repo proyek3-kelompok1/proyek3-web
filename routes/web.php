@@ -215,6 +215,12 @@ Route::prefix('admin')->group(function () {
             Route::get('/{id}', [AdminMessageController::class, 'show'])->name('show');
             Route::delete('/{id}', [AdminMessageController::class, 'destroy'])->name('destroy');
         });
+
+        // Notifications Management
+        Route::prefix('notifications')->name('admin.notifications.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('index');
+            Route::post('/send', [\App\Http\Controllers\Admin\NotificationController::class, 'sendManual'])->name('send');
+        });
         
         // Posts
         Route::prefix('posts')->name('admin.posts.')->group(function () {

@@ -188,6 +188,9 @@
                     <a class="nav-link {{ request()->is('admin/messages*') ? 'active' : '' }}" href="{{ route('admin.messages.index') }}">
                         <i class="fas fa-comments me-2"></i>Ulasan Pelanggan
                     </a>
+                    <a class="nav-link {{ request()->is('admin/notifications*') ? 'active' : '' }}" href="{{ route('admin.notifications.index') }}">
+                        <i class="fas fa-bell me-2"></i>Notifikasi FCM
+                    </a>
 
                     <div style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
                         <a class="nav-link" href="{{ url('/admin/logout') }}" 

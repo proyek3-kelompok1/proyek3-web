@@ -63,6 +63,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the pet profiles for the user.
+     */
+    public function petProfiles()
+    {
+        return $this->hasMany(PetProfile::class);
+    }
+
+    /**
      * Get the chat history for the user.
      */
     public function chatMessages()

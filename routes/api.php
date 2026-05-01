@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\ConsultationApiController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\PetProfileController;
 
 Route::get('/education', [EducationController::class, 'index']);
 Route::get('/education/{id}', [EducationController::class, 'show']);
@@ -51,6 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    // Pet Profiles (Smart Profil Anabul)
+    Route::apiResource('pet-profiles', PetProfileController::class);
 });
 
 Route::get('/bookings/queue', [BookingController::class, 'queue']);

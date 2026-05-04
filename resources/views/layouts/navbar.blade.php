@@ -93,6 +93,8 @@
         background: rgba(106, 13, 173, 0.85) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     /* Saat scroll */

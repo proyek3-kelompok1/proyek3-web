@@ -58,15 +58,22 @@
             <div class="card featured-card shadow-sm mb-5 card-hover">
                 <div class="row g-0">
 
-                    <div class="col-md-6">
+                    <div class="col-md-6 position-relative">
                         <img src="{{ asset('storage/' . $featuredContent->thumbnail) }}"
                             class="w-100 featured-img">
+                        @if($featuredContent->type == 'video')
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <a href="{{ $featuredContent->video_url }}" target="_blank" class="btn btn-light rounded-circle shadow-lg" style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; opacity: 0.9;">
+                                    <i class="fas fa-play text-danger fa-2x"></i>
+                                </a>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="col-md-6 p-4 d-flex flex-column">
 
                         <span class="badge bg-purple mb-2" style="width:max-content;">
-                            Highlight
+                            Highlight • {{ ucfirst($featuredContent->type) }}
                         </span>
 
                         <h3 class="fw-bold">
@@ -81,10 +88,17 @@
                             {{ $featuredContent->created_at->format('d M Y') }}
                         </div>
 
-                        <a href="{{ route('education.show', $featuredContent->id) }}"
-                            class="btn btn-purple">
-                            Baca Artikel
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('education.show', $featuredContent->id) }}"
+                                class="btn btn-outline-purple flex-grow-1">
+                                Baca Artikel
+                            </a>
+                            @if($featuredContent->type == 'video' && $featuredContent->video_url)
+                                <a href="{{ $featuredContent->video_url }}" target="_blank" class="btn btn-danger">
+                                    <i class="fab fa-youtube me-1"></i> Tonton
+                                </a>
+                            @endif
+                        </div>
 
                     </div>
                 </div>
@@ -98,10 +112,20 @@
 
                     <div class="card h-100 border-0 shadow-sm card-hover">
 
-                        @if($item->thumbnail)
-                            <img src="{{ asset('storage/' . $item->thumbnail) }}"
-                                style="height:200px; object-fit:cover;">
-                        @endif
+                        <div class="position-relative">
+                            @if($item->thumbnail)
+                                <img src="{{ asset('storage/' . $item->thumbnail) }}"
+                                    class="w-100"
+                                    style="height:200px; object-fit:cover;">
+                            @endif
+                            @if($item->type == 'video')
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <a href="{{ $item->video_url }}" target="_blank" class="btn btn-light rounded-circle shadow" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; opacity: 0.8;">
+                                        <i class="fas fa-play text-danger"></i>
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
 
                         <div class="card-body">
 
@@ -119,11 +143,16 @@
 
                         </div>
 
-                        <div class="card-footer bg-white border-0">
+                        <div class="card-footer bg-white border-0 d-flex gap-2">
                             <a href="{{ route('education.show', $item->id) }}"
-                                class="btn btn-sm btn-purple w-100">
-                                Lihat Detail
+                                class="btn btn-sm btn-purple flex-grow-1">
+                                Detail
                             </a>
+                            @if($item->type == 'video' && $item->video_url)
+                                <a href="{{ $item->video_url }}" target="_blank" class="btn btn-sm btn-danger">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            @endif
                         </div>
 
                     </div>

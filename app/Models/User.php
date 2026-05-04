@@ -27,6 +27,8 @@ class User extends Authenticatable
         'phone',
         'otp_code',
         'email_verified_at',
+        'fcm_token',
+        'role',
     ];
 
     /**
@@ -61,10 +63,45 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the pet profiles for the user.
+     */
+    public function petProfiles()
+    {
+        return $this->hasMany(PetProfile::class);
+    }
+
+    /**
      * Get the chat history for the user.
      */
     public function chatMessages()
     {
         return $this->hasMany(ChatMessage::class);
+    }
+
+    protected $appends = ['avatar_url', 'is_online'];
+
+    public function getAvatarUrlAttribute()
+    {
+        if (!$this->avatar) return null;
+        if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
+        }
+        return url('storage/' . $this->avatar);
+    }
+
+    public function getIsOnlineAttribute()
+    {
+        if (!$this->updated_at) return false;
+        return $this->updated_at->gt(now()->subMinutes(5));
+    }
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class);
+    }
+
+    public function isDoctor()
+    {
+        return $this->role === 'doctor';
     }
 }

@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class EducationController extends Controller
 {
+    protected $firebaseService;
+
+    public function __construct(\App\Services\FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -54,7 +61,15 @@ class EducationController extends Controller
         // Set default value untuk is_published jika tidak dicentang
         $validated['is_published'] = $request->has('is_published');
 
-        Education::create($validated);
+        $education = Education::create($validated);
+
+        // Kirim notifikasi jika dipublish
+        if ($education->is_published) {
+            $this->firebaseService->sendToTopic('education', 'Edukasi Baru!', $education->title, [
+                'type' => 'education',
+                'id' => (string)$education->id
+            ]);
+        }
 
         return redirect()->route('admin.education.index')
             ->with('success', 'Edukasi berhasil ditambahkan!');

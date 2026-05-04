@@ -2,42 +2,92 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 use Illuminate\Support\Facades\Log;
 
 class FirebaseService
 {
-    /**
-     * Send Push Notification using FCM (Legacy API for simplicity)
-     * Note: In production, consider using Firebase Admin SDK or V1 API
-     */
-    public static function sendNotification($fcmToken, $title, $body, $data = [])
+    protected $messaging;
+
+    public function __construct()
     {
-        $serverKey = config('services.firebase.server_key');
+        $credentialsPath = storage_path('app/firebase-auth.json');
         
-        if (!$serverKey || !$fcmToken) {
-            Log::warning("FCM: Missing server key or token. Cannot send notification.");
+        if (file_exists($credentialsPath)) {
+            $factory = (new Factory)->withServiceAccount($credentialsPath);
+            $this->messaging = $factory->createMessaging();
+        } else {
+            Log::error('Firebase credentials not found at ' . $credentialsPath);
+        }
+    }
+
+    /**
+     * Send notification to a specific FCM token
+     */
+    public function sendNotification($token, $title, $body, $data = [])
+    {
+        if (!$this->messaging || !$token) {
             return false;
         }
 
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'key=' . $serverKey,
-                'Content-Type' => 'application/json',
-            ])->post('https://fcm.googleapis.com/fcm/send', [
-                'to' => $fcmToken,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $body,
-                    'sound' => 'default',
-                ],
-                'data' => $data,
-            ]);
+            $notification = Notification::create($title, $body);
+            $message = CloudMessage::withTarget('token', $token)
+                ->withNotification($notification)
+                ->withData($data);
 
-            Log::info("FCM Response: " . $response->body());
-            return $response->successful();
+            $this->messaging->send($message);
+            return true;
         } catch (\Exception $e) {
-            Log::error("FCM Error: " . $e->getMessage());
+            Log::error('FCM Error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Send notification to multiple tokens
+     */
+    public function sendToMultiple($tokens, $title, $body, $data = [])
+    {
+        if (!$this->messaging || empty($tokens)) {
+            return false;
+        }
+
+        try {
+            $notification = Notification::create($title, $body);
+            $message = CloudMessage::new()
+                ->withNotification($notification)
+                ->withData($data);
+
+            $this->messaging->sendMulticast($message, $tokens);
+            return true;
+        } catch (\Exception $e) {
+            Log::error('FCM Multicast Error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Send notification to a topic
+     */
+    public function sendToTopic($topic, $title, $body, $data = [])
+    {
+        if (!$this->messaging) {
+            return false;
+        }
+
+        try {
+            $notification = Notification::create($title, $body);
+            $message = CloudMessage::withTarget('topic', $topic)
+                ->withNotification($notification)
+                ->withData($data);
+
+            $this->messaging->send($message);
+            return true;
+        } catch (\Exception $e) {
+            Log::error('FCM Topic Error: ' . $e->getMessage());
             return false;
         }
     }

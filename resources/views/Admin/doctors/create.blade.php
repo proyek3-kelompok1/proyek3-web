@@ -22,6 +22,16 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Dokter (untuk Login)</label>
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                               id="email" name="email" value="{{ old('email') }}" required>
+                        <div class="form-text text-muted">Gunakan email yang sama dengan yang didaftarkan akun di aplikasi.</div>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
                 
                 <div class="col-md-6">

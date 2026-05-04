@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MedicalRecordMail;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class MedicalRecordController extends Controller
@@ -132,13 +134,25 @@ class MedicalRecordController extends Controller
             // KIRIM NOTIFIKASI KE USER
             if ($booking->user_id) {
                 $user = User::find($booking->user_id);
-                if ($user && $user->fcm_token) {
-                    FirebaseService::sendNotification(
-                        $user->fcm_token,
-                        "Rekam Medis Baru",
-                        "Hasil pemeriksaan untuk {$booking->nama_hewan} sudah tersedia.",
-                        ['type' => 'medical_record', 'record_id' => $medicalRecord->id]
-                    );
+                if ($user) {
+                    // 1. Kirim Notifikasi Firebase
+                    if ($user->fcm_token) {
+                        FirebaseService::sendNotification(
+                            $user->fcm_token,
+                            "Rekam Medis Baru",
+                            "Hasil pemeriksaan untuk {$booking->nama_hewan} sudah tersedia.",
+                            ['type' => 'medical_record', 'record_id' => $medicalRecord->id]
+                        );
+                    }
+
+                    // 2. Kirim Email Otomatis dengan Lampiran PDF
+                    if ($user->email) {
+                        try {
+                            Mail::to($user->email)->send(new MedicalRecordMail($medicalRecord));
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error("Gagal kirim email rekam medis: " . $e->getMessage());
+                        }
+                    }
                 }
             }
         });

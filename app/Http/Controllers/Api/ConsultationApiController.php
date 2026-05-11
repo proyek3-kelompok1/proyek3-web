@@ -8,6 +8,7 @@ use App\Models\ConsultationMessage;
 use App\Models\Doctor;
 use App\Models\User;
 use App\Services\FirebaseService;
+use App\Events\MessageSent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +29,7 @@ class ConsultationApiController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         $session = ConsultationSession::where('user_id', $user->id)
             ->where('doctor_id', $request->doctor_id)
             ->where('status', 'active')
@@ -81,7 +82,7 @@ class ConsultationApiController extends Controller
     public function getMessages($sessionId)
     {
         $session = ConsultationSession::findOrFail($sessionId);
-        
+
         // Mark messages as read
         ConsultationMessage::where('session_id', $sessionId)
             ->where('sender_type', Auth::user()->role === 'doctor' ? 'user' : 'doctor')
@@ -115,7 +116,10 @@ class ConsultationApiController extends Controller
         // Update session timestamp
         $session->touch();
 
-        // Send Notification
+        // Broadcast message via Reverb WebSocket
+        broadcast(new MessageSent($message))->toOthers();
+
+        // Send FCM Notification
         $this->notifyReceiver($session, $message);
 
         return response()->json([

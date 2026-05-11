@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\DoctorController;
@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\ConsultationApiController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PetProfileController;
+use Illuminate\Support\Facades\Broadcast;
 
 Route::get('/education', [EducationController::class, 'index']);
 Route::get('/education/{id}', [EducationController::class, 'show']);
@@ -36,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/medical-records', [BookingController::class, 'allMedicalRecords']);
     Route::get('/medical-records/{id}/pdf', [BookingController::class, 'downloadPdf']);
-
+    
     // AI & Chat
     Route::get('/ai/history', [AiController::class, 'getHistory']);
     Route::post('/ai/chat', [AiController::class, 'chat']);
@@ -47,14 +48,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/consultations', [ConsultationApiController::class, 'startSession']);
     Route::get('/consultations/{id}/messages', [ConsultationApiController::class, 'getMessages']);
     Route::post('/consultations/{id}/messages', [ConsultationApiController::class, 'sendMessage']);
-
+    
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-
+    
     // Pet Profiles (Smart Profil Anabul)
     Route::apiResource('pet-profiles', PetProfileController::class);
+
+    // Broadcasting Authentication for Reverb WebSocket
+    Broadcast::routes(['middleware' => ['auth:sanctum']]);
 });
 
 Route::get('/bookings/queue', [BookingController::class, 'queue']);

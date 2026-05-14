@@ -27,6 +27,10 @@
                         href="{{ url('education') }}">Edukasi</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->is('download') ? 'active' : '' }}"
+                        href="{{ url('/download') }}">Download App</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->is('consultations') ? 'active' : '' }}"
                         href="{{ url('/consultations') }}">Kontak</a>
                 </li>

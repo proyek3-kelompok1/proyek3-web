@@ -14,6 +14,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\MedicalRecordController as AdminMedicalRecordController;
+use App\Http\Controllers\DownloadController;
 use Illuminate\Support\Facades\Route;
 
 // =======================
@@ -101,6 +102,11 @@ Route::get('/after-services', function () {
 // =======================
 Route::get('/education', [EducationController::class, 'index'])->name('education.index');
 Route::get('/education/{id}', [EducationController::class, 'show'])->name('education.show');
+
+// =======================
+// DOWNLOAD APP
+// =======================
+Route::get('/download', [DownloadController::class, 'index'])->name('download');
 
 // =======================
 // APPOINTMENTS & ONLINE SERVICES

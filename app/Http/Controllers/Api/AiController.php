@@ -13,7 +13,7 @@ class AiController extends Controller
 {
     private function getAiServiceUrl(): string
     {
-        return env('AI_SERVICE_URL', 'http://43.157.224.99:5000');
+        return env('AI_SERVICE_URL', 'http://127.0.0.1:5000');
     }
 
     // ─────────────────────────────────────────────────────
@@ -37,9 +37,9 @@ class AiController extends Controller
     {
         $userId = auth()->id();
         ChatMessage::where('user_id', $userId)->delete();
-        
+
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Riwayat chat berhasil dihapus'
         ], 200);
     }
@@ -56,8 +56,8 @@ class AiController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
 
-        $userMessage    = $request->message ?? '';
-        $base64Image    = $request->image; // Data gambar base64
+        $userMessage = $request->message ?? '';
+        $base64Image = $request->image; // Data gambar base64
         $medicalContext = $this->getMedicalContext($user);
 
         // Simpan pesan user
@@ -76,10 +76,10 @@ class AiController extends Controller
         // STEP 2: AI generate jawaban
         if ($modelResult !== null && $modelResult['ada_gejala']) {
             $aiResponse = $this->callZhipuWithDiagnosis($userMessage, $modelResult, $medicalContext, $base64Image)
-                       ?? $this->buildLocalDiagnosisResponse($modelResult);
+                ?? $this->buildLocalDiagnosisResponse($modelResult);
         } else {
             $aiResponse = $this->callZhipuGeneral($userMessage, $medicalContext, $base64Image)
-                       ?? $this->buildLocalGeneralResponse();
+                ?? $this->buildLocalGeneralResponse();
         }
 
         // Cek apakah fallback ke groq terjadi
@@ -121,11 +121,11 @@ class AiController extends Controller
     // ─────────────────────────────────────────────────────
     private function callZhipuWithDiagnosis(string $userMessage, array $model, string $medicalContext, ?string $base64Image = null): ?string
     {
-        $diagnosa     = $model['diagnosa_display'] ?? '-';
+        $diagnosa = $model['diagnosa_display'] ?? '-';
         $probabilitas = $model['probabilitas'] ?? 0;
-        $saran        = $model['saran'] ?? '';
-        $gejala       = implode(', ', $model['gejala_aktif'] ?? []);
-        $urgensi      = $model['level_urgensi'] ?? 'normal';
+        $saran = $model['saran'] ?? '';
+        $gejala = implode(', ', $model['gejala_aktif'] ?? []);
+        $urgensi = $model['level_urgensi'] ?? 'normal';
 
         $top3Text = collect($model['top3'] ?? [])->map(function ($item, $i) {
             return ($i + 1) . '. ' . str_replace('_', ' ', ucwords($item['penyakit'])) . " ({$item['probabilitas']}%)";
@@ -133,8 +133,8 @@ class AiController extends Controller
 
         $urgensiNote = match ($urgensi) {
             'darurat' => 'PENTING: Ini kondisi DARURAT. Tekankan untuk segera ke klinik.',
-            'serius'  => 'Kondisi ini serius, sarankan periksa secepatnya.',
-            default   => 'Kondisi stabil, sampaikan dengan tenang.',
+            'serius' => 'Kondisi ini serius, sarankan periksa secepatnya.',
+            default => 'Kondisi stabil, sampaikan dengan tenang.',
         };
 
         // System Prompt: Ramah, Profesional, dan Peduli (Tidak Lebay)
@@ -143,7 +143,7 @@ class AiController extends Controller
             . "PENTING: Selalu sebut dirimu 'DokterPaw' secara natural (contoh: 'DokterPaw sudah cek gejalanya...', 'Menurut catatan DokterPaw...'). "
             . "Gunakan bahasa Indonesia yang santai tapi sopan. Gunakan emoji secukupnya dan pastikan RELEVAN (contoh: 🐱 untuk kucing, 🐶 untuk anjing, 🐾 untuk umum). "
             . "Berikan diagnosa awal berdasarkan data dengan jelas dan tenang. Jika kondisi serius, sampaikan dengan empati dan sarankan ke dokter hewan secepatnya. "
-            . "Jangan gunakan markdown tebal (**) atau heading (#).";
+            . "Jangan gunakan markdown tebal (**) atau heading (#). noted jangan balas selain pertanyaan penyakit, gejala, diagnosa, saran, dan urgensi. Jangan buat-buat cerita atau informasi yang tidak ada di data. misal di suruh coding atau yang lain jangan buat-buat, jawab saja dengan tidak bisa membantu untuk itu. Fokus hanya pada konteks medis dan pertanyaan user.";
 
         $userPrompt = "Konteks Medis:\n{$medicalContext}\n\n"
             . "User bertanya: \"{$userMessage}\"\n\n"
@@ -165,10 +165,11 @@ class AiController extends Controller
     {
         $systemPrompt = "Kamu adalah DokterPaw, asisten virtual DVPets yang ramah dan membantu. "
             . "Tugasmu menjawab pertanyaan umum seputar perawatan hewan dengan bahasa yang hangat namun tetap informatif. "
-            . "Gunakan sedikit emoji yang relevan agar suasana chat tetap menyenangkan tapi tidak berlebihan.";
+            . "Gunakan sedikit emoji yang relevan agar suasana chat tetap menyenangkan tapi tidak berlebihan. noted jangan balas selain pertanyaan penyakit, gejala, diagnosa, saran, dan urgensi. Jangan buat-buat cerita atau informasi yang tidak ada di data. misal di suruh coding atau yang lain jangan buat-buat, jawab saja dengan tidak bisa membantu untuk itu. Fokus hanya pada konteks medis dan pertanyaan user.";
 
         $userPrompt = "Konteks Medis:\n{$medicalContext}\n\n"
             . "User bertanya: \"{$userMessage}\"";
+            
 
         return $this->callMultiProviderAi($systemPrompt, $userPrompt, $base64Image);
     }
@@ -197,10 +198,11 @@ class AiController extends Controller
     private function callZhipuRaw(string $systemPrompt, string $userPrompt, ?string $base64Image = null): ?string
     {
         $apiKey = env('ZHIPU_API_KEY');
-        $model  = env('ZHIPU_MODEL', 'glm-4.5-flash');
-        $url    = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+        $model = env('ZHIPU_MODEL', 'glm-4.5-flash');
+        $url = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 
-        if (!$apiKey) return null;
+        if (!$apiKey)
+            return null;
 
         $content = [['type' => 'text', 'text' => $userPrompt]];
         if ($base64Image) {
@@ -214,10 +216,10 @@ class AiController extends Controller
             $response = Http::timeout(25)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type'  => 'application/json',
+                    'Content-Type' => 'application/json',
                 ])
                 ->post($url, [
-                    'model'    => $model,
+                    'model' => $model,
                     'messages' => [
                         ['role' => 'system', 'content' => $systemPrompt],
                         ['role' => 'user', 'content' => $content],
@@ -246,19 +248,20 @@ class AiController extends Controller
     private function callGroqRaw(string $systemPrompt, string $userPrompt): ?string
     {
         $apiKey = env('GROQ_API_KEY');
-        $model  = env('GROQ_MODEL', 'llama-3.1-8b-instant');
-        $url    = 'https://api.groq.com/openai/v1/chat/completions';
+        $model = env('GROQ_MODEL', 'llama-3.1-8b-instant');
+        $url = 'https://api.groq.com/openai/v1/chat/completions';
 
-        if (!$apiKey) return null;
+        if (!$apiKey)
+            return null;
 
         try {
             $response = Http::timeout(15)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $apiKey,
-                    'Content-Type'  => 'application/json',
+                    'Content-Type' => 'application/json',
                 ])
                 ->post($url, [
-                    'model'    => $model,
+                    'model' => $model,
                     'messages' => [
                         ['role' => 'system', 'content' => $systemPrompt],
                         ['role' => 'user', 'content' => $userPrompt],
@@ -286,11 +289,11 @@ class AiController extends Controller
     // ─────────────────────────────────────────────────────
     private function buildLocalDiagnosisResponse(array $model): string
     {
-        $diagnosa     = $model['diagnosa_display'] ?? 'tidak diketahui';
+        $diagnosa = $model['diagnosa_display'] ?? 'tidak diketahui';
         $probabilitas = $model['probabilitas'] ?? 0;
-        $saran        = $model['saran'] ?? 'Segera konsultasikan ke dokter hewan.';
-        $gejala       = implode(', ', $model['gejala_aktif'] ?? []);
-        $urgensi      = $model['level_urgensi'] ?? 'normal';
+        $saran = $model['saran'] ?? 'Segera konsultasikan ke dokter hewan.';
+        $gejala = implode(', ', $model['gejala_aktif'] ?? []);
+        $urgensi = $model['level_urgensi'] ?? 'normal';
 
         $top3Lines = collect($model['top3'] ?? [])->map(function ($item, $i) {
             return ($i + 1) . '. ' . ucfirst(str_replace('_', ' ', $item['penyakit'])) . " ({$item['probabilitas']}%)";
@@ -298,8 +301,8 @@ class AiController extends Controller
 
         $urgensiTeks = match ($urgensi) {
             'darurat' => 'Ini kondisi DARURAT. Segera bawa hewan kamu ke dokter hewan sekarang!',
-            'serius'  => 'Kondisi ini perlu penanganan segera. Jangan tunda untuk ke dokter hewan.',
-            default   => 'Disarankan segera periksakan hewan kamu ke dokter hewan.',
+            'serius' => 'Kondisi ini perlu penanganan segera. Jangan tunda untuk ke dokter hewan.',
+            default => 'Disarankan segera periksakan hewan kamu ke dokter hewan.',
         };
 
         return "Berdasarkan gejala yang kamu ceritakan ({$gejala}), berikut hasil analisis AI kami.\n\n"

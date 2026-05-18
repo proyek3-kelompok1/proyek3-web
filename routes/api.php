@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\DoctorController;

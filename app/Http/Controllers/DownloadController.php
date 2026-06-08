@@ -9,7 +9,7 @@ class DownloadController extends Controller
     public function index()
     {
         // Link download dari GitHub
-        $downloadLink = 'https://github.com/ipzoone/apk-storage/releases/latest/download/dvpets.zip';
+        $downloadLink = 'https://github.com/ipzoone/apk-storage/releases/latest/download/dvpets.apk';
         
         return view('download', compact('downloadLink'));
     }

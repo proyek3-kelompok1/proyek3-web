@@ -24,10 +24,10 @@ class ConsultationSession extends Model
 
         if ($user->role === 'doctor') {
             // Check if patient is online
-            return $this->user->is_online;
+            return $this->user ? (bool)$this->user->is_online : false;
         } else {
             // Check if doctor (user) is online
-            return $this->doctor->user->is_online;
+            return ($this->doctor && $this->doctor->user) ? (bool)$this->doctor->user->is_online : false;
         }
     }
 

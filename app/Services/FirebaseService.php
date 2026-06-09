@@ -18,6 +18,7 @@ class FirebaseService
         if (file_exists($credentialsPath)) {
             $factory = (new Factory)->withServiceAccount($credentialsPath);
             $this->messaging = $factory->createMessaging();
+            Log::info('Firebase credentials loaded successfully.');
         } else {
             Log::error('Firebase credentials not found at ' . $credentialsPath);
         }
@@ -38,7 +39,8 @@ class FirebaseService
                 ->withNotification($notification)
                 ->withData($data);
 
-            $this->messaging->send($message);
+            $messageId = $this->messaging->send($message);
+            Log::info('FCM Notification sent successfully to token. Message ID: ' . $messageId);
             return true;
         } catch (\Exception $e) {
             Log::error('FCM Error: ' . $e->getMessage());
@@ -49,22 +51,38 @@ class FirebaseService
     /**
      * Send notification to multiple tokens
      */
-    public function sendToMultiple($tokens, $title, $body, $data = [])
+    /**
+     * Send notification to multiple tokens
+     */
+    public function sendToMultiple(array $tokens, string $title, string $body, array $data = []): bool
     {
-        if (!$this->messaging || empty($tokens)) {
+        if (!$this->messaging) {
+            Log::error('Firebase messaging not initialized.');
             return false;
         }
-
+        if (empty($tokens)) {
+            Log::warning('sendToMultiple called with empty token list.');
+            return false;
+        }
         try {
             $notification = Notification::create($title, $body);
             $message = CloudMessage::new()
                 ->withNotification($notification)
                 ->withData($data);
 
-            $this->messaging->sendMulticast($message, $tokens);
+            // Send multicast and capture the report
+            $report = $this->messaging->sendMulticast($message, $tokens);
+            // Log success and failure counts
+            Log::info('FCM Multicast sent. Success: ' . $report->successCount() . ', Failure: ' . $report->failureCount());
+            if ($report->hasFailures()) {
+                foreach ($report->failures() as $failure) {
+                    Log::error('FCM Multicast failure: ' . $failure->error()->getMessage());
+                }
+                return false;
+            }
             return true;
         } catch (\Exception $e) {
-            Log::error('FCM Multicast Error: ' . $e->getMessage());
+            Log::error('FCM Multicast Exception: ' . $e->getMessage());
             return false;
         }
     }
@@ -84,7 +102,8 @@ class FirebaseService
                 ->withNotification($notification)
                 ->withData($data);
 
-            $this->messaging->send($message);
+            $messageId = $this->messaging->send($message);
+            Log::info('FCM Topic notification sent successfully to topic: ' . $topic . '. Message ID: ' . $messageId);
             return true;
         } catch (\Exception $e) {
             Log::error('FCM Topic Error: ' . $e->getMessage());

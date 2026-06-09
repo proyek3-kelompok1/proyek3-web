@@ -27,7 +27,7 @@
                         href="{{ url('education') }}">Edukasi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('download') ? 'active' : '' }}"
+                    <a class="nav-link nav-link-download {{ request()->is('download') ? 'active' : '' }}"
                         href="{{ url('/download') }}">Download App</a>
                 </li>
                 <li class="nav-item">
@@ -124,6 +124,19 @@
         position: relative;
     }
 
+    .nav-link-download {
+        /* top: 5px; */
+        font-weight: 500;
+        /* margin: 0 5px; */
+        border-radius: 8px;
+        text-decoration: none;
+        padding: 5px 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        background: rgba(132, 31, 199, 0.43);
+        color: white !important;
+    }
+
     /* Hover efek glow */
     .nav-link:hover {
         background: rgba(255, 255, 255, 0.12);
@@ -132,7 +145,7 @@
 
     /* Active menu */
     .nav-link.active {
-        background: rgba(255, 255, 255, 0.2);
+        /* background: rgba(255, 255, 255, 0.2); */
         font-weight: 600;
     }
 

@@ -285,7 +285,15 @@
             </div>
         </div>
     </section>
-    
+
+    <!-- Native Banner - EffectiveCPM -->
+    <section class="py-4" style="background: #fff;">
+        <div class="container">
+            <script async="async" data-cfasync="false" src="https://pl30167341.effectivecpmnetwork.com/471b88d391f06262355b2755898ddc71/invoke.js"></script>
+            <div id="container-471b88d391f06262355b2755898ddc71"></div>
+        </div>
+    </section>
+
     <!-- Daftar Dokter -->
     <section class="py-5">
         <div class="container text-center">
@@ -340,6 +348,22 @@
 
         </div>
     </section>
+
+    <!-- Banner 728x90 - HighPerformanceFormat -->
+    <div class="text-center py-3" style="background: #f0eaf8;">
+        <div class="container">
+            <script>
+                atOptions = {
+                    'key' : '6cf327316751ec86781f14a41c9982da',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script src="https://www.highperformanceformat.com/6cf327316751ec86781f14a41c9982da/invoke.js"></script>
+        </div>
+    </div>
 
     <!-- Banner Iklan 320x50 - HighPerformanceFormat -->
     <div class="text-center py-3" style="background: #f8f9fc;">

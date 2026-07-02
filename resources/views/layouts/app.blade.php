@@ -93,6 +93,8 @@
     @include('layouts.footer')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- EffectiveCPM Social Bar -->
+    <script src="https://pl30167298.effectivecpmnetwork.com/c4/21/03/c4210348a8592b10a996b244a5b56366.js"></script>
 </body>
 
 </html>

@@ -76,6 +76,11 @@
         }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- YourTarget Ad Network Loader -->
+    <script async src="https://static.servestatic.net/js/ytrgt.js"></script>
+    <script>window.ytrgt=window.ytrgt||function(){(window.ytrgt.q=window.ytrgt.q||[]).push(arguments)};</script>
+    <!-- EffectiveCPM Ad Network -->
+    <script src="https://pl30167073.effectivecpmnetwork.com/e6/8b/ac/e68bacfedde89461b453467db666bde6.js"></script>
 </head>
 
 <body>

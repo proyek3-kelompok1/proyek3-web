@@ -181,15 +181,29 @@
         </div>
     </section>
 
-    <!-- Banner Iklan -->
+    <!-- Banner Iklan YourTarget -->
     <section class="py-4 text-center" style="background: #f0eaf8;">
         <div class="container">
-            <div class="d-flex justify-content-center align-items-center">
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 270px;">
                 <div id="ytrgt-fd58a5860b7e47d18057b80773a726f4"></div>
-                <script>!function(w,d,s,o,f,js,fjs){w[o]=w[o]||function(){(w[o].q=w[o].q||[]).push(arguments)};w[o].q=w[o].q||[];js=d.createElement(s);fjs=d.getElementsByTagName(s)[0];js.async=1;js.src=f;fjs.parentNode.insertBefore(js,fjs)}(window,document,'script','ytrgt','https://static.servestatic.net/js/ytrgt.js');ytrgt('hb:load', '#ytrgt-fd58a5860b7e47d18057b80773a726f4', {"endpoint": "https://collect.rtb.events/hb", "publisherId": "fd58a5860b7e47d18057b80773a726f4", "sizes": [[300, 250]], "tmax": 1000, "showAdMark": true});</script>
             </div>
         </div>
     </section>
+    <script>
+        (function waitYtrgt() {
+            if (typeof ytrgt === 'function') {
+                ytrgt('hb:load', '#ytrgt-fd58a5860b7e47d18057b80773a726f4', {
+                    endpoint: 'https://collect.rtb.events/hb',
+                    publisherId: 'fd58a5860b7e47d18057b80773a726f4',
+                    sizes: [[300, 250]],
+                    tmax: 1000,
+                    showAdMark: true
+                });
+            } else {
+                setTimeout(waitYtrgt, 100);
+            }
+        })();
+    </script>
 
     <!-- Tentang Kami Singkat -->
     <section class="section-soft">

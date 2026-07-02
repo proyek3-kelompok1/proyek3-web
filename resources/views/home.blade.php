@@ -341,4 +341,18 @@
         </div>
     </section>
 
+    <!-- Banner Iklan 320x50 - HighPerformanceFormat -->
+    <div class="text-center py-3" style="background: #f8f9fc;">
+        <script>
+            atOptions = {
+                'key' : '092ac736f4dca50cec19ffcc3b414f59',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script src="https://www.highperformanceformat.com/092ac736f4dca50cec19ffcc3b414f59/invoke.js"></script>
+    </div>
+
 @endsection
